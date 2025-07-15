@@ -1,0 +1,94 @@
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as yup from "yup";
+import { toast } from "react-toastify";
+import CustomAuthButton from "../components/customButton";
+import { FaHandshake } from "react-icons/fa";
+
+function Login() {
+  const [loading, setLoading] = useState(false);
+  //   const { fetchUserProfile } = useMainContext();
+  //   const navigate = useNavigate();
+
+  const onSubmitHandler = async (values, helpers) => {};
+
+  const initialValues = {
+    email: "",
+    password: ""
+  };
+
+  const validationSchema = yup.object({
+    email: yup
+      .string()
+      .required("Email is Required")
+      .email("Email must be valid"),
+    password: yup.string().required("Password is Required")
+  });
+
+  return (
+    <>
+      <div className="bg-white border-b shadow-lg">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-10 py-6 flex items-center gap-3">
+          <FaHandshake className="text-red-500 text-3xl" />
+          <h1 className="text-4xl font-extrabold bg-gradient-to-r from-red-500 via-gray-800 to-red-500 text-transparent bg-clip-text drop-shadow-md tracking-wide uppercase">
+            NGO - Karachi
+          </h1>
+        </div>
+      </div>
+      <div className="min-h-[80vh] flex items-center justify-center">
+        <div className="w-full xl:w-[40%] mx-10 xl:mx-0 py-10 flex items-start border rounded-md shadow-lg shadow-red-100">
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={onSubmitHandler}
+          >
+            <Form className="w-full  px-10 py-10  lg:mx-10 ">
+              <p className="text-center pb-8 font-bold text-2xl underline">
+                Login
+              </p>
+
+              <div className="mb-3">
+                <Field
+                  placeholder="Email"
+                  type="text"
+                  name="email"
+                  className="input w-full py-3 px-3 rounded border outline-none"
+                />
+                <ErrorMessage
+                  name="email"
+                  className="text-red-500"
+                  component="p"
+                />
+              </div>
+
+              <div className="mb-10">
+                <Field
+                  placeholder="Password"
+                  type="password"
+                  name="password"
+                  className="input w-full py-3 px-3 rounded border outline-none"
+                />
+                <ErrorMessage
+                  name="password"
+                  className="text-red-500"
+                  component="p"
+                />
+              </div>
+
+              <div className="mb-3 flex justify-center">
+                <CustomAuthButton
+                  isLoading={loading}
+                  text="Login"
+                  type="submit"
+                />
+              </div>
+            </Form>
+          </Formik>
+        </div>
+      </div>
+    </>
+  );
+}
+
+export default Login;
