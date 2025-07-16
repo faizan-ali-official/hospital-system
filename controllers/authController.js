@@ -9,9 +9,6 @@ class AuthController {
   static async register(req, res) {
     try {
       const { name, email, password } = req.body;
-      if (!name || !email || !password) {
-        return res.status(400).json({ message: 'All fields are required.' });
-      }
       const existingUser = await User.findByEmail(email);
       if (existingUser) {
         return res.status(409).json({ message: 'Email already in use.' });
@@ -27,9 +24,6 @@ class AuthController {
   static async login(req, res) {
     try {
       const { email, password } = req.body;
-      if (!email || !password) {
-        return res.status(400).json({ message: 'All fields are required.' });
-      }
       const user = await User.findByEmail(email);
       if (!user) {
         return res.status(401).json({ message: 'Invalid credentials.' });
@@ -38,11 +32,11 @@ class AuthController {
       if (!isMatch) {
         return res.status(401).json({ message: 'Invalid credentials.' });
       }
-      const accessToken = jwt.sign({ id: user.id, email: user.email }, ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
-      const refreshToken = jwt.sign({ id: user.id, email: user.email }, REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+      const accessToken = jwt.sign({ id: user.id, email: user.email, role_id: user.role_id, role: user.role_name }, ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
+      const refreshToken = jwt.sign({ id: user.id, email: user.email, role_id: user.role_id, role: user.role_name }, REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
       // Store refresh token in DB
       await User.updateRefreshToken(user.id, refreshToken);
-      return res.json({ accessToken, refreshToken });
+      return res.json({ user: { id: user.id, name: user.name, email: user.email, role_id: user.role_id, role: user.role_name }, accessToken, refreshToken });
     } catch (err) {
       return res.status(500).json({ message: 'Server error.' });
     }
@@ -64,7 +58,7 @@ class AuthController {
       if (!user || user.refresh_token !== refreshToken) {
         return res.status(403).json({ message: 'Invalid refresh token.' });
       }
-      const newAccessToken = jwt.sign({ id: user.id, email: user.email }, ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
+      const newAccessToken = jwt.sign({ id: user.id, email: user.email, role_id: user.role_id, role: user.role_name }, ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
       return res.json({ accessToken: newAccessToken });
     } catch (err) {
       return res.status(500).json({ message: 'Server error.' });
