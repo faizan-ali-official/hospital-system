@@ -28,16 +28,8 @@ function Login() {
 
   return (
     <>
-      <div className="bg-white border-b shadow-lg">
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-10 py-6 flex items-center gap-3">
-          <FaHandshake className="text-red-500 text-3xl" />
-          <h1 className="text-4xl font-extrabold bg-gradient-to-r from-red-500 via-gray-800 to-red-500 text-transparent bg-clip-text drop-shadow-md tracking-wide uppercase">
-            NGO - Karachi
-          </h1>
-        </div>
-      </div>
       <div className="min-h-[80vh] flex items-center justify-center">
-        <div className="w-full xl:w-[40%] mx-10 xl:mx-0 py-10 flex items-start border rounded-md shadow-lg shadow-red-100">
+        <div className="w-full xl:w-[40%] mx-10 xl:mx-0 py-10 flex items-start border rounded-md shadow-lg border-red-100  shadow-red-100">
           <Formik
             initialValues={initialValues}
             validationSchema={validationSchema}
