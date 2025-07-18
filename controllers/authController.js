@@ -59,7 +59,7 @@ class AuthController {
         return res.status(403).json({ message: 'Invalid refresh token.' });
       }
       const newAccessToken = jwt.sign({ id: user.id, email: user.email, role_id: user.role_id, role: user.role_name }, ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
-      return res.json({ accessToken: newAccessToken });
+      return res.json({ user: { id: user.id, name: user.name, email: user.email, role_id: user.role_id, role: user.role_name }, accessToken: newAccessToken });
     } catch (err) {
       return res.status(500).json({ message: 'Server error.' });
     }
