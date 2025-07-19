@@ -95,4 +95,55 @@ export const doctorIdParamValidation = [
     }
     next();
   }
-]; 
+];
+
+export const patientSlipValidation = {
+  create: [
+    body('patient_name').notEmpty().withMessage('Patient name is required.'),
+    body('doctor_id').isInt().withMessage('Doctor ID must be an integer.'),
+    body('fees_id').isInt().withMessage('Fees ID must be an integer.'),
+    body('reference_token_no').optional().isInt().withMessage('Reference token number must be an integer.'),
+    (req, res, next) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+      next();
+    }
+  ],
+  update: [
+    body('patient_name').optional().notEmpty().withMessage('Patient name cannot be empty.'),
+    body('doctor_id').optional().isInt().withMessage('Doctor ID must be an integer.'),
+    body('fees_id').optional().isInt().withMessage('Fees ID must be an integer.'),
+    // body('token_no').optional().isInt().withMessage('Token number must be an integer.'),
+    body('status').optional().isBoolean().withMessage('Status must be boolean.'),
+    body('reference_token_no').optional().isInt().withMessage('Reference token number must be an integer.'),
+    (req, res, next) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+      next();
+    }
+  ],
+  idParam: [
+    param('id').isInt().withMessage('Invalid patient slip ID.'),
+    (req, res, next) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+      next();
+    }
+  ],
+  status: [
+    body('status').isBoolean().withMessage('Status must be boolean.'),
+    (req, res, next) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+      next();
+    }
+  ]
+}; 

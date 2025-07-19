@@ -22,3 +22,27 @@ CREATE TABLE IF NOT EXISTS doctors (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS fees (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  doctor_fee INT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NULL
+);
+
+
+-- Table for patient slips
+CREATE TABLE IF NOT EXISTS patient_slip (
+  id SERIAL PRIMARY KEY,
+  patient_name VARCHAR(255) NOT NULL,
+  doctor_id INTEGER NOT NULL,
+  fees_id INTEGER NOT NULL,
+  token_no INTEGER NOT NULL,
+  reference_token_no INTEGER DEFAULT NULL,
+  status BOOLEAN DEFAULT TRUE,
+  created_by INTEGER NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NULL,
+  FOREIGN KEY (created_by) REFERENCES users(id)
+);
+
