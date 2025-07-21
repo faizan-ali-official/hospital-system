@@ -1,7 +1,8 @@
 import React from "react";
 import { Sidebar, Menu, MenuItem } from "react-pro-sidebar";
-import { MdDashboard } from "react-icons/md";
-import { HiMiniInformationCircle } from "react-icons/hi2";
+import { IoMdHome } from "react-icons/io";
+import { HiUser } from "react-icons/hi2";
+import { FaUserDoctor, FaSheetPlastic } from "react-icons/fa6";
 import { Link, Outlet, useLocation } from "react-router-dom";
 
 const RootLayout = () => {
@@ -12,7 +13,7 @@ const RootLayout = () => {
     <MenuItem
       icon={<Icon className="text-2xl" />}
       style={{
-        backgroundColor: location.pathname === link ? "#C70036" : "#fff",
+        backgroundColor: location.pathname === link ? "#004aa3" : "#fff",
         borderRadius: location.pathname === link ? "10px" : 0
       }}
       className={`font-bold p-2 ${
@@ -29,12 +30,14 @@ const RootLayout = () => {
       <div className="w-[250px]">
         <Sidebar breakPoint="lg" toggled={isToggle} onBackdropClick={null}>
           <Menu className="!bg-white !min-h-[90vh]">
-            <CustomMenu link="/" text="Home" Icon={MdDashboard} />
+            <CustomMenu link="/" text="Home" Icon={IoMdHome} />
             <CustomMenu
-              link="/about"
-              text="About"
-              Icon={HiMiniInformationCircle}
+              link="/patientslip"
+              text="Slips"
+              Icon={FaSheetPlastic}
             />
+            <CustomMenu link="/users" text="Users" Icon={HiUser} />
+            <CustomMenu link="/doctors" text="Doctors" Icon={FaUserDoctor} />
           </Menu>
         </Sidebar>
       </div>

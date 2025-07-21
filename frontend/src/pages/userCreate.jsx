@@ -1,20 +1,20 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as yup from "yup";
 import { toast } from "react-toastify";
 import CustomAuthButton from "../components/customButton";
 import { axiosClient } from "../utils/AxiosClient";
 
-function Home() {
+function UserCreate() {
   const [loading, setLoading] = useState(false);
 
   const onSubmitHandler = async (values, helpers) => {
     try {
       setLoading(true);
-      await axiosClient.post("/api/patient-slips/", values);
+      await axiosClient.post("/api/user/", values);
       helpers.resetForm();
     } catch (error) {
+      console.log(error);
       toast.error(error?.response?.data?.msg || error?.message);
     } finally {
       setLoading(false);
@@ -22,34 +22,31 @@ function Home() {
   };
 
   const initialValues = {
-    patient_name: "",
-    doctor_id: "",
-    fees_id: "",
-    reference_token_no: ""
+    name: "",
+    email: "",
+    password: "",
+    roleId: ""
   };
 
   const validationSchema = yup.object({
-    patient_name: yup
+    name: yup
       .string()
       .required("Name is required")
       .min(2, "Name must be at least 2 characters"),
-    doctor_id: yup
+    email: yup
       .string()
-      .required("Doctor is required")
-      .oneOf(["Doctor", "operator", "patient"], "Invalid role"),
-    fees_id: yup
+      .required("Email is Required")
+      .email("Email must be valid"),
+    roleId: yup
       .string()
-      .required("Fees is required")
-      .oneOf(["Doctor", "operator", "patient"], "Invalid role"),
-    reference_token_no: yup
-      .string()
-      .required("Reference No is required")
-      .min(2, "Reference No must be at least 2 characters")
+      .required("Role is required")
+      .oneOf(["1", "2"], "Invalid role"),
+    password: yup.string().required("Password is Required")
   });
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center">
-      <div className="w-full xl:w-[40%] mx-10 xl:mx-0 py-10 flex items-start  rounded-md shadow-lg   shadow-[#004aa3] ">
+      <div className="w-full xl:w-[40%] mx-10 xl:mx-0 py-10 flex items-start  rounded-md shadow-lg  shadow-[#004aa3]">
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
@@ -57,80 +54,73 @@ function Home() {
         >
           <Form className="w-full  px-10 py-10  lg:mx-10 ">
             <p className="text-center pb-8 font-bold text-2xl underline">
-              Patient Slip
+              Create User
             </p>
             <div className="mb-3">
               <Field
-                placeholder="Patient Name"
+                placeholder="Name"
                 type="text"
-                name="patient_name"
+                name="name"
                 className="input w-full py-3 px-3 rounded border outline-none"
               />
               <ErrorMessage
-                name="patient_name"
-                className="text-red-500"
-                component="p"
-              />
-            </div>
-            <div className="mb-3">
-              <Field name="doctor_id">
-                {({ field, form }) => (
-                  <select
-                    {...field}
-                    className={`input w-full py-3 px-3 rounded border outline-none ${
-                      field.value ? "text-black" : "text-gray-400"
-                    }`}
-                  >
-                    <option value="">Select Doctor</option>
-                    <option value="Doctor">Dr.Asad</option>
-                    <option value="operator">Dr.Kamran</option>
-                  </select>
-                )}
-              </Field>
-              <ErrorMessage
-                name="doctor_id"
-                className="text-red-500"
-                component="p"
-              />
-            </div>
-            <div className="mb-3">
-              <Field name="fees_id">
-                {({ field, form }) => (
-                  <select
-                    {...field}
-                    className={`input w-full py-3 px-3 rounded border outline-none ${
-                      field.value ? "text-black" : "text-gray-400"
-                    }`}
-                  >
-                    <option value="">Slip Type</option>
-                    <option value="100">100</option>
-                    <option value="300">300</option>
-                  </select>
-                )}
-              </Field>
-              <ErrorMessage
-                name="fees_id"
+                name="name"
                 className="text-red-500"
                 component="p"
               />
             </div>
             <div className="mb-3">
               <Field
-                placeholder="Reference No"
+                placeholder="Email"
                 type="text"
-                name="reference_token_no"
+                name="email"
                 className="input w-full py-3 px-3 rounded border outline-none"
               />
               <ErrorMessage
-                name="reference_token_no"
+                name="email"
                 className="text-red-500"
                 component="p"
               />
             </div>
-            <div className=" mt-10 flex justify-center">
+            <div className="mb-3">
+              <Field name="roleId">
+                {({ field, form }) => (
+                  <select
+                    {...field}
+                    className={`input w-full py-3 px-3 rounded border outline-none ${
+                      field.value ? "text-black" : "text-gray-400"
+                    }`}
+                  >
+                    <option value="">Role</option>
+                    <option value="1">Admin</option>
+                    <option value="2">Operator</option>
+                  </select>
+                )}
+              </Field>
+              <ErrorMessage
+                name="roleId"
+                className="text-red-500"
+                component="p"
+              />
+            </div>
+            <div className="mb-10">
+              <Field
+                placeholder="Password"
+                type="password"
+                name="password"
+                className="input w-full py-3 px-3 rounded border outline-none"
+              />
+              <ErrorMessage
+                name="password"
+                className="text-red-500"
+                component="p"
+              />
+            </div>
+
+            <div className="mb-3 flex justify-center">
               <CustomAuthButton
                 isLoading={loading}
-                text="Generate"
+                text="Create"
                 type="submit"
               />
             </div>
@@ -141,4 +131,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default UserCreate;

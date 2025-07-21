@@ -1,20 +1,20 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as yup from "yup";
 import { toast } from "react-toastify";
-import CustomAuthButton from "../components/customButton";
-import { axiosClient } from "../utils/AxiosClient";
+import CustomAuthButton from "../customButton";
+import { axiosClient } from "../../utils/AxiosClient";
 
-function Home() {
+function UserUpdateModal({ user, onClose, onUpdated }) {
   const [loading, setLoading] = useState(false);
 
-  const onSubmitHandler = async (values, helpers) => {
+  const onSubmitHandler = async (values) => {
     try {
       setLoading(true);
-      await axiosClient.post("/api/patient-slips/", values);
-      helpers.resetForm();
+      await axiosClient.put(`/api/doctors/${user.id}`, values);
+      toast.success("Doctors updated successfully!");
     } catch (error) {
+      console.log(error);
       toast.error(error?.response?.data?.msg || error?.message);
     } finally {
       setLoading(false);
@@ -22,10 +22,10 @@ function Home() {
   };
 
   const initialValues = {
-    patient_name: "",
-    doctor_id: "",
-    fees_id: "",
-    reference_token_no: ""
+    patient_name: user.patient_name || "",
+    doctor_id: user.doctor_id || "",
+    fees_id: user.fees_id || "",
+    reference_token_no: user.reference_token_no || ""
   };
 
   const validationSchema = yup.object({
@@ -48,12 +48,20 @@ function Home() {
   });
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center">
-      <div className="w-full xl:w-[40%] mx-10 xl:mx-0 py-10 flex items-start  rounded-md shadow-lg   shadow-[#004aa3] ">
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+      <div className="bg-white w-full max-w-md p-6 rounded shadow-lg relative">
+        <button
+          className="absolute top-2 right-3 text-gray-500 hover:text-black text-xl"
+          onClick={onClose}
+        >
+          &times;
+        </button>
+
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={onSubmitHandler}
+          enableReinitialize
         >
           <Form className="w-full  px-10 py-10  lg:mx-10 ">
             <p className="text-center pb-8 font-bold text-2xl underline">
@@ -141,4 +149,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default UserUpdateModal;

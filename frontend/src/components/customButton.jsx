@@ -16,8 +16,8 @@ const CustomAuthButton = ({
       disabled={isLoading}
       className={clsx(
         className,
-        isLoading && "disabled:bg-rose-700",
-        "w-xl flex items-center justify-center capitalize text-white text-lg gap-x-2 bg-rose-600 py-3 rounded-2xl shadow"
+        isLoading && "disabled:bg-bg-[#004aa3]",
+        "w-full flex items-center justify-center capitalize text-white text-lg gap-x-2 bg-[#004aa3] py-3 rounded-2xl shadow"
       )}
     >
       <span>{text}</span>

@@ -1,5 +1,5 @@
-import User from '../models/user.js';
-import bcrypt from 'bcryptjs';
+import User from "../models/user.js";
+import bcrypt from "bcryptjs";
 
 class UserController {
   static async createUser(req, res) {
@@ -8,13 +8,18 @@ class UserController {
       // Check if email already exists
       const existingUser = await User.findByEmail(email);
       if (existingUser) {
-        return res.status(409).json({ message: 'Email already in use.' });
+        return res.status(409).json({ message: "Email already in use." });
       }
       const hashedPassword = await bcrypt.hash(password, 10);
-      const userId = await User.create({ name, email, password: hashedPassword, roleId });
+      const userId = await User.create({
+        name,
+        email,
+        password: hashedPassword,
+        roleId
+      });
       return res.status(201).json({ id: userId, name, email });
     } catch (err) {
-      return res.status(500).json({ message: 'Server error.' });
+      return res.status(500).json({ message: "Server error." });
     }
   }
 
@@ -22,10 +27,15 @@ class UserController {
     try {
       const users = await User.findAll();
       // Do not return passwords or sensitive info
-      const safeUsers = users.map(({ id, user_name, email, role_name }) => ({ id, name: user_name, email, role_name }));
+      const safeUsers = users.map(({ id, user_name, email, role_name }) => ({
+        id,
+        name: user_name,
+        email,
+        role_name
+      }));
       return res.json(safeUsers);
     } catch (err) {
-      return res.status(500).json({ message: 'Server error.' });
+      return res.status(500).json({ message: "Server error." });
     }
   }
 
@@ -34,22 +44,22 @@ class UserController {
       const { id } = req.params;
       const user = await User.findById(id);
       if (!user) {
-        return res.status(404).json({ message: 'User not found.' });
+        return res.status(404).json({ message: "User not found." });
       }
       const { user_name, email, role_name } = user;
       return res.json({ id, name: user_name, email, role_name });
     } catch (err) {
-      return res.status(500).json({ message: 'Server error.' });
+      return res.status(500).json({ message: "Server error." });
     }
   }
 
   static async updateUser(req, res) {
     try {
       const { id } = req.params;
-      const { name, email, password , roleId} = req.body;
+      const { name, email, password, roleId } = req.body;
       const user = await User.findById(id);
       if (!user) {
-        return res.status(404).json({ message: 'User not found.' });
+        return res.status(404).json({ message: "User not found." });
       }
       let hashedPassword;
       if (password) {
@@ -62,11 +72,11 @@ class UserController {
         roleId
       });
       if (!updated) {
-        return res.status(400).json({ message: 'Nothing to update.' });
+        return res.status(400).json({ message: "Nothing to update." });
       }
-      return res.json({ message: 'User updated successfully.' });
+      return res.json({ message: "User updated successfully." });
     } catch (err) {
-      return res.status(500).json({ message: 'Server error.' });
+      return res.status(500).json({ message: "Server error." });
     }
   }
 
@@ -75,14 +85,14 @@ class UserController {
       const { id } = req.params;
       const user = await User.findById(id);
       if (!user) {
-        return res.status(404).json({ message: 'User not found.' });
+        return res.status(404).json({ message: "User not found." });
       }
       await User.delete(id);
-      return res.json({ message: 'User deleted successfully.' });
+      return res.json({ message: "User deleted successfully." });
     } catch (err) {
-      return res.status(500).json({ message: 'Server error.' });
+      return res.status(500).json({ message: "Server error." });
     }
   }
 }
 
-export default UserController; 
+export default UserController;
