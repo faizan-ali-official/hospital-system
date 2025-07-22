@@ -46,7 +46,7 @@ class UserController {
   static async updateUser(req, res) {
     try {
       const { id } = req.params;
-      const { name, email, password , roleId} = req.body;
+      const { name, password , roleId} = req.body;
       const user = await User.findById(id);
       if (!user) {
         return res.status(404).json({ message: 'User not found.' });
@@ -57,7 +57,6 @@ class UserController {
       }
       const updated = await User.update(id, {
         name,
-        email,
         password: hashedPassword,
         roleId
       });
