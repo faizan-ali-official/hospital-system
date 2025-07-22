@@ -47,17 +47,17 @@ const Doctors = () => {
         <tbody>
           {doctors?.map((user) => (
             <tr key={user.id} className="text-sm hover:bg-gray-50">
-              <td className="py-3 px-6 border border-red-100">
+              <td className="py-3 px-6 border border-[#004aa3]">
                 {user.doctor_name.replace(/\b\w/g, (char) =>
                   char.toUpperCase()
                 )}
               </td>
-              <td className="py-3 px-6 border border-red-100">
+              <td className="py-3 px-6 border border-[#004aa3]">
                 {user.specialization.replace(/\b\w/g, (char) =>
                   char.toUpperCase()
                 )}
               </td>
-              <td className="py-3 px-6 border border-red-100 text-center">
+              <td className="py-3 px-6 border border-[#004aa3] text-center">
                 <button
                   onClick={() => setShowUpdateModal(true)}
                   className="bg-[#004aa3] text-white px-3 py-1 rounded mr-2"
@@ -75,7 +75,7 @@ const Doctors = () => {
                 <UserUpdateModal
                   user={user}
                   onClose={() => setShowUpdateModal(false)}
-                  onUpdated={null}
+                  setShowUpdateModal={setShowUpdateModal}
                 />
               )}
               {showModal && (

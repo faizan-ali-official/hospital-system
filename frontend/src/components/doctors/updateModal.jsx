@@ -4,15 +4,22 @@ import * as yup from "yup";
 import { toast } from "react-toastify";
 import CustomAuthButton from "../customButton";
 import { axiosClient } from "../../utils/AxiosClient";
+import { useMainContext } from "../../context/mainContext";
 
-function UserUpdateModal({ user, onClose, onUpdated }) {
+function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
   const [loading, setLoading] = useState(false);
+  const { doctors, setDoctors } = useMainContext();
 
   const onSubmitHandler = async (values) => {
     try {
       setLoading(true);
-      await axiosClient.put(`/api/doctors/${user.id}`, values);
-      toast.success("Doctors updated successfully!");
+      await axiosClient.put(`/api/doctor/${user.id}`, values);
+      const updatedData = doctors.map((item) =>
+        item.id === user.id ? { ...item, ...values } : item
+      );
+      toast.success("Doctor updated successfully!");
+      setDoctors(updatedData);
+      setShowUpdateModal(false);
     } catch (error) {
       console.log(error);
       toast.error(error?.response?.data?.msg || error?.message);

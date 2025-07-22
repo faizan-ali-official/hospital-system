@@ -8,6 +8,8 @@ const mainContext = createContext({
   user: null,
   allUsers: [],
   doctors: [],
+  allSlips: [],
+  setAllSlips: () => {},
   setDoctors: () => {},
   setAllUsers: () => {},
   fetchUserProfile: () => {},
@@ -20,6 +22,8 @@ export const MainContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [allUsers, setAllUsers] = useState([]);
   const [doctors, setDoctors] = useState([]);
+  const [allSlips, setAllSlips] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -39,6 +43,9 @@ export const MainContextProvider = ({ children }) => {
       setAllUsers(userResp?.data);
       const docResp = await axiosClient.get("/api/doctor/");
       setDoctors(docResp?.data);
+      const slipResp = await axiosClient.get("/api/patient-slips/");
+      console.log(slipResp);
+      setAllSlips(slipResp?.data);
       navigate("/");
     } catch (error) {
       console.error(error);
@@ -72,9 +79,11 @@ export const MainContextProvider = ({ children }) => {
         user,
         allUsers,
         doctors,
+        allSlips,
         fetchUserProfile,
         logOutHandler,
         setAllUsers,
+        setAllSlips,
         setDoctors
       }}
     >

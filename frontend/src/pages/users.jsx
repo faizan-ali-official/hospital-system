@@ -73,7 +73,7 @@ const Users = () => {
                 <UserUpdateModal
                   user={user}
                   onClose={() => setShowUpdateModal(false)}
-                  onUpdated={null}
+                  setShowUpdateModal={setShowUpdateModal}
                 />
               )}
               {showModal && (

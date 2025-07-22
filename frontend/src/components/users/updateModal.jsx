@@ -4,15 +4,22 @@ import * as yup from "yup";
 import { toast } from "react-toastify";
 import CustomAuthButton from "../customButton";
 import { axiosClient } from "../../utils/AxiosClient";
+import { useMainContext } from "../../context/mainContext";
 
-function UserUpdateModal({ user, onClose, onUpdated }) {
+function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
   const [loading, setLoading] = useState(false);
+  const { allUsers, setAllUsers } = useMainContext();
 
   const onSubmitHandler = async (values) => {
     try {
       setLoading(true);
       await axiosClient.put(`/api/user/${user.id}`, values);
+      const updatedData = allUsers.map((item) =>
+        item.id === user.id ? { ...item, ...values } : item
+      );
       toast.success("User updated successfully!");
+      setAllUsers(updatedData);
+      setShowUpdateModal(false);
     } catch (error) {
       console.log(error);
       toast.error(error?.response?.data?.msg || error?.message);
@@ -23,7 +30,7 @@ function UserUpdateModal({ user, onClose, onUpdated }) {
   const initialValues = {
     name: user.name || "",
     email: user.email || "",
-    roleId: user.role_name === "admin" ? "1" : "2",
+    roleId: user.role_name == "admin" ? "1" : "2",
     password: ""
   };
 
@@ -67,7 +74,6 @@ function UserUpdateModal({ user, onClose, onUpdated }) {
                 className="text-red-500"
               />
             </div>
-
             <div className="mb-3">
               <Field
                 name="email"
@@ -88,7 +94,7 @@ function UserUpdateModal({ user, onClose, onUpdated }) {
               >
                 <option value="">Role</option>
                 <option value="1">Admin</option>
-                <option value="2">Operator</option>
+                <option value="2">User</option>
               </Field>
               <ErrorMessage
                 name="roleId"
@@ -96,7 +102,6 @@ function UserUpdateModal({ user, onClose, onUpdated }) {
                 className="text-red-500"
               />
             </div>
-
             <div className="mb-5">
               <Field
                 name="password"

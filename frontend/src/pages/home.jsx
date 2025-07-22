@@ -5,9 +5,11 @@ import * as yup from "yup";
 import { toast } from "react-toastify";
 import CustomAuthButton from "../components/customButton";
 import { axiosClient } from "../utils/AxiosClient";
+import { useMainContext } from "../context/mainContext";
 
 function Home() {
   const [loading, setLoading] = useState(false);
+  const { doctors } = useMainContext();
 
   const onSubmitHandler = async (values, helpers) => {
     try {
@@ -15,6 +17,7 @@ function Home() {
       await axiosClient.post("/api/patient-slips/", values);
       helpers.resetForm();
     } catch (error) {
+      console.log(error);
       toast.error(error?.response?.data?.msg || error?.message);
     } finally {
       setLoading(false);
@@ -27,23 +30,16 @@ function Home() {
     fees_id: "",
     reference_token_no: ""
   };
-
   const validationSchema = yup.object({
     patient_name: yup
       .string()
       .required("Name is required")
       .min(2, "Name must be at least 2 characters"),
-    doctor_id: yup
-      .string()
-      .required("Doctor is required")
-      .oneOf(["Doctor", "operator", "patient"], "Invalid role"),
-    fees_id: yup
-      .string()
-      .required("Fees is required")
-      .oneOf(["Doctor", "operator", "patient"], "Invalid role"),
+    doctor_id: yup.string().required("Doctor is required"),
+    fees_id: yup.string().required("Fees is required"),
     reference_token_no: yup
       .string()
-      .required("Reference No is required")
+      // .required("Reference No is required")
       .min(2, "Reference No must be at least 2 characters")
   });
 
@@ -82,8 +78,13 @@ function Home() {
                     }`}
                   >
                     <option value="">Select Doctor</option>
-                    <option value="Doctor">Dr.Asad</option>
-                    <option value="operator">Dr.Kamran</option>
+                    {doctors.map((item) => {
+                      return (
+                        <option
+                          value={item?.id}
+                        >{`Dr. ${item?.doctor_name}`}</option>
+                      );
+                    })}
                   </select>
                 )}
               </Field>
@@ -103,8 +104,8 @@ function Home() {
                     }`}
                   >
                     <option value="">Slip Type</option>
-                    <option value="100">100</option>
-                    <option value="300">300</option>
+                    <option value="1">100</option>
+                    <option value="2">300</option>
                   </select>
                 )}
               </Field>

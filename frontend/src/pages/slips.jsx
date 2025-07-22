@@ -9,18 +9,18 @@ const Slips = () => {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
-  const { doctors, setDoctors } = useMainContext();
+  const { allSlips, setAllSlips } = useMainContext();
 
   const onDelete = async (id) => {
     try {
       await axiosClient.delete(`/api/patient-slips/${id}`);
-      const deletedSlips = doctors.filter((user) => user?.id !== id);
-      setDoctors(deletedSlips);
+      const deletedSlips = allSlips.filter((user) => user?.id !== id);
+      setAllSlips(deletedSlips);
     } catch (err) {
       console.log(err);
     }
   };
-
+  console.log(allSlips, "ak");
   return (
     <div className=" justify-center">
       <div className="flex w-full xl:w-[90%] justify-between items-center mb-4">
@@ -38,18 +38,20 @@ const Slips = () => {
           </tr>
         </thead>
         <tbody>
-          {doctors?.map((user) => (
+          {allSlips?.map((user) => (
             <tr key={user.id} className="text-sm hover:bg-gray-50">
               <td className="py-3 px-6 border border-red-100">
-                {user.patient_name.replace(/\b\w/g, (char) =>
+                {user?.patient_name?.replace(/\b\w/g, (char) =>
                   char.toUpperCase()
                 )}
               </td>
               <td className="py-3 px-6 border border-red-100">
-                {user.doctor_id.replace(/\b\w/g, (char) => char.toUpperCase())}
+                {user?.doctor_id?.replace(/\b\w/g, (char) =>
+                  char.toUpperCase()
+                )}
               </td>
               <td className="py-3 px-6 border border-red-100">
-                {user.fees_id.replace(/\b\w/g, (char) => char.toUpperCase())}
+                {user?.fees_id?.replace(/\b\w/g, (char) => char.toUpperCase())}
               </td>
               <td className="py-3 px-6 border border-red-100 text-center">
                 <button
