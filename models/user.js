@@ -1,10 +1,10 @@
-import pool from '../config/db.js';
+import pool from "../config/db.js";
 
 class User {
   static async create({ name, email, password, roleId }) {
     const [result] = await pool.execute(
-      'INSERT INTO users (name, email, password, role_id) VALUES (?, ?, ?, ?)',
-      [name, email, password, roleId]
+      "INSERT INTO users (name, email, password, role_id, updated_at) VALUES (?, ?, ?, ?, ?)",
+      [name, email, password, roleId || 1, new Date()]
     );
     return result.insertId;
   }
@@ -18,19 +18,24 @@ class User {
   }
 
   static async updateRefreshToken(id, refreshToken) {
-    await pool.execute(
-      'UPDATE users SET refresh_token = ? WHERE id = ?',
-      [refreshToken, id]
-    );
+    await pool.execute("UPDATE users SET refresh_token = ? WHERE id = ?", [
+      refreshToken,
+      id,
+    ]);
   }
 
   static async findAll() {
-    const [rows] = await pool.execute('SELECT u.id, u.name as user_name, u.email, r.name as role_name FROM users u LEFT JOIN roles r ON u.role_id = r.id');
+    const [rows] = await pool.execute(
+      "SELECT u.id, u.name as user_name, u.email, r.name as role_name FROM users u LEFT JOIN roles r ON u.role_id = r.id"
+    );
     return rows;
   }
 
   static async findById(id) {
-    const [rows] = await pool.execute('SELECT u.id, u.name as user_name, u.email, r.name as role_name FROM users u LEFT JOIN roles r ON u.role_id = r.id WHERE u.id = ?', [id]);
+    const [rows] = await pool.execute(
+      "SELECT u.id, u.name as user_name, u.email, r.name as role_name FROM users u LEFT JOIN roles r ON u.role_id = r.id WHERE u.id = ?",
+      [id]
+    );
     return rows[0];
   }
 
@@ -39,32 +44,34 @@ class User {
     const fields = [];
     const values = [];
     if (name !== undefined) {
-      fields.push('name = ?');
+      fields.push("name = ?");
       values.push(name);
     }
     if (email !== undefined) {
-      fields.push('email = ?');
+      fields.push("email = ?");
       values.push(email);
     }
     if (password !== undefined) {
-      fields.push('password = ?');
+      fields.push("password = ?");
       values.push(password);
     }
     if (roleId !== undefined) {
-      fields.push('role_id = ?');
+      fields.push("role_id = ?");
       values.push(roleId);
     }
+    fields.push("updated_at = NOW()");
+
     if (fields.length === 0) return false;
     values.push(id);
-    const sql = `UPDATE users SET ${fields.join(', ')} WHERE id = ?`;
+    const sql = `UPDATE users SET ${fields.join(", ")} WHERE id = ?`;
     const [result] = await pool.execute(sql, values);
     return result.affectedRows > 0;
   }
 
   static async delete(id) {
-    const [result] = await pool.execute('DELETE FROM users WHERE id = ?', [id]);
+    const [result] = await pool.execute("DELETE FROM users WHERE id = ?", [id]);
     return result.affectedRows > 0;
   }
 }
 
-export default User; 
+export default User;
