@@ -41,7 +41,6 @@ export const createUserValidation = [
 
 export const updateUserValidation = [
   body('name').optional().notEmpty().withMessage('Name cannot be empty.'),
-  body('email').optional().isEmail().withMessage('Valid email is required.'),
   body('roleId').optional().notEmpty().withMessage('Role ID cannot be empty.'),
   body('password').optional().isLength({ min: 6 }).withMessage('Password must be at least 6 characters.'),
   (req, res, next) => {
