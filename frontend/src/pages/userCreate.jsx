@@ -4,15 +4,26 @@ import * as yup from "yup";
 import { toast } from "react-toastify";
 import CustomAuthButton from "../components/customButton";
 import { axiosClient } from "../utils/AxiosClient";
+import { useMainContext } from "../context/mainContext";
+import { useNavigate } from "react-router-dom";
 
 function UserCreate() {
   const [loading, setLoading] = useState(false);
+  const { allUsers, setAllUsers } = useMainContext();
+  const navigate = useNavigate();
 
   const onSubmitHandler = async (values, helpers) => {
     try {
       setLoading(true);
-      await axiosClient.post("/api/user/", values);
+      const data = await axiosClient.post("/api/user/", values);
+      allUsers.push({
+        ...data?.data,
+        role_name: values.roleId === "1" ? "admin" : "user"
+      });
+      setAllUsers(allUsers);
+      navigate("/users");
       helpers.resetForm();
+      toast.success("User created successfully!");
     } catch (error) {
       console.log(error);
       toast.error(error?.response?.data?.msg || error?.message);
@@ -20,7 +31,7 @@ function UserCreate() {
       setLoading(false);
     }
   };
-
+  console.log(allUsers);
   const initialValues = {
     name: "",
     email: "",
@@ -93,7 +104,7 @@ function UserCreate() {
                   >
                     <option value="">Role</option>
                     <option value="1">Admin</option>
-                    <option value="2">Operator</option>
+                    <option value="2">User</option>
                   </select>
                 )}
               </Field>

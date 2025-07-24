@@ -11,11 +11,16 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
   const { allUsers, setAllUsers } = useMainContext();
 
   const onSubmitHandler = async (values) => {
+    const payload = { ...values };
+    if (!payload.password) {
+      delete payload.password;
+    }
     try {
       setLoading(true);
-      await axiosClient.put(`/api/user/${user.id}`, values);
+      const data = await axiosClient.put(`/api/user/${user.id}`, payload);
+
       const updatedData = allUsers.map((item) =>
-        item.id === user.id ? { ...item, ...values } : item
+        item.id === user.id ? data?.data?.updatedUser : item
       );
       toast.success("User updated successfully!");
       setAllUsers(updatedData);
@@ -30,15 +35,19 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
   const initialValues = {
     name: user.name || "",
     email: user.email || "",
-    roleId: user.role_name == "admin" ? "1" : "2",
+    roleId: user.role_name === "admin" ? "1" : "2",
     password: ""
   };
-
+  console.log(allUsers);
   const validationSchema = yup.object({
     name: yup.string().required("Name is required").min(2),
     email: yup.string().email("Invalid email").required("Email is required"),
     roleId: yup.string().required("Role is required").oneOf(["1", "2"]),
-    password: yup.string()
+    password: yup
+      .string()
+      .transform((value) => (value === "" ? undefined : value)) // remove empty string
+      .optional()
+      .min(6, "Password must be at least 6 characters")
   });
 
   return (
@@ -79,6 +88,7 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
                 name="email"
                 placeholder="Email"
                 className="w-full py-2 px-3 border rounded outline-none"
+                disabled
               />
               <ErrorMessage
                 name="email"

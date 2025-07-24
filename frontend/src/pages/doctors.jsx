@@ -4,6 +4,7 @@ import DeleteModal from "../components/doctors/deleteModal";
 import UserUpdateModal from "../components/doctors/updateModal";
 import { useNavigate } from "react-router-dom";
 import { useMainContext } from "../context/mainContext";
+import { toast } from "react-toastify";
 
 const Doctors = () => {
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ const Doctors = () => {
       await axiosClient.delete(`/api/doctor/${id}`);
       const deletedDocs = doctors.filter((user) => user?.id !== id);
       setDoctors(deletedDocs);
+      toast.success("Doctor deleted successfully!");
     } catch (err) {
       console.log(err);
     }

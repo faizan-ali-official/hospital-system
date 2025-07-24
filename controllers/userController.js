@@ -17,6 +17,7 @@ class UserController {
         password: hashedPassword,
         roleId
       });
+
       return res.status(201).json({ id: userId, name, email });
     } catch (err) {
       return res.status(500).json({ message: "Server error." });
@@ -56,7 +57,7 @@ class UserController {
   static async updateUser(req, res) {
     try {
       const { id } = req.params;
-      const { name, password , roleId} = req.body;
+      const { name, password, roleId } = req.body;
       const user = await User.findById(id);
       if (!user) {
         return res.status(404).json({ message: "User not found." });
@@ -73,7 +74,15 @@ class UserController {
       if (!updated) {
         return res.status(400).json({ message: "Nothing to update." });
       }
-      return res.json({ message: "User updated successfully." });
+      const updatedUser = await User.findById(id);
+      return res.json({
+        message: "User updated successfully.",
+        updatedUser: {
+          name: updatedUser.user_name,
+          email: user.email,
+          role_name: updatedUser?.role_name
+        }
+      });
     } catch (err) {
       return res.status(500).json({ message: "Server error." });
     }

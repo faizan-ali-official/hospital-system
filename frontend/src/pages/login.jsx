@@ -18,7 +18,7 @@ function Login() {
       const data = await response.data;
       localStorage.setItem("accessToken", data?.accessToken);
       localStorage.setItem("token", data?.refreshToken);
-      fetchUserProfile();
+      await fetchUserProfile();
       helpers.resetForm();
     } catch (error) {
       toast.error(error?.response?.data?.msg || error?.message);

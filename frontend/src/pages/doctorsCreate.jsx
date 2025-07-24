@@ -4,15 +4,23 @@ import * as yup from "yup";
 import { toast } from "react-toastify";
 import CustomAuthButton from "../components/customButton";
 import { axiosClient } from "../utils/AxiosClient";
+import { useMainContext } from "../context/mainContext";
+import { useNavigate } from "react-router-dom";
 
 function DoctorCreate() {
   const [loading, setLoading] = useState(false);
+  const { doctors, setDoctors } = useMainContext();
+  const navigate = useNavigate();
 
   const onSubmitHandler = async (values, helpers) => {
     try {
       setLoading(true);
-      await axiosClient.post("/api/doctor/", values);
+      const data = await axiosClient.post("/api/doctor/", values);
+      doctors.push(data?.data);
+      setDoctors(doctors);
+      navigate("/doctors");
       helpers.resetForm();
+      toast.success("Doctor created successfully!");
     } catch (error) {
       console.log(error);
       toast.error(error?.response?.data?.msg || error?.message);

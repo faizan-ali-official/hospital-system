@@ -1,17 +1,18 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-// import Loader from "@/components/Loader";
+import Loader from "../components/loader";
 import { axiosClient } from "../utils/AxiosClient";
-// import { toast } from "react-toastify";
 
 const mainContext = createContext({
   user: null,
   allUsers: [],
   doctors: [],
   allSlips: [],
+  feesTypes: [],
   setAllSlips: () => {},
   setDoctors: () => {},
   setAllUsers: () => {},
+  setFeesTypes: () => {},
   fetchUserProfile: () => {},
   logOutHandler: () => {}
 });
@@ -23,6 +24,7 @@ export const MainContextProvider = ({ children }) => {
   const [allUsers, setAllUsers] = useState([]);
   const [doctors, setDoctors] = useState([]);
   const [allSlips, setAllSlips] = useState([]);
+  const [feesTypes, setFeesTypes] = useState([]);
 
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -31,6 +33,7 @@ export const MainContextProvider = ({ children }) => {
     const token = localStorage.getItem("token");
     if (!token) {
       setLoading(false);
+      navigate("/login");
       return;
     }
     try {
@@ -44,8 +47,9 @@ export const MainContextProvider = ({ children }) => {
       const docResp = await axiosClient.get("/api/doctor/");
       setDoctors(docResp?.data);
       const slipResp = await axiosClient.get("/api/patient-slips/");
-      console.log(slipResp);
       setAllSlips(slipResp?.data);
+      const feesResp = await axiosClient.get("/api/fees/");
+      setFeesTypes(feesResp?.data);
       navigate("/");
     } catch (error) {
       console.error(error);
@@ -56,22 +60,22 @@ export const MainContextProvider = ({ children }) => {
 
   const logOutHandler = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("accessToken");
     setUser(null);
     navigate("/login");
-    // toast.success("Logged out successfully");
   };
 
   useEffect(() => {
     fetchUserProfile();
   }, []);
 
-  //   if (loading) {
-  //     return (
-  //       <div className="min-h-screen flex items-center justify-center w-full">
-  //         <Loader />
-  //       </div>
-  //     );
-  //   }
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center w-full">
+        <Loader />
+      </div>
+    );
+  }
 
   return (
     <mainContext.Provider
@@ -80,11 +84,13 @@ export const MainContextProvider = ({ children }) => {
         allUsers,
         doctors,
         allSlips,
+        feesTypes,
         fetchUserProfile,
         logOutHandler,
         setAllUsers,
         setAllSlips,
-        setDoctors
+        setDoctors,
+        setFeesTypes
       }}
     >
       {children}

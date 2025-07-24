@@ -4,6 +4,7 @@ import DeleteModal from "../components/users/deleteModal";
 import UserUpdateModal from "../components/users/updateModal";
 import { useNavigate } from "react-router-dom";
 import { useMainContext } from "../context/mainContext";
+import { toast } from "react-toastify";
 
 const Users = () => {
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ const Users = () => {
       await axiosClient.delete(`/api/user/${id}`);
       const deletedUser = allUsers.filter((user) => user?.id !== id);
       setAllUsers(deletedUser);
+      toast.success("User deleted successfully!");
     } catch (err) {
       console.log(err);
     }
@@ -45,15 +47,17 @@ const Users = () => {
         </thead>
         <tbody>
           {allUsers?.map((user) => (
-            <tr key={user.id} className="text-sm hover:bg-gray-50">
+            <tr key={user?.id} className="text-sm hover:bg-gray-50">
               <td className="py-3 px-6 border border-[#004aa3]">
-                {user.name.replace(/\b\w/g, (char) => char.toUpperCase())}
+                {user?.name?.replace(/\b\w/g, (char) => char.toUpperCase())}
               </td>
               <td className="py-3 px-6 border border-[#004aa3]">
-                {user.email}
+                {user?.email}
               </td>
               <td className="py-3 px-6 border border-[#004aa3]">
-                {user.role_name.replace(/\b\w/g, (char) => char.toUpperCase())}
+                {user?.role_name?.replace(/\b\w/g, (char) =>
+                  char?.toUpperCase()
+                )}
               </td>
               <td className="py-3 px-6 border border-[#004aa3] text-center">
                 <button

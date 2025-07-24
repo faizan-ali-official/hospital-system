@@ -1,21 +1,42 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRef, useState } from "react";
+import { useReactToPrint } from "react-to-print";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as yup from "yup";
 import { toast } from "react-toastify";
 import CustomAuthButton from "../components/customButton";
 import { axiosClient } from "../utils/AxiosClient";
 import { useMainContext } from "../context/mainContext";
+import PrintSlip from "../components/slips/printSlips";
 
 function Home() {
+  const componentRef = useRef(null);
+  const printFn = useReactToPrint({
+    documentTitle: "AwesomeFileName",
+    contentRef: componentRef,
+    copyStyles: false
+  });
   const [loading, setLoading] = useState(false);
-  const { doctors } = useMainContext();
+  const { doctors, feesTypes, allSlips, setAllSlips } = useMainContext();
 
+  const [generatedSlip, setGeneratedSlip] = useState(null);
   const onSubmitHandler = async (values, helpers) => {
+    const payload = { ...values };
+    if (!payload.reference_token_no) {
+      delete payload.reference_token_no;
+    }
     try {
       setLoading(true);
-      await axiosClient.post("/api/patient-slips/", values);
+      const data = await axiosClient.post("/api/patient-slips/", payload);
+      allSlips.push({
+        ...data?.data?.data
+      });
       helpers.resetForm();
+      setAllSlips(allSlips);
+      setGeneratedSlip(data?.data?.data);
+      setTimeout(() => {
+        printFn();
+      }, 2000);
+      // toast.success("Slip generated successfully!");
     } catch (error) {
       console.log(error);
       toast.error(error?.response?.data?.msg || error?.message);
@@ -23,7 +44,6 @@ function Home() {
       setLoading(false);
     }
   };
-
   const initialValues = {
     patient_name: "",
     doctor_id: "",
@@ -37,10 +57,14 @@ function Home() {
       .min(2, "Name must be at least 2 characters"),
     doctor_id: yup.string().required("Doctor is required"),
     fees_id: yup.string().required("Fees is required"),
-    reference_token_no: yup
-      .string()
-      // .required("Reference No is required")
-      .min(2, "Reference No must be at least 2 characters")
+    reference_token_no: yup.string().when("fees_id", {
+      is: "3",
+      then: (schema) =>
+        schema
+          .required("Reference No is required")
+          .min(2, "Reference No must be at least 2 characters"),
+      otherwise: (schema) => schema.notRequired()
+    })
   });
 
   return (
@@ -104,8 +128,13 @@ function Home() {
                     }`}
                   >
                     <option value="">Slip Type</option>
-                    <option value="1">100</option>
-                    <option value="2">300</option>
+                    {feesTypes.map((item) => {
+                      return (
+                        <option
+                          value={item?.id}
+                        >{`${item?.doctor_fee}`}</option>
+                      );
+                    })}
                   </select>
                 )}
               </Field>
@@ -138,6 +167,13 @@ function Home() {
           </Form>
         </Formik>
       </div>
+      {generatedSlip && (
+        <>
+          <div className=" absolute left-[-9999px]">
+            <PrintSlip ref={componentRef} user={generatedSlip} />
+          </div>
+        </>
+      )}
     </div>
   );
 }

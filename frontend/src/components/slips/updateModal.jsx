@@ -4,15 +4,30 @@ import * as yup from "yup";
 import { toast } from "react-toastify";
 import CustomAuthButton from "../customButton";
 import { axiosClient } from "../../utils/AxiosClient";
+import { useMainContext } from "../../context/mainContext";
 
-function UserUpdateModal({ user, onClose, onUpdated }) {
+function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
   const [loading, setLoading] = useState(false);
+  const { doctors, feesTypes, allSlips, setAllSlips } = useMainContext();
 
   const onSubmitHandler = async (values) => {
+    const payload = { ...values };
+    if (!payload.reference_token_no) {
+      delete payload.reference_token_no;
+    }
     try {
       setLoading(true);
-      await axiosClient.put(`/api/doctors/${user.id}`, values);
-      toast.success("Doctors updated successfully!");
+      const data = await axiosClient.put(
+        `/api/patient-slips/${user.id}`,
+        payload
+      );
+      console.log(data?.data?.updatedData);
+      const updatedData = allSlips.map((item) =>
+        item.id === user.id ? data?.data?.updatedData : item
+      );
+      toast.success("Slip updated successfully!");
+      setAllSlips(updatedData);
+      setShowUpdateModal(false);
     } catch (error) {
       console.log(error);
       toast.error(error?.response?.data?.msg || error?.message);
@@ -20,7 +35,6 @@ function UserUpdateModal({ user, onClose, onUpdated }) {
       setLoading(false);
     }
   };
-
   const initialValues = {
     patient_name: user.patient_name || "",
     doctor_id: user.doctor_id || "",
@@ -33,18 +47,16 @@ function UserUpdateModal({ user, onClose, onUpdated }) {
       .string()
       .required("Name is required")
       .min(2, "Name must be at least 2 characters"),
-    doctor_id: yup
-      .string()
-      .required("Doctor is required")
-      .oneOf(["Doctor", "operator", "patient"], "Invalid role"),
-    fees_id: yup
-      .string()
-      .required("Fees is required")
-      .oneOf(["Doctor", "operator", "patient"], "Invalid role"),
-    reference_token_no: yup
-      .string()
-      .required("Reference No is required")
-      .min(2, "Reference No must be at least 2 characters")
+    doctor_id: yup.string().required("Doctor is required"),
+    fees_id: yup.string().required("Fees is required"),
+    reference_token_no: yup.string().when("fees_id", {
+      is: "3",
+      then: (schema) =>
+        schema
+          .required("Reference No is required")
+          .min(2, "Reference No must be at least 2 characters"),
+      otherwise: (schema) => schema.notRequired()
+    })
   });
 
   return (
@@ -56,14 +68,13 @@ function UserUpdateModal({ user, onClose, onUpdated }) {
         >
           &times;
         </button>
-
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={onSubmitHandler}
           enableReinitialize
         >
-          <Form className="w-full  px-10 py-10  lg:mx-10 ">
+          <Form>
             <p className="text-center pb-8 font-bold text-2xl underline">
               Patient Slip
             </p>
@@ -90,8 +101,13 @@ function UserUpdateModal({ user, onClose, onUpdated }) {
                     }`}
                   >
                     <option value="">Select Doctor</option>
-                    <option value="Doctor">Dr.Asad</option>
-                    <option value="operator">Dr.Kamran</option>
+                    {doctors.map((item) => {
+                      return (
+                        <option
+                          value={item?.id}
+                        >{`Dr. ${item?.doctor_name}`}</option>
+                      );
+                    })}
                   </select>
                 )}
               </Field>
@@ -111,8 +127,13 @@ function UserUpdateModal({ user, onClose, onUpdated }) {
                     }`}
                   >
                     <option value="">Slip Type</option>
-                    <option value="100">100</option>
-                    <option value="300">300</option>
+                    {feesTypes.map((item) => {
+                      return (
+                        <option
+                          value={item?.id}
+                        >{`${item?.doctor_fee}`}</option>
+                      );
+                    })}
                   </select>
                 )}
               </Field>
