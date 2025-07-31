@@ -4,13 +4,52 @@ class PatientSlip {
   static async create({
     patient_name,
     doctor_id,
-    fees_id,
+    fees_id = null,
     token_no,
     reference_token_no = null,
     created_by,
+    slip_type_id,
+    notes = null,
+    pharmacy_fees = null,
   }) {
+    // If slip_type_name is 'appointment', store appointment fields
+    if (slip_type_id === 1) {
+      const [result] = await pool.execute(
+        `INSERT INTO patient_slip (patient_name, doctor_id, fees_id, token_no, created_by, slip_type_id, updated_at) VALUES (?, ?, ?, ?, ?, ?,?)`,
+        [
+          patient_name,
+          doctor_id,
+          fees_id,
+          token_no,
+          created_by,
+          slip_type_id,
+          new Date(),
+        ]
+      );
+      return result.insertId;
+    }
+    // If slip_type_name is 'pharmacy', store pharmacy fields
+    if (slip_type_id === 2) {
+      const [result] = await pool.execute(
+        `INSERT INTO patient_slip (patient_name, doctor_id, fees_id, token_no, reference_token_no, created_by, slip_type_id, notes, pharmacy_fees, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?,?)`,
+        [
+          patient_name,
+          doctor_id,
+          null,
+          token_no,
+          reference_token_no,
+          created_by,
+          slip_type_id,
+          notes,
+          pharmacy_fees,
+          new Date(),
+        ]
+      );
+      return result.insertId;
+    }
+    // Default: store all fields
     const [result] = await pool.execute(
-      "INSERT INTO patient_slip (patient_name, doctor_id, fees_id, token_no, reference_token_no, created_by,updated_at) VALUES (?, ?, ?, ?, ?, ?,?)",
+      `INSERT INTO patient_slip (patient_name, doctor_id, fees_id, token_no, reference_token_no, created_by, slip_type_id, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         patient_name,
         doctor_id,
@@ -18,7 +57,8 @@ class PatientSlip {
         token_no,
         reference_token_no,
         created_by,
-        new Date(),
+        slip_type_id,
+        notes,
       ]
     );
     return result.insertId;
@@ -30,6 +70,7 @@ class PatientSlip {
     doctor_id,
     created_by,
     fees_id,
+    slip_type_id,
     status,
     search,
     limit,
@@ -38,10 +79,13 @@ class PatientSlip {
     let sql = `
       SELECT ps.*, 
              d.id as doctor_id, d.doctor_name, d.specialization, 
-             f.id as fees_id, f.doctor_fee
+             f.id as fees_id, f.doctor_fee, st.type_name,
+             u.id as created_by, u.name as created_by_name
       FROM patient_slip ps
-      JOIN doctors d ON ps.doctor_id = d.id
-      JOIN fees f ON ps.fees_id = f.id
+      left JOIN doctors d ON ps.doctor_id = d.id
+      left JOIN fees f ON ps.fees_id = f.id
+      left JOIN slip_type st ON ps.slip_type_id = st.id
+      left JOIN users u ON ps.created_by = u.id
     `;
     const conditions = [];
     const params = [];
@@ -67,6 +111,10 @@ class PatientSlip {
       conditions.push("ps.fees_id = ?");
       params.push(fees_id);
     }
+    if (slip_type_id) {
+      conditions.push("ps.slip_type_id = ?");
+      params.push(slip_type_id);
+    }
     if (status !== undefined) {
       conditions.push("ps.status = ?");
       params.push(status);
@@ -87,6 +135,7 @@ class PatientSlip {
         params.push(Number(offset));
       }
     }
+    console.log("sql", sql);
     const [rows] = await pool.execute(sql, params);
     return rows;
   }
@@ -96,10 +145,13 @@ class PatientSlip {
       `
       SELECT ps.*, 
              d.id as doctor_id, d.doctor_name, d.specialization, 
-             f.id as fees_id, f.doctor_fee
+             f.id as fees_id, f.doctor_fee, st.type_name,
+             u.id as created_by, u.name as created_by_name
       FROM patient_slip ps
-      JOIN doctors d ON ps.doctor_id = d.id
-      JOIN fees f ON ps.fees_id = f.id
+      left JOIN doctors d ON ps.doctor_id = d.id
+      left JOIN fees f ON ps.fees_id = f.id
+      left JOIN slip_type st ON ps.slip_type_id = st.id
+      left JOIN users u ON ps.created_by = u.id
       WHERE ps.id = ?
     `,
       [id]
@@ -109,10 +161,20 @@ class PatientSlip {
 
   static async update(
     id,
-    { patient_name, doctor_id, fees_id, status, reference_token_no }
+    {
+      patient_name,
+      doctor_id,
+      fees_id,
+      status,
+      reference_token_no,
+      notes,
+      // slip_type_id,
+      pharmacy_fees,
+    }
   ) {
     const fields = [];
     const values = [];
+
     if (patient_name !== undefined) {
       fields.push("patient_name = ?");
       values.push(patient_name);
@@ -125,10 +187,6 @@ class PatientSlip {
       fields.push("fees_id = ?");
       values.push(fees_id);
     }
-    // if (token_no !== undefined) {
-    //   fields.push('token_no = ?');
-    //   values.push(token_no);
-    // }
     if (status !== undefined) {
       fields.push("status = ?");
       values.push(status);
@@ -137,16 +195,28 @@ class PatientSlip {
       fields.push("reference_token_no = ?");
       values.push(reference_token_no);
     }
-    // if (created_by !== undefined) {
-    //   fields.push('created_by = ?');
-    //   values.push(created_by);
+    if (notes !== undefined) {
+      fields.push("notes = ?");
+      values.push(notes);
+    }
+    // if (slip_type_id !== undefined) {
+    //   fields.push("slip_type_id = ?");
+    //   values.push(slip_type_id);
     // }
-    // Always update updated_at
+    if (pharmacy_fees !== undefined) {
+      fields.push("pharmacy_fees = ?");
+      values.push(pharmacy_fees);
+    }
+
+    // Always update updated_at timestamp
     fields.push("updated_at = NOW()");
+
     if (fields.length === 0) return false;
+
     values.push(id);
     const sql = `UPDATE patient_slip SET ${fields.join(", ")} WHERE id = ?`;
     const [result] = await pool.execute(sql, values);
+
     return result.affectedRows > 0;
   }
 
@@ -172,6 +242,69 @@ class PatientSlip {
     );
     const maxToken = rows[0]?.max_token;
     return maxToken ? maxToken + 1 : 1;
+  }
+
+  static async getSlipAppointmentReport({
+    startDate,
+    endDate,
+    doctor_id,
+    created_by,
+  }) {
+    let sql = `SELECT COUNT(*) as slips_count, COALESCE(SUM(COALESCE(f.doctor_fee,0)),0) as total_amount
+      FROM patient_slip ps
+      LEFT JOIN fees f ON ps.fees_id = f.id
+      WHERE 1=1 AND ps.slip_type_id = 1`;
+    const params = [];
+    if (startDate) {
+      sql += " AND DATE(ps.created_at) >= ?";
+      params.push(startDate);
+    }
+    if (endDate) {
+      sql += " AND DATE(ps.created_at) <= ?";
+      params.push(endDate);
+    }
+    if (doctor_id) {
+      sql += " AND ps.doctor_id = ?";
+      params.push(doctor_id);
+    }
+    if (created_by) {
+      sql += " AND ps.created_by = ?";
+      params.push(created_by);
+    }
+
+    const [rows] = await pool.execute(sql, params);
+    return rows[0];
+  }
+
+  static async getSlipPharmacyReport({
+    startDate,
+    endDate,
+    doctor_id,
+    created_by,
+  }) {
+    let sql = `SELECT COUNT(*) as slips_count, COALESCE(SUM(COALESCE(ps.pharmacy_fees,0)),0) as total_amount
+      FROM patient_slip ps
+      WHERE 1=1 AND ps.slip_type_id = 2`;
+    const params = [];
+    if (startDate) {
+      sql += " AND DATE(ps.created_at) >= ?";
+      params.push(startDate);
+    }
+    if (endDate) {
+      sql += " AND DATE(ps.created_at) <= ?";
+      params.push(endDate);
+    }
+    if (doctor_id) {
+      sql += " AND ps.doctor_id = ?";
+      params.push(doctor_id);
+    }
+    if (created_by) {
+      sql += " AND ps.created_by = ?";
+      params.push(created_by);
+    }
+
+    const [rows] = await pool.execute(sql, params);
+    return rows[0];
   }
 }
 

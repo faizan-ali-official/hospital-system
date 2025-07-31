@@ -40,7 +40,7 @@ class AuthController {
           role: user.role_name,
         },
         ACCESS_TOKEN_SECRET,
-        { expiresIn: "15m" }
+        { expiresIn: "360m" }
       );
       const refreshToken = jwt.sign(
         {
