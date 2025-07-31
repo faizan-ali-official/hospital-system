@@ -5,18 +5,28 @@ import userRoutes from './routes/user.js';
 import doctorRoutes from './routes/doctor.js';
 import patientSlipRoutes from './routes/patientSlip.js';
 import feesRoutes from './routes/fees.js';
+import reportRoutes from './routes/report.js';
 import pool from './config/db.js';
+import cors from "cors";
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
+app.use(
+  cors({
+    origin: "*",
+    credentials: true
+  })
+);
+
 
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/doctor', doctorRoutes);
 app.use('/api/patient-slips', patientSlipRoutes);
 app.use('/api/fees', feesRoutes);
+app.use('/api/report', reportRoutes);
 
 const PORT = process.env.PORT || 3000;
 
