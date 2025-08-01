@@ -35,8 +35,8 @@ function Home() {
       setGeneratedSlip(data?.data?.data);
       setTimeout(() => {
         printFn();
-      }, 2000);
-      // toast.success("Slip generated successfully!");
+      }, 1000);
+      toast.success("Slip generated successfully!");
     } catch (error) {
       console.log(error);
       toast.error(error?.response?.data?.msg || error?.message);

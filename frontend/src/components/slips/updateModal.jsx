@@ -21,7 +21,6 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
         `/api/patient-slips/${user.id}`,
         payload
       );
-      console.log(data?.data?.updatedData);
       const updatedData = allSlips.map((item) =>
         item.id === user.id ? data?.data?.updatedData : item
       );
@@ -35,6 +34,7 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
       setLoading(false);
     }
   };
+
   const initialValues = {
     patient_name: user.patient_name || "",
     doctor_id: user.doctor_id || "",

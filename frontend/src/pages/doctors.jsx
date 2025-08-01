@@ -10,13 +10,17 @@ const Doctors = () => {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
-  const { doctors, setDoctors } = useMainContext();
+  const { doctors, setDoctors, user } = useMainContext();
+  const [selectedUser, setSelectedUser] = useState(null);
 
-  const onDelete = async (id) => {
+  const onDelete = async () => {
     try {
-      await axiosClient.delete(`/api/doctor/${id}`);
-      const deletedDocs = doctors.filter((user) => user?.id !== id);
+      await axiosClient.delete(`/api/doctor/${selectedUser?.id}`);
+      const deletedDocs = doctors.filter(
+        (user) => user?.id !== selectedUser?.id
+      );
       setDoctors(deletedDocs);
+      setSelectedUser(null);
       toast.success("Doctor deleted successfully!");
     } catch (err) {
       console.log(err);
@@ -27,12 +31,14 @@ const Doctors = () => {
     <div className=" justify-center">
       <div className="flex w-full xl:w-[90%] justify-between items-center mb-4">
         <h2 className="text-xl font-bold">Doctors</h2>
-        <button
-          onClick={() => navigate("/doctorcreate")}
-          className="bg-[#004aa3] text-white px-4 py-2 rounded shadow"
-        >
-          + Doctor
-        </button>
+        {user?.role === "admin" && (
+          <button
+            onClick={() => navigate("/doctorcreate")}
+            className="bg-[#004aa3] text-white px-4 py-2 rounded shadow"
+          >
+            + Doctor
+          </button>
+        )}
       </div>
       <table className="w-full xl:w-[90%] rounded">
         <thead>
@@ -67,7 +73,10 @@ const Doctors = () => {
                   Edit
                 </button>
                 <button
-                  onClick={() => setShowModal(true)}
+                  onClick={() => {
+                    setSelectedUser(user);
+                    setShowModal(true);
+                  }}
                   className="bg-[#004aa3] text-white px-3 py-1 rounded"
                 >
                   Delete
@@ -76,7 +85,10 @@ const Doctors = () => {
               {showUpdateModal && (
                 <UserUpdateModal
                   user={user}
-                  onClose={() => setShowUpdateModal(false)}
+                  onClose={() => {
+                    setSelectedUser(null);
+                    setShowUpdateModal(false);
+                  }}
                   setShowUpdateModal={setShowUpdateModal}
                 />
               )}
@@ -84,9 +96,12 @@ const Doctors = () => {
                 <DeleteModal
                   title="Confirm Deletion"
                   message={`Are you sure you want to delete ?`}
-                  onCancel={() => setShowModal(false)}
+                  onCancel={() => {
+                    setSelectedUser(null);
+                    setShowModal(false);
+                  }}
                   onConfirm={() => {
-                    onDelete(user?.id);
+                    onDelete();
                     setShowModal(false);
                   }}
                 />

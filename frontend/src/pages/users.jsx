@@ -10,13 +10,17 @@ const Users = () => {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
-  const { allUsers, setAllUsers } = useMainContext();
+  const { allUsers, setAllUsers, user } = useMainContext();
+  const [selectedUser, setSelectedUser] = useState(null);
 
-  const onDelete = async (id) => {
+  const onDelete = async () => {
     try {
-      await axiosClient.delete(`/api/user/${id}`);
-      const deletedUser = allUsers.filter((user) => user?.id !== id);
+      await axiosClient.delete(`/api/user/${selectedUser?.id}`);
+      const deletedUser = allUsers.filter(
+        (user) => user?.id !== selectedUser?.id
+      );
       setAllUsers(deletedUser);
+      setSelectedUser(null);
       toast.success("User deleted successfully!");
     } catch (err) {
       console.log(err);
@@ -27,12 +31,14 @@ const Users = () => {
     <div className=" justify-center">
       <div className="flex w-full xl:w-[90%] justify-between items-center mb-4">
         <h2 className="text-xl font-bold">Users</h2>
-        <button
-          onClick={() => navigate("/usercreate")}
-          className="bg-[#004aa3] text-white px-4 py-2 rounded shadow"
-        >
-          + User
-        </button>
+        {user?.role === "admin" && (
+          <button
+            onClick={() => navigate("/usercreate")}
+            className="bg-[#004aa3] text-white px-4 py-2 rounded shadow"
+          >
+            + User
+          </button>
+        )}
       </div>
       <table className="w-full xl:w-[90%] rounded">
         <thead>
@@ -67,7 +73,10 @@ const Users = () => {
                   Edit
                 </button>
                 <button
-                  onClick={() => setShowModal(true)}
+                  onClick={() => {
+                    setSelectedUser(user);
+                    setShowModal(true);
+                  }}
                   className="bg-[#004aa3] text-white px-3 py-1 rounded"
                 >
                   Delete
@@ -76,7 +85,11 @@ const Users = () => {
               {showUpdateModal && (
                 <UserUpdateModal
                   user={user}
-                  onClose={() => setShowUpdateModal(false)}
+                  onClose={() => {
+                    console.log("hhh");
+                    setSelectedUser(null);
+                    setShowUpdateModal(false);
+                  }}
                   setShowUpdateModal={setShowUpdateModal}
                 />
               )}
@@ -84,9 +97,12 @@ const Users = () => {
                 <DeleteModal
                   title="Confirm Deletion"
                   message={`Are you sure you want to delete ?`}
-                  onCancel={() => setShowModal(false)}
+                  onCancel={() => {
+                    setSelectedUser(null);
+                    setShowModal(false);
+                  }}
                   onConfirm={() => {
-                    onDelete(user?.id);
+                    onDelete();
                     setShowModal(false);
                   }}
                 />

@@ -36,63 +36,72 @@ function SearchSlip({ setFilteredSearch }) {
 
   return (
     <div className="pb-5 border-b-1 border-b-[#004aa3] mb-4">
-      <div className="w-full xl:w-[90%] mb-5  flex flex-wrap gap-3 mt-7  items-center justify-center ">
-        <select
-          value={doctorName}
-          onChange={(e) => setDoctorName(e.target.value)}
-          className="border p-2 rounded min-w-[17%]"
-        >
-          <option value="">Select Doctor</option>
-          {doctors.map((doc) => (
-            <option key={doc?.id} value={doc?.id}>
-              {`Dr. ${doc?.doctor_name}`}
-            </option>
-          ))}
-        </select>
-
-        <input
-          type="text"
-          placeholder="Patient Name"
-          value={patientName}
-          onChange={(e) => setPatientName(e.target.value)}
-          className="border p-2 rounded min-w-[17%]"
-        />
-
-        <select
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-          className="border p-2 rounded min-w-[17%]"
-        >
-          <option value="">Select Status</option>
-
-          <option key={1} value="1">
-            Active
-          </option>
-          <option key={2} value="2">
-            Inactive
-          </option>
-        </select>
-        <input
-          placeholder="Start Date"
-          type="date"
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
-          className="border p-2 rounded min-w-[17%]"
-        />
-        <input
-          placeholder="End Date"
-          type="date"
-          value={endDate}
-          onChange={(e) => setEndDate(e.target.value)}
-          className="border p-2 rounded min-w-[17%]"
-        />
-        <button
-          onClick={fetchFilteredSlips}
-          className="bg-[#004aa3] text-white py-2 px-4 rounded"
-        >
-          Search
-        </button>
+      <div className="w-full xl:w-[90%] mb-5 flex flex-wrap gap-3 mt-7 items-center justify-center">
+        <div className="flex flex-col min-w-[17%]">
+          <label className="mb-1 text-sm text-gray-700">Doctor</label>
+          <select
+            value={doctorName}
+            onChange={(e) => setDoctorName(e.target.value)}
+            className="border p-2 rounded"
+          >
+            <option value="">Select Doctor</option>
+            {doctors.map((doc) => (
+              <option key={doc?.id} value={doc?.id}>
+                {`Dr. ${doc?.doctor_name}`}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="flex flex-col min-w-[17%]">
+          <label className="mb-1 text-sm text-gray-700">Patient Name</label>
+          <input
+            type="text"
+            placeholder="Patient Name"
+            value={patientName}
+            onChange={(e) => setPatientName(e.target.value)}
+            className="border p-2 rounded"
+          />
+        </div>
+        <div className="flex flex-col min-w-[17%]">
+          <label className="mb-1 text-sm text-gray-700">Status</label>
+          <select
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+            className="border p-2 rounded"
+          >
+            <option value="">Select Status</option>
+            <option value="1">Active</option>
+            <option value="2">Inactive</option>
+          </select>
+        </div>
+        <div className="flex flex-col min-w-[17%]">
+          <label className="mb-1 text-sm text-gray-700">Start Date</label>
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            className="border p-2 rounded"
+          />
+        </div>
+        <div className="flex flex-col min-w-[17%]">
+          <label className="mb-1 text-sm text-gray-700">End Date</label>
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            className="border p-2 rounded"
+          />
+        </div>
+        <div className="flex flex-col justify-end mt-6">
+          <button
+            onClick={fetchFilteredSlips}
+            className="bg-[#004aa3] text-white py-2 px-4 rounded mt-5 xl:mt-0"
+          >
+            Search
+          </button>
+        </div>
       </div>
+
       {showNo && (
         <div>
           <p className="text-center font-bold text-xl">No Data Found</p>

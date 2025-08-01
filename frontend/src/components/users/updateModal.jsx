@@ -38,7 +38,6 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
     roleId: user.role_name === "admin" ? "1" : "2",
     password: ""
   };
-  console.log(allUsers);
   const validationSchema = yup.object({
     name: yup.string().required("Name is required").min(2),
     email: yup.string().email("Invalid email").required("Email is required"),
