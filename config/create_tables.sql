@@ -41,8 +41,25 @@ CREATE TABLE IF NOT EXISTS patient_slip (
   reference_token_no INTEGER DEFAULT NULL,
   status BOOLEAN DEFAULT TRUE,
   created_by INTEGER NOT NULL,
+  slip_type_id INTEGER,
+  pharmacy_fees VARCHAR(100) NULL,
+  notes TEXT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NULL,
-  FOREIGN KEY (created_by) REFERENCES users(id)
+  FOREIGN KEY (created_by) REFERENCES users(id),
+  FOREIGN KEY (slip_type_id) REFERENCES slip_type(id)
 );
+
+CREATE TABLE IF NOT EXISTS slip_type (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  type_name VARCHAR(100) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NULL
+);
+
+-- Insert example slip types
+INSERT INTO slip_type (type_name) VALUES
+  ('appointment'),
+  ('pharmacy'),
+ON DUPLICATE KEY UPDATE type_name=VALUES(type_name);
 
