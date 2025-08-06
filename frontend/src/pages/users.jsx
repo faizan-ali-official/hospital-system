@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { axiosClient } from "../utils/AxiosClient";
 import DeleteModal from "../components/users/deleteModal";
 import UserUpdateModal from "../components/users/updateModal";
@@ -54,20 +54,21 @@ const Users = () => {
         <tbody>
           {allUsers?.map((user) => (
             <tr key={user?.id} className="text-sm hover:bg-gray-50">
-              <td className="py-3 px-6 border border-[#004aa3]">
-                {user?.name?.replace(/\b\w/g, (char) => char.toUpperCase())}
+              <td className="py-3 px-6 border border-[#004aa3] capitalize">
+                {user?.name}
               </td>
               <td className="py-3 px-6 border border-[#004aa3]">
                 {user?.email}
               </td>
-              <td className="py-3 px-6 border border-[#004aa3]">
-                {user?.role_name?.replace(/\b\w/g, (char) =>
-                  char?.toUpperCase()
-                )}
+              <td className="py-3 px-6 border border-[#004aa3] capitalize">
+                {user?.role_name}
               </td>
               <td className="py-3 px-6 border border-[#004aa3] text-center">
                 <button
-                  onClick={() => setShowUpdateModal(true)}
+                  onClick={() => {
+                    setSelectedUser(user);
+                    setShowUpdateModal(true);
+                  }}
                   className="bg-[#004aa3] text-white px-3 py-1 rounded mr-2"
                 >
                   Edit
@@ -84,9 +85,8 @@ const Users = () => {
               </td>
               {showUpdateModal && (
                 <UserUpdateModal
-                  user={user}
+                  user={selectedUser}
                   onClose={() => {
-                    console.log("hhh");
                     setSelectedUser(null);
                     setShowUpdateModal(false);
                   }}

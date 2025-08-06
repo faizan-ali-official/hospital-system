@@ -1,41 +1,70 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { axiosClient } from "../utils/AxiosClient";
 import { useMainContext } from "../context/mainContext";
 import { toast } from "react-toastify";
+import BtnLoader from "./loader/btnLoader";
 
-function SearchSlip({ setFilteredSearch }) {
-  const { doctors } = useMainContext();
+function SearchSlip({
+  setFilteredSearch,
+  isreport,
+  endpoint,
+  setShowNo,
+  showNo
+}) {
+  const { doctors, today, allUsers } = useMainContext();
   const [doctorName, setDoctorName] = useState("");
   const [patientName, setPatientName] = useState("");
+  const [user, setUser] = useState("");
+  const [slipType, setSlipType] = useState("");
   const [status, setStatus] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [showNo, setShowNo] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [startDate, setStartDate] = useState(() => {
+    return today.toISOString().split("T")[0];
+  });
+  const [endDate, setEndDate] = useState(() => {
+    return today.toISOString().split("T")[0];
+  });
 
   const fetchFilteredSlips = async () => {
+    setLoading(true);
     try {
       const params = {
         ...(doctorName && { doctor_id: doctorName }),
         ...(patientName && { search: patientName }),
+        ...(user && { created_by: user }),
+        ...(slipType && { slip_type_id: Number(slipType) }),
         ...(status && { status }),
         ...(startDate && { startDate }),
         ...(endDate && { endDate })
       };
-      const response = await axiosClient.get("/api/patient-slips", { params });
+      const response = await axiosClient.get(
+        isreport ? endpoint : "/api/patient-slips",
+        { params }
+      );
       setFilteredSearch(response?.data);
-      if (response?.data?.length < 1) {
-        setShowNo(true);
-      } else {
-        setShowNo(false);
+      if (!isreport) {
+        if (response?.data?.length < 1) {
+          setShowNo(true);
+        } else {
+          setShowNo(false);
+        }
       }
     } catch (err) {
       console.error("Error fetching filtered slips:", err);
       toast.error("Error fetching slips");
+    } finally {
+      setLoading(false);
     }
   };
 
+  useEffect(() => {
+    if (isreport) {
+      fetchFilteredSlips();
+    }
+  }, []);
+
   return (
-    <div className="pb-5 border-b-1 border-b-[#004aa3] mb-4">
+    <div className="pb-5 border-b-1 border-b-[#004aa3] mb-4 flex justify-center">
       <div className="w-full xl:w-[90%] mb-5 flex flex-wrap gap-3 mt-7 items-center justify-center">
         <div className="flex flex-col min-w-[17%]">
           <label className="mb-1 text-sm text-gray-700">Doctor</label>
@@ -52,28 +81,48 @@ function SearchSlip({ setFilteredSearch }) {
             ))}
           </select>
         </div>
-        <div className="flex flex-col min-w-[17%]">
-          <label className="mb-1 text-sm text-gray-700">Patient Name</label>
-          <input
-            type="text"
-            placeholder="Patient Name"
-            value={patientName}
-            onChange={(e) => setPatientName(e.target.value)}
-            className="border p-2 rounded"
-          />
-        </div>
-        <div className="flex flex-col min-w-[17%]">
-          <label className="mb-1 text-sm text-gray-700">Status</label>
-          <select
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-            className="border p-2 rounded"
-          >
-            <option value="">Select Status</option>
-            <option value="1">Active</option>
-            <option value="2">Inactive</option>
-          </select>
-        </div>
+        {!isreport ? (
+          <>
+            <div className="flex flex-col min-w-[17%]">
+              <label className="mb-1 text-sm text-gray-700">Patient Name</label>
+              <input
+                type="text"
+                placeholder="Patient Name"
+                value={patientName}
+                onChange={(e) => setPatientName(e.target.value)}
+                className="border p-2 rounded"
+              />
+            </div>
+            <div className="flex flex-col min-w-[17%]">
+              <label className="mb-1 text-sm text-gray-700">Slip Type</label>
+              <select
+                value={slipType}
+                onChange={(e) => setSlipType(e.target.value)}
+                className="border p-2 rounded"
+              >
+                <option value="">Select Type</option>
+                <option value="1">appointment</option>
+                <option value="2">pharmacy</option>
+              </select>
+            </div>
+          </>
+        ) : (
+          <div className="flex flex-col min-w-[17%]">
+            <label className="mb-1 text-sm text-gray-700">User</label>
+            <select
+              value={user}
+              onChange={(e) => setUser(e.target.value)}
+              className="border p-2 rounded"
+            >
+              <option value="">Select User</option>
+              {allUsers.map((user) => (
+                <option key={user?.id} value={user?.id}>
+                  {user.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
         <div className="flex flex-col min-w-[17%]">
           <label className="mb-1 text-sm text-gray-700">Start Date</label>
           <input
@@ -95,16 +144,21 @@ function SearchSlip({ setFilteredSearch }) {
         <div className="flex flex-col justify-end mt-6">
           <button
             onClick={fetchFilteredSlips}
-            className="bg-[#004aa3] text-white py-2 px-4 rounded mt-5 xl:mt-0"
+            disabled={loading}
+            className="bg-[#004aa3] w-[80px] text-white py-2 flex justify-center rounded mt-5 xl:mt-0"
           >
-            Search
+            {loading ? <BtnLoader /> : "Search"}
           </button>
         </div>
       </div>
-
       {showNo && (
         <div>
-          <p className="text-center font-bold text-xl">No Data Found</p>
+          <p
+            className="text-center font-bold text-xl cursor-pointer"
+            onClick={() => setShowNo(false)}
+          >
+            Clear Filter
+          </p>
         </div>
       )}
     </div>

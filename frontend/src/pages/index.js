@@ -5,5 +5,15 @@ import Users from "./users";
 import DoctorCreate from "./doctorsCreate";
 import Doctors from "./doctors";
 import Slips from "./slips";
+import Reports from "./reports";
 
-export { Home, Login, UserCreate, Users, DoctorCreate, Doctors, Slips };
+export {
+  Home,
+  Login,
+  UserCreate,
+  Users,
+  DoctorCreate,
+  Doctors,
+  Slips,
+  Reports
+};

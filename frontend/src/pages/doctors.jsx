@@ -55,19 +55,18 @@ const Doctors = () => {
         <tbody>
           {doctors?.map((user) => (
             <tr key={user.id} className="text-sm hover:bg-gray-50">
-              <td className="py-3 px-6 border border-[#004aa3]">
-                {user.doctor_name.replace(/\b\w/g, (char) =>
-                  char.toUpperCase()
-                )}
+              <td className="py-3 px-6 border border-[#004aa3] capitalize">
+                {user.doctor_name}
               </td>
-              <td className="py-3 px-6 border border-[#004aa3]">
-                {user.specialization.replace(/\b\w/g, (char) =>
-                  char.toUpperCase()
-                )}
+              <td className="py-3 px-6 border border-[#004aa3] capitalize">
+                {user.specialization}
               </td>
               <td className="py-3 px-6 border border-[#004aa3] text-center">
                 <button
-                  onClick={() => setShowUpdateModal(true)}
+                  onClick={() => {
+                    setSelectedUser(user);
+                    setShowUpdateModal(true);
+                  }}
                   className="bg-[#004aa3] text-white px-3 py-1 rounded mr-2"
                 >
                   Edit
@@ -84,7 +83,7 @@ const Doctors = () => {
               </td>
               {showUpdateModal && (
                 <UserUpdateModal
-                  user={user}
+                  user={selectedUser}
                   onClose={() => {
                     setSelectedUser(null);
                     setShowUpdateModal(false);

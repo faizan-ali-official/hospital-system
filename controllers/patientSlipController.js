@@ -2,6 +2,7 @@ import PatientSlip from "../models/patientSlip.js";
 
 class PatientSlipController {
   static async createPatientSlip(req, res) {
+    let slipId;
     try {
       const {
         patient_name,
@@ -11,7 +12,7 @@ class PatientSlipController {
         reference_token_no,
         notes,
         slip_type_id,
-        pharmacy_fees,
+        pharmacy_fees
       } = req.body;
       const created_by = req.user.id;
       const token_no = await PatientSlip.getNextTokenNoForToday();
@@ -22,7 +23,7 @@ class PatientSlipController {
           fees_id,
           token_no,
           created_by,
-          slip_type_id,
+          slip_type_id
         });
       } else if (slip_type_id === 2) {
         slipId = await PatientSlip.create({
@@ -33,7 +34,7 @@ class PatientSlipController {
           created_by,
           slip_type_id,
           notes,
-          pharmacy_fees,
+          pharmacy_fees
         });
       } else {
         slipId = await PatientSlip.create({
@@ -45,13 +46,15 @@ class PatientSlipController {
           created_by,
           slip_type_id,
           notes,
-          pharmacy_fees,
+          pharmacy_fees
         });
       }
+      const fullData = await PatientSlip.findById(slipId);
       return res
         .status(201)
-        .json({ data: req.body, message: "Created Successfully" });
+        .json({ data: fullData, message: "Created Successfully" });
     } catch (err) {
+      console.log(err);
       return res.status(500).json({ message: "Server error. " + err.message });
     }
   }
@@ -68,7 +71,7 @@ class PatientSlipController {
         status,
         search,
         limit,
-        offset,
+        offset
       } = req.query;
       const slips = await PatientSlip.findAll({
         startDate,
@@ -80,7 +83,7 @@ class PatientSlipController {
         status,
         search,
         limit,
-        offset,
+        offset
       });
       return res.json(slips);
     } catch (err) {
@@ -111,7 +114,7 @@ class PatientSlipController {
         status,
         reference_token_no,
         notes,
-        pharmacy_fees,
+        pharmacy_fees
       } = req.body;
       const slip = await PatientSlip.findById(id);
       if (!slip) {
@@ -124,7 +127,7 @@ class PatientSlipController {
         status,
         reference_token_no,
         notes,
-        pharmacy_fees,
+        pharmacy_fees
       });
       if (!updated) {
         return res.status(400).json({ message: "Nothing to update." });

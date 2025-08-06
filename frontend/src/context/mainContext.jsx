@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Loader from "../components/loader";
+import Loader from "../components/loader/loader";
 import { axiosClient } from "../utils/AxiosClient";
 
 const mainContext = createContext({
@@ -20,6 +20,8 @@ const mainContext = createContext({
 export const useMainContext = () => useContext(mainContext);
 
 export const MainContextProvider = ({ children }) => {
+  const today = new Date();
+
   const [user, setUser] = useState(null);
   const [allUsers, setAllUsers] = useState([]);
   const [doctors, setDoctors] = useState([]);
@@ -28,7 +30,10 @@ export const MainContextProvider = ({ children }) => {
 
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-
+  const params = {
+    startDate: today.toISOString().split("T")[0],
+    endDate: today.toISOString().split("T")[0]
+  };
   const fetchUserProfile = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -46,13 +51,14 @@ export const MainContextProvider = ({ children }) => {
       setAllUsers(userResp?.data);
       const docResp = await axiosClient.get("/api/doctor/");
       setDoctors(docResp?.data);
-      const slipResp = await axiosClient.get("/api/patient-slips/");
+      const slipResp = await axiosClient.get("/api/patient-slips/", { params });
       setAllSlips(slipResp?.data);
       const feesResp = await axiosClient.get("/api/fees/");
       setFeesTypes(feesResp?.data);
       navigate("/");
     } catch (error) {
       console.error(error);
+      navigate("/login");
     } finally {
       setLoading(false);
     }
@@ -82,6 +88,7 @@ export const MainContextProvider = ({ children }) => {
       value={{
         user,
         allUsers,
+        today,
         doctors,
         allSlips,
         feesTypes,

@@ -38,8 +38,13 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
   const initialValues = {
     patient_name: user.patient_name || "",
     doctor_id: user.doctor_id || "",
-    fees_id: user.fees_id || "",
-    reference_token_no: user.reference_token_no || ""
+    ...(user.slip_type_id === 1 && { fees_id: user.fees_id || "" }),
+    reference_token_no: user.reference_token_no || "",
+    slip_type_id: user.slip_type_id || "",
+    ...(user.slip_type_id === 2 && {
+      pharmacy_fees: user.pharmacy_fees || "",
+      notes: user.notes || ""
+    })
   };
 
   const validationSchema = yup.object({
@@ -48,14 +53,33 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
       .required("Name is required")
       .min(2, "Name must be at least 2 characters"),
     doctor_id: yup.string().required("Doctor is required"),
-    fees_id: yup.string().required("Fees is required"),
-    reference_token_no: yup.string().when("fees_id", {
-      is: "3",
+    fees_id: yup.string().when("slip_type_id", {
+      is: 1,
+      then: (schema) => schema.required("Fees is required"),
+      otherwise: (schema) => schema.notRequired()
+    }),
+    reference_token_no: yup.string().when(["slip_type_id", "fees_id"], {
+      is: (slip_type_id, fees_id) =>
+        Number(slip_type_id) === 2 ||
+        (Number(slip_type_id) === 1 && fees_id === "3"),
       then: (schema) =>
         schema
           .required("Reference No is required")
-          .min(2, "Reference No must be at least 2 characters"),
+          .min(1, "Reference No must be at least 1 characters"),
       otherwise: (schema) => schema.notRequired()
+    }),
+    pharmacy_fees: yup.string().when("slip_type_id", {
+      is: 2,
+      then: (schema) =>
+        schema
+          .required("Fees is required")
+          .matches(/^\d+$/, "Fees must be a number"),
+      otherwise: (schema) => schema.strip()
+    }),
+    notes: yup.string().when("slip_type_id", {
+      is: 2,
+      then: (schema) => schema,
+      otherwise: (schema) => schema.strip()
     })
   });
 
@@ -76,7 +100,8 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
         >
           <Form>
             <p className="text-center pb-8 font-bold text-2xl underline">
-              Patient Slip
+              {user?.type_name?.replace(/\b\w/g, (char) => char.toUpperCase())}{" "}
+              Slip
             </p>
             <div className="mb-3">
               <Field
@@ -117,32 +142,48 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
                 component="p"
               />
             </div>
-            <div className="mb-3">
-              <Field name="fees_id">
-                {({ field, form }) => (
-                  <select
-                    {...field}
-                    className={`input w-full py-3 px-3 rounded border outline-none ${
-                      field.value ? "text-black" : "text-gray-400"
-                    }`}
-                  >
-                    <option value="">Slip Type</option>
-                    {feesTypes.map((item) => {
-                      return (
-                        <option
-                          value={item?.id}
-                        >{`${item?.doctor_fee}`}</option>
-                      );
-                    })}
-                  </select>
-                )}
-              </Field>
-              <ErrorMessage
-                name="fees_id"
-                className="text-red-500"
-                component="p"
-              />
-            </div>
+            {user.slip_type_id === 1 ? (
+              <div className="mb-3">
+                <Field name="fees_id">
+                  {({ field, form }) => (
+                    <select
+                      {...field}
+                      className={`input w-full py-3 px-3 rounded border outline-none ${
+                        field.value ? "text-black" : "text-gray-400"
+                      }`}
+                    >
+                      <option value="">Slip Type</option>
+                      {feesTypes.map((item) => {
+                        return (
+                          <option
+                            value={item?.id}
+                          >{`${item?.doctor_fee}`}</option>
+                        );
+                      })}
+                    </select>
+                  )}
+                </Field>
+                <ErrorMessage
+                  name="fees_id"
+                  className="text-red-500"
+                  component="p"
+                />
+              </div>
+            ) : (
+              <div className="mb-3">
+                <Field
+                  placeholder="Pharmacy fees"
+                  type="text"
+                  name="pharmacy_fees"
+                  className="input w-full py-3 px-3 rounded border outline-none"
+                />
+                <ErrorMessage
+                  name="pharmacy_fees"
+                  className="text-red-500"
+                  component="p"
+                />
+              </div>
+            )}
             <div className="mb-3">
               <Field
                 placeholder="Reference No"
@@ -156,6 +197,17 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
                 component="p"
               />
             </div>
+            {user.slip_type_id === 2 && (
+              <div className="mb-3">
+                <Field
+                  placeholder="Description (optional)"
+                  type="text"
+                  name="notes"
+                  className="input w-full py-3 px-3 rounded border outline-none"
+                />
+              </div>
+            )}
+
             <div className=" mt-10 flex justify-center">
               <CustomAuthButton
                 isLoading={loading}
