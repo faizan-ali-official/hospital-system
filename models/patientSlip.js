@@ -9,13 +9,15 @@ class PatientSlip {
     reference_token_no = null,
     created_by,
     slip_type_id,
+    age,
+    gender,
     notes = null,
     pharmacy_fees = null,
   }) {
     // If slip_type_name is 'appointment', store appointment fields
     if (slip_type_id === 1) {
       const [result] = await pool.execute(
-        `INSERT INTO patient_slip (patient_name, doctor_id, fees_id, token_no, created_by, slip_type_id, updated_at) VALUES (?, ?, ?, ?, ?, ?,?)`,
+        `INSERT INTO patient_slip (patient_name, doctor_id, fees_id, token_no, created_by, slip_type_id, age, gender, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           patient_name,
           doctor_id,
@@ -23,6 +25,8 @@ class PatientSlip {
           token_no,
           created_by,
           slip_type_id,
+          age,
+          gender,
           new Date(),
         ]
       );
@@ -31,7 +35,7 @@ class PatientSlip {
     // If slip_type_name is 'pharmacy', store pharmacy fields
     if (slip_type_id === 2) {
       const [result] = await pool.execute(
-        `INSERT INTO patient_slip (patient_name, doctor_id, fees_id, token_no, reference_token_no, created_by, slip_type_id, notes, pharmacy_fees, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?,?)`,
+        `INSERT INTO patient_slip (patient_name, doctor_id, fees_id, token_no, reference_token_no, created_by, slip_type_id, notes, pharmacy_fees,age, gender, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?)`,
         [
           patient_name,
           doctor_id,
@@ -42,6 +46,8 @@ class PatientSlip {
           slip_type_id,
           notes,
           pharmacy_fees,
+          age,
+          gender,
           new Date(),
         ]
       );
@@ -49,7 +55,7 @@ class PatientSlip {
     }
     // Default: store all fields
     const [result] = await pool.execute(
-      `INSERT INTO patient_slip (patient_name, doctor_id, fees_id, token_no, reference_token_no, created_by, slip_type_id, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO patient_slip (patient_name, doctor_id, fees_id, token_no, reference_token_no, created_by, slip_type_id, notes,age,gender,updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         patient_name,
         doctor_id,
@@ -59,6 +65,9 @@ class PatientSlip {
         created_by,
         slip_type_id,
         notes,
+        age,
+        gender,
+        new Date(),
       ]
     );
     return result.insertId;
@@ -80,7 +89,8 @@ class PatientSlip {
       SELECT ps.*, 
              d.id as doctor_id, d.doctor_name, d.specialization, 
              f.id as fees_id, f.doctor_fee, st.type_name,
-             u.id as created_by, u.name as created_by_name
+             u.id as created_by, u.name as created_by_name,
+             ps.age, ps.gender
       FROM patient_slip ps
       left JOIN doctors d ON ps.doctor_id = d.id
       left JOIN fees f ON ps.fees_id = f.id
@@ -146,7 +156,8 @@ class PatientSlip {
       SELECT ps.*, 
              d.id as doctor_id, d.doctor_name, d.specialization, 
              f.id as fees_id, f.doctor_fee, st.type_name,
-             u.id as created_by, u.name as created_by_name
+             u.id as created_by, u.name as created_by_name,
+             ps.age, ps.gender
       FROM patient_slip ps
       left JOIN doctors d ON ps.doctor_id = d.id
       left JOIN fees f ON ps.fees_id = f.id

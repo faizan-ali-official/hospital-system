@@ -44,6 +44,8 @@ CREATE TABLE IF NOT EXISTS patient_slip (
   slip_type_id INTEGER,
   pharmacy_fees VARCHAR(100) NULL,
   notes TEXT NULL,
+  age INTEGER NOT NULL,
+  gender VARCHAR(10) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NULL,
   FOREIGN KEY (created_by) REFERENCES users(id),
