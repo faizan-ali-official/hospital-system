@@ -31,7 +31,6 @@ function UserCreate() {
       setLoading(false);
     }
   };
-  console.log(allUsers);
   const initialValues = {
     name: "",
     email: "",

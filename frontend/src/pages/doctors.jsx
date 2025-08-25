@@ -47,40 +47,44 @@ const Doctors = () => {
             <th className="py-3 px-6 border border-[#004aa3]">
               Specialization
             </th>
-            <th className="py-3 px-6 border border-[#004aa3] text-center">
-              Actions
-            </th>
+            {user?.role === "admin" && (
+              <th className="py-3 px-6 border border-[#004aa3] text-center">
+                Actions
+              </th>
+            )}
           </tr>
         </thead>
         <tbody>
-          {doctors?.map((user) => (
-            <tr key={user.id} className="text-sm hover:bg-gray-50">
+          {doctors?.map((item) => (
+            <tr key={item.id} className="text-sm hover:bg-gray-50">
               <td className="py-3 px-6 border border-[#004aa3] capitalize">
-                {user.doctor_name}
+                {item.doctor_name}
               </td>
               <td className="py-3 px-6 border border-[#004aa3] capitalize">
-                {user.specialization}
+                {item.specialization}
               </td>
-              <td className="py-3 px-6 border border-[#004aa3] text-center">
-                <button
-                  onClick={() => {
-                    setSelectedUser(user);
-                    setShowUpdateModal(true);
-                  }}
-                  className="bg-[#004aa3] text-white px-3 py-1 rounded mr-2"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => {
-                    setSelectedUser(user);
-                    setShowModal(true);
-                  }}
-                  className="bg-[#004aa3] text-white px-3 py-1 rounded"
-                >
-                  Delete
-                </button>
-              </td>
+              {user?.role === "admin" && (
+                <td className="py-3 px-6 border border-[#004aa3] text-center">
+                  <button
+                    onClick={() => {
+                      setSelectedUser(item);
+                      setShowUpdateModal(true);
+                    }}
+                    className="bg-[#004aa3] text-white px-3 py-1 rounded mr-2"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSelectedUser(item);
+                      setShowModal(true);
+                    }}
+                    className="bg-[#004aa3] text-white px-3 py-1 rounded"
+                  >
+                    Delete
+                  </button>
+                </td>
+              )}
               {showUpdateModal && (
                 <UserUpdateModal
                   user={selectedUser}

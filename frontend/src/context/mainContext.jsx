@@ -27,9 +27,10 @@ export const MainContextProvider = ({ children }) => {
   const [doctors, setDoctors] = useState([]);
   const [allSlips, setAllSlips] = useState([]);
   const [feesTypes, setFeesTypes] = useState([]);
-
   const [loading, setLoading] = useState(true);
+
   const navigate = useNavigate();
+
   const params = {
     startDate: today.toISOString().split("T")[0],
     endDate: today.toISOString().split("T")[0]
@@ -46,6 +47,7 @@ export const MainContextProvider = ({ children }) => {
         refreshToken: token
       });
       localStorage.setItem("accessToken", resp?.data?.accessToken);
+      localStorage.setItem("user", resp?.data?.user);
       setUser(resp?.data?.user);
       const userResp = await axiosClient.get("/api/user/");
       setAllUsers(userResp?.data);
@@ -58,6 +60,7 @@ export const MainContextProvider = ({ children }) => {
       navigate("/");
     } catch (error) {
       console.error(error);
+      setUser(null);
       navigate("/login");
     } finally {
       setLoading(false);
@@ -67,6 +70,7 @@ export const MainContextProvider = ({ children }) => {
   const logOutHandler = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("accessToken");
+    localStorage.removeItem("user");
     setUser(null);
     navigate("/login");
   };

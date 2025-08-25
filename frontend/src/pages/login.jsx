@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as yup from "yup";
 import { toast } from "react-toastify";
@@ -18,6 +17,7 @@ function Login() {
       const data = await response.data;
       localStorage.setItem("accessToken", data?.accessToken);
       localStorage.setItem("token", data?.refreshToken);
+      localStorage.setItem("user", data?.user);
       await fetchUserProfile();
       helpers.resetForm();
     } catch (error) {

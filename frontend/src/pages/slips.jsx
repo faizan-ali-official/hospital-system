@@ -1,9 +1,12 @@
 import React, { useRef, useState } from "react";
 import UserUpdateModal from "../components/slips/updateModal";
+import DeleteModal from "../components/slips/deleteModal";
 import { useMainContext } from "../context/mainContext";
 import SearchSlip from "../components/searchSlip";
 import PrintSlip from "../components/slips/printSlips";
 import { useReactToPrint } from "react-to-print";
+import { toast } from "react-toastify";
+import { axiosClient } from "../utils/AxiosClient";
 
 const Slips = () => {
   const componentRef = useRef(null);
@@ -12,12 +15,26 @@ const Slips = () => {
     contentRef: componentRef,
     copyStyles: false
   });
+  const [showModal, setShowModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [generatedSlip, setGeneratedSlip] = useState(null);
-  const [filteredSearch, setFilteredSearch] = useState([]);
-  const { allSlips, setAllSlips } = useMainContext();
+  const { allSlips, setAllSlips, user } = useMainContext();
   const [selectedUser, setSelectedUser] = useState(null);
   const [showNo, setShowNo] = useState(false);
+
+  const onDelete = async () => {
+    try {
+      await axiosClient.delete(`/api/patient-slips/${selectedUser?.id}`);
+      const deletedSlips = allSlips.filter(
+        (user) => user?.id !== selectedUser?.id
+      );
+      setAllSlips(deletedSlips);
+      setSelectedUser(null);
+      toast.success("Slip deleted successfully!");
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <div className="flex justify-center h-[89vh]">
@@ -26,7 +43,7 @@ const Slips = () => {
           <h2 className="text-xl font-bold">Patient Slips</h2>
         </div>
         <SearchSlip
-          setFilteredSearch={setFilteredSearch}
+          setFilteredSearch={setAllSlips}
           setShowNo={setShowNo}
           showNo={showNo}
         />
@@ -35,12 +52,12 @@ const Slips = () => {
         </h2>
         <div className="overflow-y-auto flex-1">
           {!showNo ? (
-            (filteredSearch?.length > 0 ? filteredSearch : allSlips) ? (
+            allSlips ? (
               <table className="w-full rounded">
                 <thead className="sticky top-0 bg-gray-100 z-10">
                   <tr className="text-left text-sm uppercase text-gray-600">
                     <th className="py-3 px-6 border border-[#004aa3]">
-                      Token No.
+                      Slip ID
                     </th>
                     <th className="py-3 px-6 border border-[#004aa3]">
                       Patient Name
@@ -55,62 +72,86 @@ const Slips = () => {
                       Created By
                     </th>
                     <th className="py-3 px-6 border border-[#004aa3]">Fees</th>
-                    <th className="py-3 px-6 border border-[#004aa3] text-center">
-                      Actions
-                    </th>
+                    {user?.role === "admin" && (
+                      <th className="py-3 px-6 border border-[#004aa3] text-center">
+                        Actions
+                      </th>
+                    )}
                   </tr>
                 </thead>
                 <tbody>
-                  {(filteredSearch?.length > 0
-                    ? filteredSearch
-                    : allSlips
-                  )?.map((user) => (
-                    <tr key={user.id} className="text-sm hover:bg-gray-50">
+                  {allSlips.map((item) => (
+                    <tr key={item.id} className="text-sm hover:bg-gray-50">
                       <td className="py-3 px-6 border border-[#004aa3]">
-                        {user?.token_no}
+                        {item?.id}
                       </td>
                       <td className="py-3 px-6 border border-[#004aa3] capitalize">
-                        {user?.patient_name}
+                        {item?.patient_name}
                       </td>
                       <td className="py-3 px-6 border border-[#004aa3] capitalize">
-                        {user?.doctor_name}
+                        {item?.doctor_name}
                       </td>
                       <td className="py-3 px-6 border border-[#004aa3] capitalize">
-                        {user?.type_name}
+                        {item?.type_name}
                       </td>
                       <td className="py-3 px-6 border border-[#004aa3] capitalize">
-                        {user?.created_by_name}
+                        {item?.created_by_name}
                       </td>
                       <td className="py-3 px-6 border border-[#004aa3]">
-                        {user?.doctor_fee || user?.pharmacy_fees}
+                        {item?.doctor_fee || item?.pharmacy_fees}
                       </td>
-                      <td className="py-3 px-6 border border-[#004aa3] text-center">
-                        <button
-                          onClick={() => {
-                            setSelectedUser(user);
-                            setShowUpdateModal(true);
-                          }}
-                          className="bg-[#004aa3] text-white px-3 py-1 rounded mr-2"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => {
-                            setGeneratedSlip(user);
-                            setTimeout(() => {
-                              printFn();
-                            }, 1000);
-                          }}
-                          className="bg-[#004aa3] text-white px-3 py-1 rounded mr-2"
-                        >
-                          View
-                        </button>
-                      </td>
+                      {user?.role === "admin" && (
+                        <td className="py-3 px-6 border border-[#004aa3] text-center">
+                          <button
+                            onClick={() => {
+                              setSelectedUser(item);
+                              setShowUpdateModal(true);
+                            }}
+                            className="bg-[#004aa3] text-white px-3 py-1 rounded mr-2"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => {
+                              setSelectedUser(item);
+                              setShowModal(true);
+                            }}
+                            className="bg-[#004aa3] text-white px-3 py-1 rounded mr-2"
+                          >
+                            Delete
+                          </button>
+                          <button
+                            onClick={() => {
+                              setGeneratedSlip(item);
+                              setTimeout(() => {
+                                printFn();
+                              }, 1000);
+                            }}
+                            className="bg-[#004aa3] text-white px-3 py-1 rounded mr-2"
+                          >
+                            View
+                          </button>
+                        </td>
+                      )}
                       {showUpdateModal && (
                         <UserUpdateModal
                           user={selectedUser}
                           onClose={() => setShowUpdateModal(false)}
                           setShowUpdateModal={setShowUpdateModal}
+                        />
+                      )}
+                      {showModal && (
+                        <DeleteModal
+                          title="Confirm Deletion"
+                          message="Are you sure you want to delete?"
+                          onCancel={() => {
+                            setSelectedUser(null);
+                            setShowModal(false);
+                          }}
+                          onConfirm={() => {
+                            onDelete();
+                            setShowModal(false);
+                          }}
                         />
                       )}
                     </tr>

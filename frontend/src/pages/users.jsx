@@ -14,6 +14,7 @@ const Users = () => {
   const [selectedUser, setSelectedUser] = useState(null);
 
   const onDelete = async () => {
+    console.log(selectedUser);
     try {
       await axiosClient.delete(`/api/user/${selectedUser?.id}`);
       const deletedUser = allUsers.filter(
@@ -46,43 +47,47 @@ const Users = () => {
             <th className="py-3 px-6 border border-[#004aa3]">Name</th>
             <th className="py-3 px-6 border border-[#004aa3]">Email</th>
             <th className="py-3 px-6 border border-[#004aa3]">Role</th>
-            <th className="py-3 px-6 border border-[#004aa3] text-center">
-              Actions
-            </th>
+            {user?.role === "admin" && (
+              <th className="py-3 px-6 border border-[#004aa3] text-center">
+                Actions
+              </th>
+            )}
           </tr>
         </thead>
         <tbody>
-          {allUsers?.map((user) => (
-            <tr key={user?.id} className="text-sm hover:bg-gray-50">
+          {allUsers?.map((item) => (
+            <tr key={item?.id} className="text-sm hover:bg-gray-50">
               <td className="py-3 px-6 border border-[#004aa3] capitalize">
-                {user?.name}
+                {item?.name}
               </td>
               <td className="py-3 px-6 border border-[#004aa3]">
-                {user?.email}
+                {item?.email}
               </td>
               <td className="py-3 px-6 border border-[#004aa3] capitalize">
-                {user?.role_name}
+                {item?.role_name}
               </td>
-              <td className="py-3 px-6 border border-[#004aa3] text-center">
-                <button
-                  onClick={() => {
-                    setSelectedUser(user);
-                    setShowUpdateModal(true);
-                  }}
-                  className="bg-[#004aa3] text-white px-3 py-1 rounded mr-2"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => {
-                    setSelectedUser(user);
-                    setShowModal(true);
-                  }}
-                  className="bg-[#004aa3] text-white px-3 py-1 rounded"
-                >
-                  Delete
-                </button>
-              </td>
+              {user?.role === "admin" && (
+                <td className="py-3 px-6 border border-[#004aa3] text-center">
+                  <button
+                    onClick={() => {
+                      setSelectedUser(item);
+                      setShowUpdateModal(true);
+                    }}
+                    className="bg-[#004aa3] text-white px-3 py-1 rounded mr-2"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSelectedUser(item);
+                      setShowModal(true);
+                    }}
+                    className="bg-[#004aa3] text-white px-3 py-1 rounded"
+                  >
+                    Delete
+                  </button>
+                </td>
+              )}
               {showUpdateModal && (
                 <UserUpdateModal
                   user={selectedUser}
