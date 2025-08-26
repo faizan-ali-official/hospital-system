@@ -134,6 +134,8 @@ export const patientSlipValidation = {
       .optional()
       .isInt()
       .withMessage("Notes must be an int."),
+    body("age").notEmpty().isInt().withMessage("Age must be an integer."),
+    body("gender").notEmpty().withMessage("Gender is required."),
     (req, res, next) => {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
