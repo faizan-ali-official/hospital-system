@@ -25,7 +25,7 @@ const Reports = () => {
   const fetchData = async () => {
     const params = {
       ...(doctorName && { doctor_id: doctorName }),
-      //   ...(patientName && { search: patientName }),
+      // ...(patientName && { search: patientName }),
       ...(startDate && { startDate }),
       ...(endDate && { endDate })
     };
@@ -34,6 +34,7 @@ const Reports = () => {
       const repData = await axiosClient.get(endpoint, {
         params
       });
+      console.log(repData, "red");
       setReportData(repData.data);
     } catch (error) {
       console.error(error);

@@ -27,7 +27,7 @@ class PatientSlip {
           slip_type_id,
           age,
           gender,
-          new Date(),
+          new Date()
         ]
       );
       return result.insertId;
@@ -39,7 +39,7 @@ class PatientSlip {
         [
           patient_name,
           doctor_id,
-          null,
+          1,
           token_no,
           reference_token_no,
           created_by,
@@ -48,7 +48,7 @@ class PatientSlip {
           pharmacy_fees,
           age,
           gender,
-          new Date(),
+          new Date()
         ]
       );
       return result.insertId;
@@ -67,7 +67,7 @@ class PatientSlip {
         notes,
         age,
         gender,
-        new Date(),
+        new Date()
       ]
     );
     return result.insertId;
@@ -179,7 +179,9 @@ class PatientSlip {
       reference_token_no,
       notes,
       // slip_type_id,
-      pharmacy_fees
+      pharmacy_fees,
+      gender,
+      age
     }
   ) {
     const fields = [];
@@ -213,11 +215,19 @@ class PatientSlip {
     //   fields.push("slip_type_id = ?");
     //   values.push(slip_type_id);
     // }
+
     if (pharmacy_fees !== undefined) {
       fields.push("pharmacy_fees = ?");
       values.push(pharmacy_fees);
     }
-
+    if (age !== undefined) {
+      fields.push("age = ?");
+      values.push(age);
+    }
+    if (gender !== undefined) {
+      fields.push("gender = ?");
+      values.push(gender);
+    }
     // Always update updated_at timestamp
     fields.push("updated_at = NOW()");
 

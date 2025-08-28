@@ -7,6 +7,7 @@ import CustomAuthButton from "../customButton";
 import { axiosClient } from "../../utils/AxiosClient";
 import { useMainContext } from "../../context/mainContext";
 import PrintSlip from "../slips/printSlips";
+import Input from "../input/input";
 
 function CheckupSlip() {
   const componentRef = useRef(null);
@@ -17,10 +18,10 @@ function CheckupSlip() {
   });
   const [loading, setLoading] = useState(false);
   const { doctors, feesTypes, allSlips, setAllSlips } = useMainContext();
-
   const [generatedSlip, setGeneratedSlip] = useState(null);
+
   const onSubmitHandler = async (values, helpers) => {
-    const payload = { ...values };
+    const payload = { ...values, age: Number(values.age) };
     if (!payload.reference_token_no) {
       delete payload.reference_token_no;
     }
@@ -44,13 +45,17 @@ function CheckupSlip() {
       setLoading(false);
     }
   };
+
   const initialValues = {
     patient_name: "",
     doctor_id: "",
     fees_id: "",
     reference_token_no: "",
-    slip_type_id: 1
+    slip_type_id: 1,
+    age: "",
+    gender: ""
   };
+
   const validationSchema = yup.object({
     patient_name: yup
       .string()
@@ -58,6 +63,11 @@ function CheckupSlip() {
       .min(2, "Name must be at least 2 characters"),
     doctor_id: yup.string().required("Doctor is required"),
     fees_id: yup.string().required("Fees is required"),
+    age: yup.number().required("Age is required"),
+    gender: yup
+      .string()
+      .required("Gender is required")
+      .oneOf(["Male", "Female"], "Invalid gender"),
     reference_token_no: yup.string().when("fees_id", {
       is: "3",
       then: (schema) =>
@@ -67,6 +77,7 @@ function CheckupSlip() {
       otherwise: (schema) => schema.notRequired()
     })
   });
+
   return (
     <div>
       <Formik
@@ -75,19 +86,11 @@ function CheckupSlip() {
         onSubmit={onSubmitHandler}
       >
         <Form className="px-10 py-10  lg:mx-10 ">
-          <div className="mb-3">
-            <Field
-              placeholder="Patient Name"
-              type="text"
-              name="patient_name"
-              className="input w-full py-3 px-3 rounded border outline-none"
-            />
-            <ErrorMessage
-              name="patient_name"
-              className="text-red-500"
-              component="p"
-            />
-          </div>
+          <Input
+            placeholder="Patient Name"
+            name="patient_name"
+            errorName="patient_name"
+          />
           <div className="mb-3">
             <Field name="doctor_id">
               {({ field, form }) => (
@@ -110,6 +113,28 @@ function CheckupSlip() {
             </Field>
             <ErrorMessage
               name="doctor_id"
+              className="text-red-500"
+              component="p"
+            />
+          </div>
+          <Input placeholder="Age" name="age" errorName="age" />
+          <div className="mb-3">
+            <Field name="gender">
+              {({ field, form }) => (
+                <select
+                  {...field}
+                  className={`input w-full py-3 px-3 rounded border outline-none ${
+                    field.value ? "text-black" : "text-gray-400"
+                  }`}
+                >
+                  <option value="">Select Gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
+              )}
+            </Field>
+            <ErrorMessage
+              name="gender"
               className="text-red-500"
               component="p"
             />
@@ -138,7 +163,7 @@ function CheckupSlip() {
               component="p"
             />
           </div>
-          <div className="mb-3">
+          {/* <div className="mb-3">
             <Field
               placeholder="Reference No"
               type="text"
@@ -150,7 +175,7 @@ function CheckupSlip() {
               className="text-red-500"
               component="p"
             />
-          </div>
+          </div> */}
           <div className=" mt-10 flex justify-center">
             <CustomAuthButton
               isLoading={loading}

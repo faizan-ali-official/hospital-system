@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import CustomAuthButton from "../customButton";
 import { axiosClient } from "../../utils/AxiosClient";
 import { useMainContext } from "../../context/mainContext";
+import Input from "../input/input";
 
 function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
   const [loading, setLoading] = useState(false);
@@ -21,6 +22,7 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
         `/api/patient-slips/${user.id}`,
         payload
       );
+      console.log(data?.data?.updatedData, "data?.data?.updatedData");
       const updatedData = allSlips.map((item) =>
         item.id === user.id ? data?.data?.updatedData : item
       );
@@ -44,7 +46,9 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
     ...(user.slip_type_id === 2 && {
       pharmacy_fees: user.pharmacy_fees || "",
       notes: user.notes || ""
-    })
+    }),
+    age: user.age || "",
+    gender: user.gender || ""
   };
 
   const validationSchema = yup.object({
@@ -80,7 +84,12 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
       is: 2,
       then: (schema) => schema,
       otherwise: (schema) => schema.strip()
-    })
+    }),
+    age: yup.number().required("Age is required"),
+    gender: yup
+      .string()
+      .required("Gender is required")
+      .oneOf(["Male", "Female"], "Invalid gender")
   });
 
   return (
@@ -103,19 +112,11 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
               {user?.type_name?.replace(/\b\w/g, (char) => char.toUpperCase())}{" "}
               Slip
             </p>
-            <div className="mb-3">
-              <Field
-                placeholder="Patient Name"
-                type="text"
-                name="patient_name"
-                className="input w-full py-3 px-3 rounded border outline-none"
-              />
-              <ErrorMessage
-                name="patient_name"
-                className="text-red-500"
-                component="p"
-              />
-            </div>
+            <Input
+              placeholder="Patient Name"
+              name="patient_name"
+              errorName="patient_name"
+            />
             <div className="mb-3">
               <Field name="doctor_id">
                 {({ field, form }) => (
@@ -138,6 +139,28 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
               </Field>
               <ErrorMessage
                 name="doctor_id"
+                className="text-red-500"
+                component="p"
+              />
+            </div>
+            <Input placeholder="Age" name="age" errorName="age" />
+            <div className="mb-3">
+              <Field name="gender">
+                {({ field, form }) => (
+                  <select
+                    {...field}
+                    className={`input w-full py-3 px-3 rounded border outline-none ${
+                      field.value ? "text-black" : "text-gray-400"
+                    }`}
+                  >
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                  </select>
+                )}
+              </Field>
+              <ErrorMessage
+                name="gender"
                 className="text-red-500"
                 component="p"
               />
@@ -170,44 +193,24 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
                 />
               </div>
             ) : (
-              <div className="mb-3">
-                <Field
-                  placeholder="Pharmacy fees"
-                  type="text"
-                  name="pharmacy_fees"
-                  className="input w-full py-3 px-3 rounded border outline-none"
-                />
-                <ErrorMessage
-                  name="pharmacy_fees"
-                  className="text-red-500"
-                  component="p"
-                />
-              </div>
+              <Input
+                placeholder="Pharmacy fees"
+                name="pharmacy_fees"
+                errorName="pharmacy_fees"
+              />
             )}
-            <div className="mb-3">
-              <Field
-                placeholder="Reference No"
-                type="text"
-                name="reference_token_no"
-                className="input w-full py-3 px-3 rounded border outline-none"
-              />
-              <ErrorMessage
-                name="reference_token_no"
-                className="text-red-500"
-                component="p"
-              />
-            </div>
+            <Input
+              placeholder="Reference No"
+              name="reference_token_no"
+              errorName="reference_token_no"
+            />
             {user.slip_type_id === 2 && (
-              <div className="mb-3">
-                <Field
-                  placeholder="Description (optional)"
-                  type="text"
-                  name="notes"
-                  className="input w-full py-3 px-3 rounded border outline-none"
-                />
-              </div>
+              <Input
+                placeholder="Description (optional)"
+                name="notes"
+                errorName="notes"
+              />
             )}
-
             <div className=" mt-10 flex justify-center">
               <CustomAuthButton
                 isLoading={loading}

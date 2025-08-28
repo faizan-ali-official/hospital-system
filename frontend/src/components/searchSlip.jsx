@@ -16,6 +16,7 @@ function SearchSlip({
   const [patientName, setPatientName] = useState("");
   const [user, setUser] = useState("");
   const [slipType, setSlipType] = useState("");
+  const [slipId, setSlipID] = useState("");
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
   const [startDate, setStartDate] = useState(() => {
@@ -37,11 +38,25 @@ function SearchSlip({
         ...(startDate && { startDate }),
         ...(endDate && { endDate })
       };
-      const response = await axiosClient.get(
-        isreport ? endpoint : "/api/patient-slips",
-        { params }
+
+      let apiUrl = "/api/patient-slips";
+      if (isreport) {
+        apiUrl = endpoint;
+      } else if (slipId) {
+        apiUrl = `/api/patient-slips/${slipId}`;
+        setSlipID("");
+      }
+
+      const response = await axiosClient.get(apiUrl, { params });
+      setFilteredSearch(
+        isreport
+          ? response?.data || []
+          : response?.data
+          ? Array.isArray(response.data)
+            ? response.data
+            : [response.data]
+          : []
       );
-      setFilteredSearch(response?.data);
       if (!isreport) {
         if (response?.data?.length < 1) {
           setShowNo(true);
@@ -66,7 +81,7 @@ function SearchSlip({
   return (
     <div className="pb-5 border-b-1 border-b-[#004aa3] mb-4 flex justify-center">
       <div className="w-full xl:w-[90%] mb-5 flex flex-wrap gap-3 mt-7 items-center justify-center">
-        <div className="flex flex-col min-w-[17%]">
+        <div className="flex flex-col min-w-[14%]">
           <label className="mb-1 text-sm text-gray-700">Doctor</label>
           <select
             value={doctorName}
@@ -83,7 +98,7 @@ function SearchSlip({
         </div>
         {!isreport ? (
           <>
-            <div className="flex flex-col min-w-[17%]">
+            <div className="flex flex-col min-w-[14%]">
               <label className="mb-1 text-sm text-gray-700">Patient Name</label>
               <input
                 type="text"
@@ -93,7 +108,17 @@ function SearchSlip({
                 className="border p-2 rounded"
               />
             </div>
-            <div className="flex flex-col min-w-[17%]">
+            <div className="flex flex-col min-w-[14%]">
+              <label className="mb-1 text-sm text-gray-700">Slip ID</label>
+              <input
+                type="text"
+                placeholder="Slip ID"
+                value={slipId}
+                onChange={(e) => setSlipID(e.target.value)}
+                className="border p-2 rounded"
+              />
+            </div>
+            <div className="flex flex-col min-w-[14%]">
               <label className="mb-1 text-sm text-gray-700">Slip Type</label>
               <select
                 value={slipType}
@@ -107,7 +132,7 @@ function SearchSlip({
             </div>
           </>
         ) : (
-          <div className="flex flex-col min-w-[17%]">
+          <div className="flex flex-col min-w-[14%]">
             <label className="mb-1 text-sm text-gray-700">User</label>
             <select
               value={user}
@@ -123,7 +148,7 @@ function SearchSlip({
             </select>
           </div>
         )}
-        <div className="flex flex-col min-w-[17%]">
+        <div className="flex flex-col min-w-[14%]">
           <label className="mb-1 text-sm text-gray-700">Start Date</label>
           <input
             type="date"
@@ -132,7 +157,7 @@ function SearchSlip({
             className="border p-2 rounded"
           />
         </div>
-        <div className="flex flex-col min-w-[17%]">
+        <div className="flex flex-col min-w-[14%]">
           <label className="mb-1 text-sm text-gray-700">End Date</label>
           <input
             type="date"

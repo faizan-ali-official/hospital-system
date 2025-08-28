@@ -3,6 +3,7 @@ import axios from "axios";
 export const axiosClient = axios.create({
   baseURL: import.meta.env.VITE_BASE_URI
 });
+
 axiosClient.interceptors.request.use(
   (config) => {
     if (!config.url.includes("/login")) {

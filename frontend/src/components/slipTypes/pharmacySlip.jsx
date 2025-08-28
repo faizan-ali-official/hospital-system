@@ -7,6 +7,7 @@ import CustomAuthButton from "../customButton";
 import { axiosClient } from "../../utils/AxiosClient";
 import { useMainContext } from "../../context/mainContext";
 import PrintSlip from "../slips/printSlips";
+import Input from "../input/input";
 
 function PharmacySlip() {
   const componentRef = useRef(null);
@@ -15,23 +16,23 @@ function PharmacySlip() {
     contentRef: componentRef,
     copyStyles: false
   });
+
   const [loading, setLoading] = useState(false);
   const { doctors, feesTypes, allSlips, setAllSlips } = useMainContext();
-
   const [generatedSlip, setGeneratedSlip] = useState(null);
+
   const onSubmitHandler = async (values, helpers) => {
     const payload = { ...values };
     if (!payload.notes) {
       delete payload.notes;
     }
-    console.log(payload);
+    console.log(payload, "payload");
     try {
       setLoading(true);
       const data = await axiosClient.post("/api/patient-slips/", payload);
       allSlips.push({
         ...data?.data?.data
       });
-      console.log(data?.data?.data);
       helpers.resetForm();
       setAllSlips(allSlips);
       setGeneratedSlip(data?.data?.data);
@@ -52,6 +53,8 @@ function PharmacySlip() {
     pharmacy_fees: "",
     reference_token_no: "",
     slip_type_id: 2,
+    age: "",
+    gender: "",
     notes: ""
   };
 
@@ -66,6 +69,11 @@ function PharmacySlip() {
       .typeError("Fees must be a number")
       .required("Fees is required"),
     reference_token_no: yup.string().required("Refrence token is required"),
+    age: yup.number().required("Age is required"),
+    gender: yup
+      .string()
+      .required("Gender is required")
+      .oneOf(["Male", "Female"], "Invalid gender"),
     notes: yup.string()
   });
 
@@ -77,19 +85,11 @@ function PharmacySlip() {
         onSubmit={onSubmitHandler}
       >
         <Form className="px-10 py-10  lg:mx-10 ">
-          <div className="mb-3">
-            <Field
-              placeholder="Patient Name"
-              type="text"
-              name="patient_name"
-              className="input w-full py-3 px-3 rounded border outline-none"
-            />
-            <ErrorMessage
-              name="patient_name"
-              className="text-red-500"
-              component="p"
-            />
-          </div>
+          <Input
+            placeholder="Patient Name"
+            name="patient_name"
+            errorName="patient_name"
+          />
           <div className="mb-3">
             <Field name="doctor_id">
               {({ field, form }) => (
@@ -116,40 +116,43 @@ function PharmacySlip() {
               component="p"
             />
           </div>
+          <Input placeholder="Age" name="age" errorName="age" />
           <div className="mb-3">
-            <Field
-              placeholder="Pharmacy fees"
-              type="text"
-              name="pharmacy_fees"
-              className="input w-full py-3 px-3 rounded border outline-none"
-            />
+            <Field name="gender">
+              {({ field, form }) => (
+                <select
+                  {...field}
+                  className={`input w-full py-3 px-3 rounded border outline-none ${
+                    field.value ? "text-black" : "text-gray-400"
+                  }`}
+                >
+                  <option value="">Select Gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
+              )}
+            </Field>
             <ErrorMessage
-              name="pharmacy_fees"
+              name="gender"
               className="text-red-500"
               component="p"
             />
           </div>
-          <div className="mb-3">
-            <Field
-              placeholder="Reference No"
-              type="text"
-              name="reference_token_no"
-              className="input w-full py-3 px-3 rounded border outline-none"
-            />
-            <ErrorMessage
-              name="reference_token_no"
-              className="text-red-500"
-              component="p"
-            />
-          </div>
-          <div className="mb-3">
-            <Field
-              placeholder="Description (optional)"
-              type="text"
-              name="notes"
-              className="input w-full py-3 px-3 rounded border outline-none"
-            />
-          </div>
+          <Input
+            placeholder="Pharmacy fees"
+            name="pharmacy_fees"
+            errorName="pharmacy_fees"
+          />
+          <Input
+            placeholder="Reference No"
+            name="reference_token_no"
+            errorName="reference_token_no"
+          />
+          <Input
+            placeholder="Description (optional)"
+            name="notes"
+            errorName="noteso"
+          />
           <div className=" mt-10 flex justify-center">
             <CustomAuthButton
               isLoading={loading}

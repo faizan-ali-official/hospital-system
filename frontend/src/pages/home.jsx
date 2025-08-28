@@ -7,7 +7,7 @@ function Home() {
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center">
-      <div className="w-full xl:w-[50%] mx-10 xl:mx-0 py-10 items-start rounded-md shadow-lg shadow-[#004aa3]">
+      <div className="w-full xl:w-[60%] lg:w-[80%] mx-10 xl:mx-0 py-10 items-start rounded-md shadow-lg shadow-[#004aa3]">
         <div className="flex">
           {selectedType && (
             <button
@@ -32,7 +32,7 @@ function Home() {
                 onClick={() => setSelectedType("doctor")}
               >
                 <p className="flex justify-center h-[100%] items-center font-bold text-white text-2xl cursor-pointer">
-                  Doctor Slip
+                  Appointment Slip
                 </p>
               </div>
               <div

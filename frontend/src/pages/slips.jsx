@@ -68,15 +68,14 @@ const Slips = () => {
                     <th className="py-3 px-6 border border-[#004aa3]">
                       Slip Type
                     </th>
+                    <th className="py-3 px-6 border border-[#004aa3]">Date</th>
                     <th className="py-3 px-6 border border-[#004aa3]">
                       Created By
                     </th>
                     <th className="py-3 px-6 border border-[#004aa3]">Fees</th>
-                    {user?.role === "admin" && (
-                      <th className="py-3 px-6 border border-[#004aa3] text-center">
-                        Actions
-                      </th>
-                    )}
+                    <th className="py-3 px-6 border border-[#004aa3] text-center">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -95,44 +94,50 @@ const Slips = () => {
                         {item?.type_name}
                       </td>
                       <td className="py-3 px-6 border border-[#004aa3] capitalize">
+                        {item?.created_at?.split("T")[0]}
+                      </td>
+                      <td className="py-3 px-6 border border-[#004aa3] capitalize">
                         {item?.created_by_name}
                       </td>
                       <td className="py-3 px-6 border border-[#004aa3]">
                         {item?.doctor_fee || item?.pharmacy_fees}
                       </td>
-                      {user?.role === "admin" && (
-                        <td className="py-3 px-6 border border-[#004aa3] text-center">
-                          <button
-                            onClick={() => {
-                              setSelectedUser(item);
-                              setShowUpdateModal(true);
-                            }}
-                            className="bg-[#004aa3] text-white px-3 py-1 rounded mr-2"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => {
-                              setSelectedUser(item);
-                              setShowModal(true);
-                            }}
-                            className="bg-[#004aa3] text-white px-3 py-1 rounded mr-2"
-                          >
-                            Delete
-                          </button>
-                          <button
-                            onClick={() => {
-                              setGeneratedSlip(item);
-                              setTimeout(() => {
-                                printFn();
-                              }, 1000);
-                            }}
-                            className="bg-[#004aa3] text-white px-3 py-1 rounded mr-2"
-                          >
-                            View
-                          </button>
-                        </td>
-                      )}
+                      <td className="py-3 px-6 border border-[#004aa3] text-center">
+                        {user?.role === "admin" && (
+                          <>
+                            <button
+                              onClick={() => {
+                                setSelectedUser(item);
+                                setShowUpdateModal(true);
+                              }}
+                              className="bg-[#004aa3] text-white px-3 py-1 rounded mr-2"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => {
+                                setSelectedUser(item);
+                                setShowModal(true);
+                              }}
+                              className="bg-[#004aa3] text-white px-3 py-1 rounded mr-2"
+                            >
+                              Delete
+                            </button>
+                          </>
+                        )}
+
+                        <button
+                          onClick={() => {
+                            setGeneratedSlip(item);
+                            setTimeout(() => {
+                              printFn();
+                            }, 1000);
+                          }}
+                          className="bg-[#004aa3] text-white px-3 py-1 rounded mr-2"
+                        >
+                          View
+                        </button>
+                      </td>
                       {showUpdateModal && (
                         <UserUpdateModal
                           user={selectedUser}

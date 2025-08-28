@@ -122,7 +122,9 @@ class PatientSlipController {
         status,
         reference_token_no,
         notes,
-        pharmacy_fees
+        pharmacy_fees,
+        gender,
+        age
       } = req.body;
       const slip = await PatientSlip.findById(id);
       if (!slip) {
@@ -135,7 +137,9 @@ class PatientSlipController {
         status,
         reference_token_no,
         notes,
-        pharmacy_fees
+        pharmacy_fees,
+        gender,
+        age
       });
       if (!updated) {
         return res.status(400).json({ message: "Nothing to update." });
