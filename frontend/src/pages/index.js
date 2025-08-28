@@ -1,5 +1,19 @@
 import Home from "./home";
-import About from "./about";
-import Login from "./Login";
+import Login from "./login";
+import UserCreate from "./userCreate";
+import Users from "./users";
+import DoctorCreate from "./doctorsCreate";
+import Doctors from "./doctors";
+import Slips from "./slips";
+import Reports from "./reports";
 
-export { Home, About, Login };
+export {
+  Home,
+  Login,
+  UserCreate,
+  Users,
+  DoctorCreate,
+  Doctors,
+  Slips,
+  Reports
+};

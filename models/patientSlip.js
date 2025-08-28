@@ -12,7 +12,7 @@ class PatientSlip {
     age,
     gender,
     notes = null,
-    pharmacy_fees = null,
+    pharmacy_fees = null
   }) {
     // If slip_type_name is 'appointment', store appointment fields
     if (slip_type_id === 1) {
@@ -39,7 +39,7 @@ class PatientSlip {
         [
           patient_name,
           doctor_id,
-          null,
+          1,
           token_no,
           reference_token_no,
           created_by,
@@ -83,7 +83,7 @@ class PatientSlip {
     status,
     search,
     limit,
-    offset,
+    offset
   } = {}) {
     let sql = `
       SELECT ps.*, 
@@ -145,7 +145,6 @@ class PatientSlip {
         params.push(Number(offset));
       }
     }
-    console.log("sql", sql);
     const [rows] = await pool.execute(sql, params);
     return rows;
   }
@@ -181,6 +180,8 @@ class PatientSlip {
       notes,
       // slip_type_id,
       pharmacy_fees,
+      gender,
+      age
     }
   ) {
     const fields = [];
@@ -214,11 +215,19 @@ class PatientSlip {
     //   fields.push("slip_type_id = ?");
     //   values.push(slip_type_id);
     // }
+
     if (pharmacy_fees !== undefined) {
       fields.push("pharmacy_fees = ?");
       values.push(pharmacy_fees);
     }
-
+    if (age !== undefined) {
+      fields.push("age = ?");
+      values.push(age);
+    }
+    if (gender !== undefined) {
+      fields.push("gender = ?");
+      values.push(gender);
+    }
     // Always update updated_at timestamp
     fields.push("updated_at = NOW()");
 
@@ -259,7 +268,7 @@ class PatientSlip {
     startDate,
     endDate,
     doctor_id,
-    created_by,
+    created_by
   }) {
     let sql = `SELECT COUNT(*) as slips_count, COALESCE(SUM(COALESCE(f.doctor_fee,0)),0) as total_amount
       FROM patient_slip ps
@@ -291,7 +300,7 @@ class PatientSlip {
     startDate,
     endDate,
     doctor_id,
-    created_by,
+    created_by
   }) {
     let sql = `SELECT COUNT(*) as slips_count, COALESCE(SUM(COALESCE(ps.pharmacy_fees,0)),0) as total_amount
       FROM patient_slip ps

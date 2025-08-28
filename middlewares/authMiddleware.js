@@ -1,23 +1,26 @@
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 
 const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-  if (!token) return res.status(401).json({ message: 'Access token required.' });
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (!token)
+    return res.status(401).json({ message: "Access token required." });
   jwt.verify(token, ACCESS_TOKEN_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ message: 'Invalid or expired token.' });
+    if (err)
+      return res.status(403).json({ message: "Invalid or expired token." });
     req.user = user;
     next();
   });
 };
 
 export const isAdmin = (req, res, next) => {
-  if (req.user && req.user.role === 'admin') {
+  if (req.user && req.user.role === "admin") {
     return next();
   }
-  return res.status(403).json({ message: 'Admin access required.' });
+  return res.status(403).json({ message: "Admin access required." });
 };
 
-export default authenticateToken; 
+export default authenticateToken;

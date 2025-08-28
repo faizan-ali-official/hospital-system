@@ -34,12 +34,12 @@ const PORT = process.env.PORT || 3000;
 (async () => {
   try {
     await pool.getConnection();
-    console.log('Connected to MySQL database.');
+    console.log("Connected to MySQL database.");
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
   } catch (err) {
-    console.error('Failed to connect to MySQL:', err);
+    console.error("Failed to connect to MySQL:", err);
     process.exit(1);
   }
 })();
