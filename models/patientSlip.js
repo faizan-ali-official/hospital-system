@@ -12,7 +12,7 @@ class PatientSlip {
     age,
     gender,
     notes = null,
-    pharmacy_fees = null
+    pharmacy_fees = null,
   }) {
     // If slip_type_name is 'appointment', store appointment fields
     if (slip_type_id === 1) {
@@ -27,7 +27,7 @@ class PatientSlip {
           slip_type_id,
           age,
           gender,
-          new Date()
+          new Date(),
         ]
       );
       return result.insertId;
@@ -48,7 +48,7 @@ class PatientSlip {
           pharmacy_fees,
           age,
           gender,
-          new Date()
+          new Date(),
         ]
       );
       return result.insertId;
@@ -67,10 +67,27 @@ class PatientSlip {
         notes,
         age,
         gender,
-        new Date()
+        new Date(),
       ]
     );
     return result.insertId;
+  }
+
+  static async createBulk(slips) {
+    const insertedIds = [];
+
+    for (const slip of slips) {
+      const token_no = await PatientSlip.getNextTokenNoForToday();
+
+      const slipId = await PatientSlip.create({
+        ...slip,
+        token_no,
+      });
+
+      insertedIds.push(slipId);
+    }
+
+    return insertedIds;
   }
 
   static async findAll({
@@ -83,20 +100,24 @@ class PatientSlip {
     status,
     search,
     limit,
-    offset
+    offset,
+    deleted,
   } = {}) {
     let sql = `
-      SELECT ps.*, 
-             d.id as doctor_id, d.doctor_name, d.specialization, 
-             f.id as fees_id, f.doctor_fee, st.type_name,
-             u.id as created_by, u.name as created_by_name,
-             ps.age, ps.gender
-      FROM patient_slip ps
-      left JOIN doctors d ON ps.doctor_id = d.id
-      left JOIN fees f ON ps.fees_id = f.id
-      left JOIN slip_type st ON ps.slip_type_id = st.id
-      left JOIN users u ON ps.created_by = u.id
-    `;
+        SELECT ps.*, 
+              d.id as doctor_id, d.doctor_name, d.specialization, 
+              f.id as fees_id, f.doctor_fee, st.type_name,
+              u.id as created_by, u.name as created_by_name,
+              ps.age, ps.gender, ps.deleted_at, ps.delete_note, 
+              ud.name as deleted_by
+        FROM patient_slip ps
+        LEFT JOIN doctors d ON ps.doctor_id = d.id
+        LEFT JOIN fees f ON ps.fees_id = f.id
+        LEFT JOIN slip_type st ON ps.slip_type_id = st.id
+        LEFT JOIN users u ON ps.created_by = u.id
+        LEFT JOIN users ud ON ps.delete_by = ud.id
+      `;
+
     const conditions = [];
     const params = [];
     if (startDate && endDate) {
@@ -133,6 +154,12 @@ class PatientSlip {
       conditions.push("ps.patient_name LIKE ?");
       params.push(`%${search}%`);
     }
+    if (deleted) {
+      conditions.push("ps.deleted_at IS NOT NULL");
+    } else {
+      conditions.push("ps.deleted_at IS NULL");
+    }
+
     if (conditions.length > 0) {
       sql += " WHERE " + conditions.join(" AND ");
     }
@@ -156,12 +183,14 @@ class PatientSlip {
              d.id as doctor_id, d.doctor_name, d.specialization, 
              f.id as fees_id, f.doctor_fee, st.type_name,
              u.id as created_by, u.name as created_by_name,
-             ps.age, ps.gender
+             ps.age, ps.gender, ps.deleted_at, ps.delete_note, 
+            ud.name as deleted_by
       FROM patient_slip ps
       left JOIN doctors d ON ps.doctor_id = d.id
       left JOIN fees f ON ps.fees_id = f.id
       left JOIN slip_type st ON ps.slip_type_id = st.id
       left JOIN users u ON ps.created_by = u.id
+      left JOIN users ud ON ps.created_by = ud.id
       WHERE ps.id = ?
     `,
       [id]
@@ -181,7 +210,7 @@ class PatientSlip {
       // slip_type_id,
       pharmacy_fees,
       gender,
-      age
+      age,
     }
   ) {
     const fields = [];
@@ -248,11 +277,17 @@ class PatientSlip {
     return result.affectedRows > 0;
   }
 
-  static async delete(id) {
+  static async delete(id, delete_note, deleted_by) {
     const [result] = await pool.execute(
-      "DELETE FROM patient_slip WHERE id = ?",
-      [id]
+      `UPDATE patient_slip 
+     SET deleted_at = NOW(), 
+         delete_note = ?, 
+         updated_at = NOW(), 
+         delete_by = ? 
+     WHERE id = ? AND deleted_at IS NULL`,
+      [delete_note, deleted_by, id]
     );
+
     return result.affectedRows > 0;
   }
 
@@ -268,7 +303,7 @@ class PatientSlip {
     startDate,
     endDate,
     doctor_id,
-    created_by
+    created_by,
   }) {
     let sql = `SELECT COUNT(*) as slips_count, COALESCE(SUM(COALESCE(f.doctor_fee,0)),0) as total_amount
       FROM patient_slip ps
@@ -300,7 +335,7 @@ class PatientSlip {
     startDate,
     endDate,
     doctor_id,
-    created_by
+    created_by,
   }) {
     let sql = `SELECT COUNT(*) as slips_count, COALESCE(SUM(COALESCE(ps.pharmacy_fees,0)),0) as total_amount
       FROM patient_slip ps

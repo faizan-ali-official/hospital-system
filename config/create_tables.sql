@@ -65,3 +65,6 @@ INSERT INTO slip_type (type_name) VALUES
   ('pharmacy'),
 ON DUPLICATE KEY UPDATE type_name=VALUES(type_name);
 
+ALTER TABLE patient_slip
+ADD COLUMN deleted_at TIMESTAMP NULL,
+ADD COLUMN delete_note TEXT NULL;

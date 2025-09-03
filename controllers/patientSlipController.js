@@ -14,7 +14,7 @@ class PatientSlipController {
         slip_type_id,
         pharmacy_fees,
         age,
-        gender
+        gender,
       } = req.body;
       const created_by = req.user.id;
       const token_no = await PatientSlip.getNextTokenNoForToday();
@@ -27,7 +27,7 @@ class PatientSlipController {
           created_by,
           slip_type_id,
           age,
-          gender
+          gender,
         });
       } else if (slip_type_id === 2) {
         slipId = await PatientSlip.create({
@@ -40,7 +40,7 @@ class PatientSlipController {
           age,
           gender,
           notes,
-          pharmacy_fees
+          pharmacy_fees,
         });
       } else {
         slipId = await PatientSlip.create({
@@ -54,13 +54,37 @@ class PatientSlipController {
           age,
           gender,
           notes,
-          pharmacy_fees
+          pharmacy_fees,
         });
       }
       const fullData = await PatientSlip.findById(slipId);
       return res
         .status(201)
         .json({ data: fullData, message: "Created Successfully" });
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json({ message: "Server error. " + err.message });
+    }
+  }
+
+  static async createBulkPatientSlips(req, res) {
+    try {
+      const { slips } = req.body; // expect an array of slips
+      const created_by = req.user.id;
+
+      if (!Array.isArray(slips) || slips.length === 0) {
+        return res.status(400).json({ message: "Slips array is required" });
+      }
+
+      // Attach created_by to all slips
+      const slipsWithUser = slips.map((slip) => ({
+        ...slip,
+        created_by,
+      }));
+
+      await PatientSlip.createBulk(slipsWithUser);
+
+      return res.status(201).json({ message: "Bulk Created Successfully" });
     } catch (err) {
       console.log(err);
       return res.status(500).json({ message: "Server error. " + err.message });
@@ -79,7 +103,8 @@ class PatientSlipController {
         status,
         search,
         limit,
-        offset
+        offset,
+        deleted,
       } = req.query;
       const slips = await PatientSlip.findAll({
         startDate,
@@ -91,7 +116,8 @@ class PatientSlipController {
         status,
         search,
         limit,
-        offset
+        offset,
+        deleted,
       });
       return res.json(slips);
     } catch (err) {
@@ -124,7 +150,7 @@ class PatientSlipController {
         notes,
         pharmacy_fees,
         gender,
-        age
+        age,
       } = req.body;
       const slip = await PatientSlip.findById(id);
       if (!slip) {
@@ -139,7 +165,7 @@ class PatientSlipController {
         notes,
         pharmacy_fees,
         gender,
-        age
+        age,
       });
       if (!updated) {
         return res.status(400).json({ message: "Nothing to update." });
@@ -148,7 +174,7 @@ class PatientSlipController {
 
       return res.json({
         message: "Patient slip updated successfully.",
-        updatedData: data
+        updatedData: data,
       });
     } catch (err) {
       return res.status(500).json({ message: "Server error." });
@@ -179,14 +205,17 @@ class PatientSlipController {
   static async deletePatientSlip(req, res) {
     try {
       const { id } = req.params;
+      const { delete_note } = req.body;
+      const deleted_by = req.user.id;
+
       const slip = await PatientSlip.findById(id);
       if (!slip) {
         return res.status(404).json({ message: "Patient slip not found." });
       }
-      await PatientSlip.delete(id);
+      await PatientSlip.delete(id, delete_note, deleted_by);
       return res.json({ message: "Patient slip deleted successfully." });
     } catch (err) {
-      return res.status(500).json({ message: "Server error." });
+      return res.status(500).json({ message: "Server error. " + err.message });
     }
   }
 }

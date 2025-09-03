@@ -200,6 +200,17 @@ export const patientSlipValidation = {
     },
   ],
 
+  delete: [
+    body("delete_note").notEmpty().withMessage("Delete note cannot be empty."),
+    (req, res, next) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+      next();
+    },
+  ],
+
   status: [
     body("status").isBoolean().withMessage("Status must be boolean."),
     (req, res, next) => {

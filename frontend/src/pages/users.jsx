@@ -14,7 +14,7 @@ const Users = () => {
   const [selectedUser, setSelectedUser] = useState(null);
 
   const onDelete = async () => {
-    console.log(selectedUser);
+    console.log(selectedUser, "selected");
     try {
       await axiosClient.delete(`/api/user/${selectedUser?.id}`);
       const deletedUser = allUsers.filter(
