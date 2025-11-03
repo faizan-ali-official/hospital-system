@@ -3,76 +3,92 @@ import Logo from "../../assets/logo.jpeg";
 
 const PrintSlip = forwardRef(({ user }, ref) => {
   return (
-    <div ref={ref} className="min-h-screen p-6 flex flex-col justify-between">
-      <div>
-        <div className="bg-white border-b border-[#004aa3] shadow-lg shadow-[#004aa3]/30">
-          <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-10 py-6 justify-between gap-3">
-            <div className="flex items-center">
-              <img
-                src={Logo}
-                alt="Malik Foundation Logo"
-                className="h-10 w-10 object-contain"
-              />
-              <h1 className="text-4xl font-extrabold bg-gradient-to-r from-[#004aa3] via-gray-800 to-[#004aa3] text-transparent bg-clip-text drop-shadow-md tracking-wide uppercase">
-                Malik Foundation
-              </h1>
-            </div>
-            <p className="text-sm text-gray-600 font-medium mt-1">
-              Non-profit organization · Non-governmental organization (NGO) ·
-              Charity organization
-            </p>
-          </div>
-        </div>
-        <div className="border border-gray-300 rounded p-6 mt-8 shadow-md w-full">
-          <h2 className="text-3xl font-bold mb-4 text-center border-b pb-2">
-            Patient Information
-          </h2>
-          <p className="text-2xl mt-3 my-2 text-right">
-            <strong>Token No : </strong> {user?.token_no}
-          </p>
-          <p className="text-2xl my-2">
-            <strong>Patient Name : </strong> {user?.patient_name}
-          </p>
-          <p className="text-2xl my-2">
-            <strong>Doctor Name : </strong> {user?.doctor_name}
-          </p>
-          <p className="text-2xl my-2">
-            <strong>Age : </strong> N/A
-          </p>
-          <p className="text-2xl my-2">
-            <strong>Gender : </strong> N/A
-          </p>
-          <p className="text-2xl my-2">
-            <strong>Status : </strong>{" "}
-            {user?.status == "1" ? "Active" : "Inactive"}
-          </p>
-          <p className="text-2xl">
-            <strong>Date :</strong> {user?.created_at?.slice(0, 10)}
-          </p>
-        </div>
-        <div className="flex justify-between mt-25 ">
-          <div className="text-xl text-gray-700 text-left border-t border-gray-400 pt-2 w-1/3">
-            Receptionist Sign
-          </div>
-          <div className="text-xl text-gray-700 text-right border-t border-gray-400 pt-2 w-1/3">
-            Welfare Stamp
-          </div>
-        </div>
+    <div
+      ref={ref}
+      className="w-[600px] mx-auto bg-white text-black font-mono p-6 border border-gray-400 rounded shadow-sm"
+    >
+      <div className="flex flex-col items-center border-b border-gray-400 pb-2">
+        <img src={Logo} alt="Logo" className="h-16 w-16 object-contain mb-2" />
+        <h1 className="text-xl font-bold tracking-widest uppercase">
+          Malik Foundation
+        </h1>
+        <p className="text-xs text-gray-600">
+          Non-profit Organization · Karachi, Pakistan
+        </p>
       </div>
-      <div>
-        <p className="text-[#004aa3] text-xl font-bold">Contact Information</p>
-        <div className="mt-2 text-lg text-gray-700 flex flex-wrap gap-x-6 gap-y-2">
-          <p className="flex items-center gap-1">
-            📞 <span>0300 6254553</span>
+
+      <div className="flex justify-between mt-3">
+        <div>
+          <p className="text-sm">
+            <span className="font-semibold">Receipt #:</span>{" "}
+            {user?.id || "N/A"}
           </p>
-          <p className="flex items-center gap-1">
-            📧 <span>info@malikkhidmatfoundation.com</span>
+          <p className="text-sm">
+            <span className="font-semibold">Token #:</span>{" "}
+            {user?.token_no || "N/A"}
           </p>
-          <p className="flex items-center gap-1">
-            📍 <span>Karachi, Pakistan</span>
+        </div>
+        <div className="text-center mt-3">
+          <p className="text-sm">
+            <span className="font-semibold">Date:</span>{" "}
+            {user?.created_at?.slice(0, 10) || "N/A"}
           </p>
         </div>
       </div>
+
+      <div className="mt-4 border-t border-b border-gray-300 py-3">
+        <div className="flex text-sm mb-1">
+          <span className="font-semibold">Patient Name:</span>
+          <span className="pl-3">{user?.patient_name}</span>
+        </div>
+        <div className="flex text-sm mb-1">
+          <span className="font-semibold">Doctor Name:</span>
+          <span className="pl-3">{user?.doctor_name}</span>
+        </div>
+        <div className="flex text-sm mb-1">
+          <span className="font-semibold">Age:</span>
+          <span className="pl-3">{user?.age}</span>
+        </div>
+        <div className="flex text-sm mb-1">
+          <span className="font-semibold">Gender:</span>
+          <span className="pl-3">{user?.gender}</span>
+        </div>
+      </div>
+
+      <div className="mt-4 border-b border-gray-300 pb-2">
+        <div className="flex justify-between text-sm font-semibold mb-1">
+          <span>Sr.</span>
+          <span>Detail</span>
+          <span>Total</span>
+        </div>
+        <div className="flex justify-between text-sm">
+          <span>01</span>
+          <span className="capitalize Fees">{`${user?.type_name} fees`}</span>
+          <span>
+            {`${
+              user?.type_name === "appointment"
+                ? user?.doctor_fee
+                : user?.pharmacy_fees
+            } Rs.`}
+          </span>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="mt-3 text-xs text-gray-700">
+        <p className="mt-1"> Appointment once booked is non-refundable.</p>
+        <p className="mt-1"> For donations or queries: 📞 0300-6254553</p>
+        <p className="mt-1"> info@malikkhidmatfoundation.com</p>
+      </div>
+
+      <div className="flex justify-between text-xs mt-2 pt-2 border-t border-gray-400">
+        <span className="font-semibold">Receptionist Sign</span>
+        <span className="font-semibold">Welfare Stamp</span>
+      </div>
+
+      <p className="text-center text-xs mt-10 text-gray-500">
+        Malik Foundation © {new Date().getFullYear()}
+      </p>
     </div>
   );
 });

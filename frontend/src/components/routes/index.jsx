@@ -8,7 +8,8 @@ import {
   Slips,
   UserCreate,
   Users,
-  Reports
+  Reports,
+  DeletedSlips
 } from "../../pages";
 import Logo from "../../assets/logo.jpeg";
 import { useIsOnline } from "react-use-is-online";
@@ -17,11 +18,7 @@ import { useMainContext } from "../../context/mainContext";
 const RouterPage = () => {
   const { user } = useMainContext();
   const { isOnline, isOffline } = useIsOnline();
-  // const users = localStorage.getItem("user");
 
-  // const users = JSON.parse(localStorage.getItem("user") || "null");
-
-  // console.log(users);
   return (
     <>
       <div className="bg-white border-b border-[#004aa3] shadow-lg shadow-[#004aa3]/30">
@@ -62,6 +59,7 @@ const RouterPage = () => {
                 <Route path="/doctorcreate" element={<DoctorCreate />} />
                 <Route path="/patientslip" element={<Slips />} />
                 <Route path="/reports" element={<Reports />} />
+                <Route path="/deletedslips" element={<DeletedSlips />} />
               </>
             ) : (
               <>

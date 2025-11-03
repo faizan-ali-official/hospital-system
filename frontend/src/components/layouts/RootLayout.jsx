@@ -3,7 +3,7 @@ import { Sidebar, Menu, MenuItem } from "react-pro-sidebar";
 import { IoMdHome } from "react-icons/io";
 import { HiUser } from "react-icons/hi2";
 import { FaUserDoctor, FaSheetPlastic } from "react-icons/fa6";
-import { HiDocumentMagnifyingGlass } from "react-icons/hi2";
+import { HiDocumentMagnifyingGlass, HiDocumentMinus } from "react-icons/hi2";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import CustomAuthButton from "../customButton";
 import { useMainContext } from "../../context/mainContext";
@@ -47,6 +47,11 @@ const RootLayout = () => {
                 link="/reports"
                 text="Reports"
                 Icon={HiDocumentMagnifyingGlass}
+              />
+              <CustomMenu
+                link="/deletedslips"
+                text="Deleted Slips"
+                Icon={HiDocumentMinus}
               />
             </div>
             <div className="m-4 mb-6">
