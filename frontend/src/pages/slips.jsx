@@ -22,24 +22,34 @@ const Slips = () => {
   const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+
   const printFn = useReactToPrint({
     documentTitle: `Pateint Slip ${generatedSlip?.id}`,
     contentRef: componentRef,
     copyStyles: true,
     pageStyle: `
-      @page {
-        size: 896px 1454px;
+    @page {
+      size: 80mm auto;
+      margin: 0;
+    }
+    @media print {
+      html, body {
+        width: 80mm;
         margin: 0;
+        padding: 0;
+        font-family: 'Courier New', monospace;
+        font-size: 11px;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
       }
-      @media print {
-        body {
-          margin: 0;
-          height:200px,
-          width:200px,
-          -webkit-print-color-adjust: exact;
-        }
+      * {
+        box-sizing: border-box;
       }
-    `
+      .no-print {
+        display: none !important;
+      }
+    }
+  `
   });
 
   const limit = 100;

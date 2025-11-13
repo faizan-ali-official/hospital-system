@@ -21,13 +21,24 @@ function CheckupSlip() {
     copyStyles: true,
     pageStyle: `
     @page {
-      size: 896px 1454px; 
-      margin: 0; 
+      size: 80mm auto;
+      margin: 0;
     }
     @media print {
-      body {
+      html, body {
+        width: 80mm;
         margin: 0;
-        -webkit-print-color-adjust: exact;
+        padding: 0;
+        font-family: 'Courier New', monospace;
+        font-size: 11px;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      .no-print {
+        display: none !important;
       }
     }
   `
