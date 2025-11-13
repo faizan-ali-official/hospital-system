@@ -11,33 +11,62 @@ import Input from "../input/input";
 
 function CheckupSlip() {
   const componentRef = useRef(null);
-  const printFn = useReactToPrint({
-    documentTitle: "AwesomeFileName",
-    contentRef: componentRef,
-    copyStyles: false
-  });
   const [loading, setLoading] = useState(false);
   const { doctors, feesTypes, allSlips, setAllSlips } = useMainContext();
   const [generatedSlip, setGeneratedSlip] = useState(null);
+
+  const printFn = useReactToPrint({
+    documentTitle: `Pateint Slip ${generatedSlip?.id}`,
+    contentRef: componentRef,
+    copyStyles: true,
+    pageStyle: `
+    @page {
+      size: 80mm auto;
+      margin: 0;
+    }
+    @media print {
+      html, body {
+        width: 80mm;
+        margin: 0;
+        padding: 0;
+        font-family: 'Courier New', monospace;
+        font-size: 11px;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  `
+  });
 
   const onSubmitHandler = async (values, helpers) => {
     const payload = { ...values, age: Number(values.age) };
     if (!payload.reference_token_no) {
       delete payload.reference_token_no;
     }
+    let data;
     try {
       setLoading(true);
-      const data = await axiosClient.post("/api/patient-slips/", payload);
-      allSlips.push({
-        ...data?.data?.data
-      });
-      helpers.resetForm();
-      setAllSlips(allSlips);
-      setGeneratedSlip(data?.data?.data);
+      if (navigator.onLine) {
+        data = await axiosClient.post("/api/patient-slips/", payload);
+        allSlips.push({
+          ...data?.data?.data
+        });
+        helpers.resetForm();
+        setAllSlips(allSlips);
+        setGeneratedSlip(data?.data?.data);
+        toast.success("Slip generated successfully!");
+      } else {
+        saveDataOffline(newData);
+      }
       setTimeout(() => {
         printFn();
       }, 1000);
-      toast.success("Slip generated successfully!");
     } catch (error) {
       console.log(error);
       toast.error(error?.response?.data?.msg || error?.message);
@@ -163,19 +192,6 @@ function CheckupSlip() {
               component="p"
             />
           </div>
-          {/* <div className="mb-3">
-            <Field
-              placeholder="Reference No"
-              type="text"
-              name="reference_token_no"
-              className="input w-full py-3 px-3 rounded border outline-none"
-            />
-            <ErrorMessage
-              name="reference_token_no"
-              className="text-red-500"
-              component="p"
-            />
-          </div> */}
           <div className=" mt-10 flex justify-center">
             <CustomAuthButton
               isLoading={loading}

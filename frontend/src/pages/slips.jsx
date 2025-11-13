@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import UserUpdateModal from "../components/slips/updateModal";
 import DeleteModal from "../components/slips/deleteModal";
 import { useMainContext } from "../context/mainContext";
@@ -10,25 +10,111 @@ import { axiosClient } from "../utils/AxiosClient";
 
 const Slips = () => {
   const componentRef = useRef(null);
-  const printFn = useReactToPrint({
-    documentTitle: "AwesomeFileName",
-    contentRef: componentRef,
-    copyStyles: false
-  });
+  const tableContainerRef = useRef(null);
+  const { allSlips, user, setDeleteSlips, setAllSlips } = useMainContext();
+
   const [showModal, setShowModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [generatedSlip, setGeneratedSlip] = useState(null);
-  const { allSlips, setAllSlips, user } = useMainContext();
   const [selectedUser, setSelectedUser] = useState(null);
   const [showNo, setShowNo] = useState(false);
+  const [reasonSlip, setReasonSlip] = useState("");
+  const [offset, setOffset] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+
+  const printFn = useReactToPrint({
+    documentTitle: `Pateint Slip ${generatedSlip?.id}`,
+    contentRef: componentRef,
+    copyStyles: true,
+    pageStyle: `
+    @page {
+      size: 80mm auto;
+      margin: 0;
+    }
+    @media print {
+      html, body {
+        width: 80mm;
+        margin: 0;
+        padding: 0;
+        font-family: 'Courier New', monospace;
+        font-size: 11px;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  `
+  });
+
+  const limit = 100;
+
+  const fetchSlips = async () => {
+    if (loading || !hasMore) return;
+    setLoading(true);
+    try {
+      const response = await axiosClient.get(
+        `/api/patient-slips?limit=${limit}&offset=${offset}&deleted=true`
+      );
+      const newSlips = response?.data;
+      setAllSlips((prevSlips) => [...prevSlips, ...newSlips]);
+      setOffset((prevOffset) => prevOffset + limit);
+      if (newSlips.length < limit) {
+        setHasMore(false);
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to fetch more slips.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } =
+        tableContainerRef.current;
+      if (
+        scrollHeight - scrollTop <= clientHeight + 50 &&
+        !loading &&
+        hasMore
+      ) {
+        fetchSlips();
+      }
+    };
+
+    const container = tableContainerRef.current;
+    if (container) {
+      container.addEventListener("scroll", handleScroll);
+    }
+
+    return () => {
+      if (container) {
+        container.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, [loading, hasMore]);
 
   const onDelete = async () => {
     try {
-      await axiosClient.delete(`/api/patient-slips/${selectedUser?.id}`);
+      await axiosClient.delete(`/api/patient-slips/${selectedUser?.id}`, {
+        data: {
+          delete_note: reasonSlip
+        }
+      });
       const deletedSlips = allSlips.filter(
         (user) => user?.id !== selectedUser?.id
       );
+      const deletedSlip = allSlips.find(
+        (user) => user?.id === selectedUser?.id
+      );
       setAllSlips(deletedSlips);
+      setDeleteSlips(deletedSlip);
       setSelectedUser(null);
       toast.success("Slip deleted successfully!");
     } catch (err) {
@@ -50,7 +136,7 @@ const Slips = () => {
         <h2 className="text-2xl font-bold text-center pb-4 underline">
           Records
         </h2>
-        <div className="overflow-y-auto flex-1">
+        <div ref={tableContainerRef} className="overflow-y-auto flex-1">
           {!showNo ? (
             allSlips ? (
               <table className="w-full rounded">
@@ -125,7 +211,6 @@ const Slips = () => {
                             </button>
                           </>
                         )}
-
                         <button
                           onClick={() => {
                             setGeneratedSlip(item);
@@ -138,27 +223,6 @@ const Slips = () => {
                           View
                         </button>
                       </td>
-                      {showUpdateModal && (
-                        <UserUpdateModal
-                          user={selectedUser}
-                          onClose={() => setShowUpdateModal(false)}
-                          setShowUpdateModal={setShowUpdateModal}
-                        />
-                      )}
-                      {showModal && (
-                        <DeleteModal
-                          title="Confirm Deletion"
-                          message="Are you sure you want to delete?"
-                          onCancel={() => {
-                            setSelectedUser(null);
-                            setShowModal(false);
-                          }}
-                          onConfirm={() => {
-                            onDelete();
-                            setShowModal(false);
-                          }}
-                        />
-                      )}
                     </tr>
                   ))}
                 </tbody>
@@ -170,11 +234,46 @@ const Slips = () => {
             )
           ) : (
             <div className="h-[40vh] flex items-center justify-center">
-              <p className="text-center font-bold text-xl ">No Data Found</p>
+              <p className="text-center font-bold text-xl text-[#004aa3]">
+                No Data Found
+              </p>
+            </div>
+          )}
+          {loading && (
+            <div className="flex justify-center items-center text-[#004aa3] py-4 font-bold">
+              Loading more data...
+            </div>
+          )}
+          {!hasMore && (
+            <div className="flex justify-center items-center py-4 text-[#004aa3] font-bold">
+              End of records.
             </div>
           )}
         </div>
       </div>
+      {showUpdateModal && (
+        <UserUpdateModal
+          user={selectedUser}
+          onClose={() => setShowUpdateModal(false)}
+          setShowUpdateModal={setShowUpdateModal}
+        />
+      )}
+      {showModal && (
+        <DeleteModal
+          title="Confirm Deletion"
+          message="Are you sure you want to delete?"
+          onCancel={() => {
+            setSelectedUser(null);
+            setShowModal(false);
+          }}
+          onConfirm={() => {
+            onDelete();
+            setShowModal(false);
+          }}
+          reasonSlip={reasonSlip}
+          setReasonSlip={setReasonSlip}
+        />
+      )}
       {generatedSlip && (
         <>
           <div className=" absolute left-[-9999px]">

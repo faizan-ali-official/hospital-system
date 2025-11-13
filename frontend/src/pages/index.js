@@ -6,6 +6,7 @@ import DoctorCreate from "./doctorsCreate";
 import Doctors from "./doctors";
 import Slips from "./slips";
 import Reports from "./reports";
+import DeletedSlips from "./deletedSlip";
 
 export {
   Home,
@@ -15,5 +16,6 @@ export {
   DoctorCreate,
   Doctors,
   Slips,
-  Reports
+  Reports,
+  DeletedSlips
 };

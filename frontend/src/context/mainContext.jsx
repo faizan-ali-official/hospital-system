@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Loader from "../components/loader/loader";
 import { axiosClient } from "../utils/AxiosClient";
+import { toast } from "react-toastify";
 
 const mainContext = createContext({
   user: null,
@@ -26,11 +27,11 @@ export const MainContextProvider = ({ children }) => {
   const [allUsers, setAllUsers] = useState([]);
   const [doctors, setDoctors] = useState([]);
   const [allSlips, setAllSlips] = useState([]);
+  const [deleteSlips, setDeleteSlips] = useState([]);
   const [feesTypes, setFeesTypes] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
-
   const params = {
     startDate: today.toISOString().split("T")[0],
     endDate: today.toISOString().split("T")[0]
@@ -57,6 +58,10 @@ export const MainContextProvider = ({ children }) => {
       setAllSlips(slipResp?.data);
       const feesResp = await axiosClient.get("/api/fees/");
       setFeesTypes(feesResp?.data);
+      const deleteSlipResp = await axiosClient.get(
+        "/api/patient-slips?limit=100&offset=0&deleted=true"
+      );
+      setDeleteSlips(deleteSlipResp?.data);
       navigate("/");
     } catch (error) {
       console.error(error);
@@ -77,7 +82,37 @@ export const MainContextProvider = ({ children }) => {
 
   useEffect(() => {
     fetchUserProfile();
+    monitorInternetConnection();
   }, []);
+
+  const saveDataOffline = (data) => {
+    let storedData = JSON.parse(localStorage.getItem("offlineData")) || [];
+    storedData.push(data);
+    localStorage.setItem("offlineData", JSON.stringify(storedData));
+  };
+
+  const syncDataOnline = async () => {
+    let storedData = JSON.parse(localStorage.getItem("offlineData")) || [];
+    if (storedData.length === 0) return;
+    try {
+      await axiosClient.post("/api/patient-slips/bulk", storedData);
+      localStorage.removeItem("offlineData");
+      toast.success("Data synced successfully!");
+      console.log("Data synced successfully!");
+    } catch (error) {
+      console.error("Sync failed, will retry later", error);
+    }
+  };
+
+  const monitorInternetConnection = () => {
+    window.addEventListener("online", () => {
+      console.log("Internet connected, syncing...");
+      syncDataOnline();
+    });
+    window.addEventListener("offline", () => {
+      console.log("Internet disconnected, saving offline.");
+    });
+  };
 
   if (loading) {
     return (
@@ -96,12 +131,16 @@ export const MainContextProvider = ({ children }) => {
         doctors,
         allSlips,
         feesTypes,
+        deleteSlips,
         fetchUserProfile,
         logOutHandler,
         setAllUsers,
         setAllSlips,
         setDoctors,
-        setFeesTypes
+        setFeesTypes,
+        setDeleteSlips,
+        monitorInternetConnection,
+        saveDataOffline
       }}
     >
       {children}

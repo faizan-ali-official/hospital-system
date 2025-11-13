@@ -11,15 +11,38 @@ import Input from "../input/input";
 
 function PharmacySlip() {
   const componentRef = useRef(null);
-  const printFn = useReactToPrint({
-    documentTitle: "AwesomeFileName",
-    contentRef: componentRef,
-    copyStyles: false
-  });
-
   const [loading, setLoading] = useState(false);
   const { doctors, feesTypes, allSlips, setAllSlips } = useMainContext();
   const [generatedSlip, setGeneratedSlip] = useState(null);
+
+  const printFn = useReactToPrint({
+    documentTitle: `Pateint Slip ${generatedSlip?.id}`,
+    contentRef: componentRef,
+    copyStyles: true,
+    pageStyle: `
+    @page {
+      size: 80mm auto;
+      margin: 0;
+    }
+    @media print {
+      html, body {
+        width: 80mm;
+        margin: 0;
+        padding: 0;
+        font-family: 'Courier New', monospace;
+        font-size: 11px;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  `
+  });
 
   const onSubmitHandler = async (values, helpers) => {
     const payload = { ...values };
