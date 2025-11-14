@@ -171,7 +171,6 @@ class PatientSlip {
         params.push(Number(offset));
       }
     }
-    console.log("sql", sql);
     const [rows] = await pool.execute(sql, params);
     return rows;
   }

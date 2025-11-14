@@ -8,6 +8,10 @@ import feesRoutes from "./routes/fees.js";
 import reportRoutes from "./routes/report.js";
 import pool from "./config/db.js";
 import cors from "cors";
+import { dirname } from "path";
+import path from "path";
+import { fileURLToPath } from "url";
+const PORT = process.env.PORT || 3000;
 
 dotenv.config();
 
@@ -16,9 +20,12 @@ app.use(express.json());
 app.use(
   cors({
     origin: "*",
-    credentials: true
+    credentials: true,
   })
 );
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
@@ -27,7 +34,12 @@ app.use("/api/patient-slips", patientSlipRoutes);
 app.use("/api/fees", feesRoutes);
 app.use("/api/report", reportRoutes);
 
-const PORT = process.env.PORT || 3000;
+
+app.use(express.static(path.resolve(path.join(__dirname, "./frontend/dist"))));
+
+app.get(/.*/, (req, res) => {
+  res.sendFile(path.join(__dirname, "./frontend/dist", "index.html"));
+});
 
 // Test DB connection before starting server
 (async () => {

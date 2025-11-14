@@ -119,9 +119,6 @@ class PatientSlipController {
         offset,
         deleted,
       });
-
-      console.log('slips',slips)
-
       return res.json(slips);
     } catch (err) {
       return res.status(500).json({ message: "Server error. " + err.message });
