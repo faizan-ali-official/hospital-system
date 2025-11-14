@@ -35,12 +35,11 @@ class PatientSlip {
     // If slip_type_name is 'pharmacy', store pharmacy fields
     if (slip_type_id === 2) {
       const [result] = await pool.execute(
-        `INSERT INTO patient_slip (patient_name, doctor_id, fees_id, token_no, reference_token_no, created_by, slip_type_id, notes, pharmacy_fees,age, gender, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?)`,
+        `INSERT INTO patient_slip (patient_name, doctor_id, fees_id, reference_token_no, created_by, slip_type_id, notes, pharmacy_fees,age, gender, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?,?)`,
         [
           patient_name,
           doctor_id,
           1,
-          token_no,
           reference_token_no,
           created_by,
           slip_type_id,
@@ -172,6 +171,7 @@ class PatientSlip {
         params.push(Number(offset));
       }
     }
+    console.log("sql", sql);
     const [rows] = await pool.execute(sql, params);
     return rows;
   }
@@ -293,8 +293,11 @@ class PatientSlip {
 
   static async getNextTokenNoForToday() {
     const [rows] = await pool.execute(
-      `SELECT MAX(token_no) as max_token FROM patient_slip WHERE DATE(created_at) = CURDATE()`
+      `SELECT MAX(token_no) as max_token 
+     FROM patient_slip 
+     WHERE DATE(DATE_SUB(created_at, INTERVAL 2 HOUR)) = DATE(DATE_SUB(NOW(), INTERVAL 2 HOUR))`
     );
+
     const maxToken = rows[0]?.max_token;
     return maxToken ? maxToken + 1 : 1;
   }

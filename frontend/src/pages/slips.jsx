@@ -186,7 +186,7 @@ const Slips = () => {
                         {item?.created_by_name}
                       </td>
                       <td className="py-3 px-6 border border-[#004aa3]">
-                        {item?.doctor_fee || item?.pharmacy_fees}
+                        {item?.pharmacy_fees  || item?.doctor_fee}
                       </td>
                       <td className="py-3 px-6 border border-[#004aa3] text-center">
                         {user?.role === "admin" && (
