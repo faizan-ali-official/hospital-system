@@ -22,7 +22,6 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
         `/api/patient-slips/${user.id}`,
         payload
       );
-      console.log(data?.data?.updatedData, "data?.data?.updatedData");
       const updatedData = allSlips.map((item) =>
         item.id === user.id ? data?.data?.updatedData : item
       );
@@ -30,7 +29,6 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
       setAllSlips(updatedData);
       setShowUpdateModal(false);
     } catch (error) {
-      console.log(error);
       toast.error(error?.response?.data?.msg || error?.message);
     } finally {
       setLoading(false);

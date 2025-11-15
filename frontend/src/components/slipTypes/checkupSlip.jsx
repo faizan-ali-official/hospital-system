@@ -68,7 +68,6 @@ function CheckupSlip() {
         printFn();
       }, 1000);
     } catch (error) {
-      console.log(error);
       toast.error(error?.response?.data?.msg || error?.message);
     } finally {
       setLoading(false);

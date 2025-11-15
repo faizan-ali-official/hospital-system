@@ -37,19 +37,15 @@ export const MainContextProvider = ({ children }) => {
     endDate: today.toISOString().split("T")[0]
   };
   const fetchUserProfile = async () => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("accessToken");
     if (!token) {
       setLoading(false);
       navigate("/login");
       return;
     }
     try {
-      const resp = await axiosClient.post("/api/auth/refresh", {
-        refreshToken: token
-      });
-      localStorage.setItem("accessToken", resp?.data?.accessToken);
-      localStorage.setItem("user", resp?.data?.user);
-      setUser(resp?.data?.user);
+      const loginUser = JSON.parse(localStorage.getItem("user"));
+      setUser(loginUser);
       const userResp = await axiosClient.get("/api/user/");
       setAllUsers(userResp?.data);
       const docResp = await axiosClient.get("/api/doctor/");
@@ -64,7 +60,6 @@ export const MainContextProvider = ({ children }) => {
       setDeleteSlips(deleteSlipResp?.data);
       navigate("/");
     } catch (error) {
-      console.error(error);
       setUser(null);
       navigate("/login");
     } finally {
@@ -82,7 +77,7 @@ export const MainContextProvider = ({ children }) => {
 
   useEffect(() => {
     fetchUserProfile();
-    monitorInternetConnection();
+    // monitorInternetConnection();
   }, []);
 
   const saveDataOffline = (data) => {
@@ -98,7 +93,6 @@ export const MainContextProvider = ({ children }) => {
       await axiosClient.post("/api/patient-slips/bulk", storedData);
       localStorage.removeItem("offlineData");
       toast.success("Data synced successfully!");
-      console.log("Data synced successfully!");
     } catch (error) {
       console.error("Sync failed, will retry later", error);
     }

@@ -6,6 +6,7 @@ import CustomAuthButton from "../components/customButton";
 import { axiosClient } from "../utils/AxiosClient";
 import { useMainContext } from "../context/mainContext";
 import { useNavigate } from "react-router-dom";
+import PasswordInput from "../components/input/passwordInput";
 
 function UserCreate() {
   const [loading, setLoading] = useState(false);
@@ -114,12 +115,7 @@ function UserCreate() {
               />
             </div>
             <div className="mb-10">
-              <Field
-                placeholder="Password"
-                type="password"
-                name="password"
-                className="input w-full py-3 px-3 rounded border outline-none"
-              />
+              <Field name="password" component={PasswordInput} />
               <ErrorMessage
                 name="password"
                 className="text-red-500"

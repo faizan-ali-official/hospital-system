@@ -18,7 +18,6 @@ import { useMainContext } from "../../context/mainContext";
 const RouterPage = () => {
   const { user } = useMainContext();
   const { isOnline, isOffline } = useIsOnline();
-
   return (
     <>
       <div className="bg-white border-b border-[#004aa3] shadow-lg shadow-[#004aa3]/30">
@@ -67,7 +66,6 @@ const RouterPage = () => {
                 <Route path="/users" element={<Users />} />
                 <Route path="/doctors" element={<Doctors />} />
                 <Route path="/patientslip" element={<Slips />} />
-                <Route path="/reports" element={<Reports />} />
               </>
             )}
           </Route>

@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import CustomAuthButton from "../customButton";
 import { axiosClient } from "../../utils/AxiosClient";
 import { useMainContext } from "../../context/mainContext";
+import PasswordInput from "../input/passwordInput";
 
 function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
   const [loading, setLoading] = useState(false);
@@ -26,7 +27,6 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
       setAllUsers(updatedData);
       setShowUpdateModal(false);
     } catch (error) {
-      console.log(error);
       toast.error(error?.response?.data?.msg || error?.message);
     } finally {
       setLoading(false);
@@ -114,9 +114,8 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
             <div className="mb-5">
               <Field
                 name="password"
-                type="password"
+                component={PasswordInput}
                 placeholder="New Password (optional)"
-                className="w-full py-2 px-3 border rounded outline-none"
               />
               <ErrorMessage
                 name="password"

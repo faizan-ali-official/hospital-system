@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import CustomAuthButton from "../components/customButton";
 import { axiosClient } from "../utils/AxiosClient";
 import { useMainContext } from "../context/mainContext";
+import PasswordInput from "../components/input/passwordInput";
 
 function Login() {
   const [loading, setLoading] = useState(false);
@@ -16,12 +17,12 @@ function Login() {
       const response = await axiosClient.post("/api/auth/login", values);
       const data = await response.data;
       localStorage.setItem("accessToken", data?.accessToken);
-      localStorage.setItem("token", data?.refreshToken);
-      localStorage.setItem("user", data?.user);
+      localStorage.setItem("user", JSON.stringify(data?.user));
       await fetchUserProfile();
       helpers.resetForm();
     } catch (error) {
-      toast.error(error?.response?.data?.msg || error?.message);
+      console.log(error);
+      toast.error(error?.response?.data?.message || error?.message);
     } finally {
       setLoading(false);
     }
@@ -67,21 +68,14 @@ function Login() {
                   component="p"
                 />
               </div>
-
               <div className="mb-10">
-                <Field
-                  placeholder="Password"
-                  type="password"
-                  name="password"
-                  className="input w-full py-3 px-3 rounded border outline-none"
-                />
+                <Field name="password" component={PasswordInput} />
                 <ErrorMessage
                   name="password"
                   className="text-red-500"
                   component="p"
                 />
               </div>
-
               <div className="mb-3 flex justify-center">
                 <CustomAuthButton
                   isLoading={loading}
