@@ -42,18 +42,18 @@ class AuthController {
         ACCESS_TOKEN_SECRET,
         { expiresIn: "360m" }
       );
-      const refreshToken = jwt.sign(
-        {
-          id: user.id,
-          email: user.email,
-          role_id: user.role_id,
-          role: user.role_name,
-        },
-        REFRESH_TOKEN_SECRET,
-        { expiresIn: "1d" }
-      );
-      // Store refresh token in DB
-      await User.updateRefreshToken(user.id, refreshToken);
+      // const refreshToken = jwt.sign(
+      //   {
+      //     id: user.id,
+      //     email: user.email,
+      //     role_id: user.role_id,
+      //     role: user.role_name,
+      //   },
+      //   REFRESH_TOKEN_SECRET,
+      //   { expiresIn: "1d" }
+      // );
+      // // Store refresh token in DB
+      // await User.updateRefreshToken(user.id, refreshToken);
       return res.json({
         user: {
           id: user.id,
@@ -63,7 +63,7 @@ class AuthController {
           role: user.role_name,
         },
         accessToken,
-        refreshToken,
+        // refreshToken,
       });
     } catch (err) {
       return res.status(500).json({ message: "Server error." });

@@ -17,8 +17,8 @@ class PatientSlipController {
         gender,
       } = req.body;
       const created_by = req.user.id;
-      const token_no = await PatientSlip.getNextTokenNoForToday();
       if (slip_type_id === 1) {
+        const token_no = await PatientSlip.getNextTokenNoForToday();
         slipId = await PatientSlip.create({
           patient_name,
           doctor_id,
@@ -33,7 +33,7 @@ class PatientSlipController {
         slipId = await PatientSlip.create({
           patient_name,
           doctor_id,
-          token_no,
+          token_no: "",
           reference_token_no,
           created_by,
           slip_type_id,
