@@ -3,7 +3,6 @@ import { useMainContext } from "../context/mainContext";
 
 const DeletedSlips = () => {
   const { deleteSlips } = useMainContext();
-
   return (
     <div className="flex justify-center h-[89vh]">
       <div className="w-full xl:w-[90%] flex flex-col overflow-hidden">

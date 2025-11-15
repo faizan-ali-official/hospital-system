@@ -65,7 +65,6 @@ function SearchSlip({
         }
       }
     } catch (err) {
-      console.error("Error fetching filtered slips:", err);
       toast.error("Error fetching slips");
     } finally {
       setLoading(false);

@@ -49,7 +49,6 @@ function PharmacySlip() {
     if (!payload.notes) {
       delete payload.notes;
     }
-    console.log(payload, "payload");
     try {
       setLoading(true);
       const data = await axiosClient.post("/api/patient-slips/", payload);

@@ -11,7 +11,7 @@ import { useMainContext } from "../../context/mainContext";
 const RootLayout = () => {
   const isToggle = true;
   const location = useLocation();
-  const { logOutHandler } = useMainContext();
+  const { logOutHandler, user } = useMainContext();
 
   const CustomMenu = ({ link, text, Icon }) => (
     <MenuItem
@@ -43,16 +43,20 @@ const RootLayout = () => {
               />
               <CustomMenu link="/users" text="Users" Icon={HiUser} />
               <CustomMenu link="/doctors" text="Doctors" Icon={FaUserDoctor} />
-              <CustomMenu
-                link="/reports"
-                text="Reports"
-                Icon={HiDocumentMagnifyingGlass}
-              />
-              <CustomMenu
-                link="/deletedslips"
-                text="Deleted Slips"
-                Icon={HiDocumentMinus}
-              />
+              {user?.role === "admin" && (
+                <>
+                  <CustomMenu
+                    link="/reports"
+                    text="Reports"
+                    Icon={HiDocumentMagnifyingGlass}
+                  />
+                  <CustomMenu
+                    link="/deletedslips"
+                    text="Deleted Slips"
+                    Icon={HiDocumentMinus}
+                  />
+                </>
+              )}
             </div>
             <div className="m-4 mb-6">
               <CustomAuthButton text="Logout" onClick={() => logOutHandler()} />

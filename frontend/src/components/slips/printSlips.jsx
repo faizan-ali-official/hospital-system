@@ -15,10 +15,16 @@ const PrintSlip = forwardRef(({ user }, ref) => {
         <p className="text-[10px] py-2 text-center">
           Non-profit Organization · Karachi, Pakistan
         </p>
-          <p className="text-[16px] text-center">
-            <span className="font-semibold">Token#:</span>{" "}
-            {user?.token_no || "N/A"}
-          </p>
+        <p className="text-[16px] text-center">
+          <span className="font-semibold">
+            {user?.type_name === "appointment"
+              ? "Token No. : "
+              : "Reference Id : "}
+          </span>{" "}
+          {user?.type_name === "appointment"
+            ? user?.token_no || "N/A"
+            : user?.reference_token_no || "N/A"}
+        </p>
       </div>
       <div className="flex justify-between mt-1">
         <div>
@@ -29,7 +35,9 @@ const PrintSlip = forwardRef(({ user }, ref) => {
         <div className="text-right">
           <p>
             <span className="font-semibold">Date:</span>{" "}
-           {new Date(user?.created_at).toLocaleDateString('en-GB').replace(/\//g, '-')|| "N/A"}
+            {new Date(user?.created_at)
+              .toLocaleDateString("en-GB")
+              .replace(/\//g, "-") || "N/A"}
           </p>
         </div>
       </div>
@@ -58,7 +66,7 @@ const PrintSlip = forwardRef(({ user }, ref) => {
         <div className="flex justify-between mt-1 py-2">
           <span>01</span>
           <span className="capitalize">{user?.type_name} fees</span>
-          <span >
+          <span>
             {user?.type_name === "appointment"
               ? ` Rs. ${user?.doctor_fee}`
               : `Rs. ${user?.pharmacy_fees}`}
@@ -73,7 +81,7 @@ const PrintSlip = forwardRef(({ user }, ref) => {
         <span>info@malikkhidmatfoundation.com</span>
       </div>
       <p className="text-center text-[10px] mt-4 text-black italic pb-3">
-       Developed by UA Digital 
+        Developed by UA Digital
       </p>
     </div>
   );
