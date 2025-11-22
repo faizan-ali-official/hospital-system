@@ -4,23 +4,24 @@ import bcrypt from "bcryptjs";
 class UserController {
   static async createUser(req, res) {
     try {
-      const { name, email, password, roleId } = req.body;
+      const { name, email, password, roleId, username } = req.body;
       // Check if email already exists
-      const existingUser = await User.findByEmail(email);
+      const existingUser = await User.findByUserName(username);
       if (existingUser) {
-        return res.status(409).json({ message: "Email already in use." });
+        return res.status(409).json({ message: "Username already in use." });
       }
       const hashedPassword = await bcrypt.hash(password, 10);
       const userId = await User.create({
         name,
-        email,
+        email: email || '',
         password: hashedPassword,
-        roleId
+        roleId,
+        username,
       });
 
-      return res.status(201).json({ id: userId, name, email });
+      return res.status(201).json({ id: userId, name, email, username });
     } catch (err) {
-      return res.status(500).json({ message: "Server error." });
+      return res.status(500).json({ message: err.message || "Server error." });
     }
   }
 
@@ -28,12 +29,15 @@ class UserController {
     try {
       const users = await User.findAll();
       // Do not return passwords or sensitive info
-      const safeUsers = users.map(({ id, user_name, email, role_name }) => ({
-        id,
-        name: user_name,
-        email,
-        role_name
-      }));
+      const safeUsers = users.map(
+        ({ id, user_name, email, role_name, username }) => ({
+          id,
+          name: user_name,
+          email,
+          role_name,
+          username,
+        })
+      );
       return res.json(safeUsers);
     } catch (err) {
       return res.status(500).json({ message: "Server error." });
@@ -47,8 +51,8 @@ class UserController {
       if (!user) {
         return res.status(404).json({ message: "User not found." });
       }
-      const { user_name, email, role_name } = user;
-      return res.json({ id, name: user_name, email, role_name });
+      const { user_name, email, role_name, username } = user;
+      return res.json({ id, name: user_name, email, role_name, username });
     } catch (err) {
       return res.status(500).json({ message: "Server error." });
     }
@@ -69,7 +73,7 @@ class UserController {
       const updated = await User.update(id, {
         name,
         password: hashedPassword,
-        roleId
+        roleId,
       });
       if (!updated) {
         return res.status(400).json({ message: "Nothing to update." });
@@ -80,8 +84,8 @@ class UserController {
         updatedUser: {
           name: updatedUser.user_name,
           email: user.email,
-          role_name: updatedUser?.role_name
-        }
+          role_name: updatedUser?.role_name,
+        },
       });
     } catch (err) {
       return res.status(500).json({ message: "Server error." });

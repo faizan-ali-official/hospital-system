@@ -68,3 +68,19 @@ ON DUPLICATE KEY UPDATE type_name=VALUES(type_name);
 ALTER TABLE patient_slip
 ADD COLUMN deleted_at TIMESTAMP NULL,
 ADD COLUMN delete_note TEXT NULL;
+
+CREATE TABLE IF NOT EXISTS services (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  service_name VARCHAR(100) NOT NULL,
+  service_fees INT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NULL
+);
+
+ALTER TABLE patient_slip
+ADD COLUMN service_id INT NULL,
+ADD CONSTRAINT fk_patient_slip_service
+FOREIGN KEY (service_id) REFERENCES services(id);
+
+ALTER TABLE users
+ADD COLUMN username VARCHAR(50) NULL
