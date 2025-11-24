@@ -1,10 +1,10 @@
 import pool from "../config/db.js";
 
 class User {
-  static async create({ name, email, password, roleId }) {
+  static async create({ name, email, password, roleId, username }) {
     const [result] = await pool.execute(
-      "INSERT INTO users (name, email, password, role_id, updated_at) VALUES (?, ?, ?, ?, ?)",
-      [name, email, password, roleId || 1, new Date()]
+      "INSERT INTO users (name, email, password, role_id, username, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
+      [name, email, password, roleId || 1, username, new Date()]
     );
     return result.insertId;
   }
@@ -13,6 +13,14 @@ class User {
     const [rows] = await pool.execute(
       `SELECT users.*, roles.name as role_name FROM users JOIN roles ON users.role_id = roles.id WHERE users.email = ?`,
       [email]
+    );
+    return rows[0];
+  }
+
+  static async findByUserName(username) {
+    const [rows] = await pool.execute(
+      `SELECT * FROM users WHERE username Like ?`,
+      [`%${username}%`]
     );
     return rows[0];
   }
@@ -26,14 +34,14 @@ class User {
 
   static async findAll() {
     const [rows] = await pool.execute(
-      "SELECT u.id, u.name as user_name, u.email, r.name as role_name FROM users u LEFT JOIN roles r ON u.role_id = r.id"
+      "SELECT u.id, u.name as user_name, u.email, u.username, r.name as role_name FROM users u LEFT JOIN roles r ON u.role_id = r.id"
     );
     return rows;
   }
 
   static async findById(id) {
     const [rows] = await pool.execute(
-      "SELECT u.id, u.name as user_name, u.email, r.name as role_name FROM users u LEFT JOIN roles r ON u.role_id = r.id WHERE u.id = ?",
+      "SELECT u.id, u.name as user_name, u.username, u.email, r.name as role_name FROM users u LEFT JOIN roles r ON u.role_id = r.id WHERE u.id = ?",
       [id]
     );
     return rows[0];

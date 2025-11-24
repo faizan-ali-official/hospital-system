@@ -15,6 +15,7 @@ class PatientSlipController {
         pharmacy_fees,
         age,
         gender,
+        service_id,
       } = req.body;
       const created_by = req.user.id;
       if (slip_type_id === 1) {
@@ -41,6 +42,7 @@ class PatientSlipController {
           gender,
           notes,
           pharmacy_fees,
+          service_id,
         });
       } else {
         slipId = await PatientSlip.create({
@@ -151,6 +153,7 @@ class PatientSlipController {
         pharmacy_fees,
         gender,
         age,
+        service_id
       } = req.body;
       const slip = await PatientSlip.findById(id);
       if (!slip) {
@@ -166,6 +169,7 @@ class PatientSlipController {
         pharmacy_fees,
         gender,
         age,
+        service_id
       });
       if (!updated) {
         return res.status(400).json({ message: "Nothing to update." });

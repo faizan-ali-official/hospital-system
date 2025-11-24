@@ -13,6 +13,7 @@ class PatientSlip {
     gender,
     notes = null,
     pharmacy_fees = null,
+    service_id,
   }) {
     // If slip_type_name is 'appointment', store appointment fields
     if (slip_type_id === 1) {
@@ -35,7 +36,7 @@ class PatientSlip {
     // If slip_type_name is 'pharmacy', store pharmacy fields
     if (slip_type_id === 2) {
       const [result] = await pool.execute(
-        `INSERT INTO patient_slip (patient_name, doctor_id, fees_id, reference_token_no, created_by, slip_type_id, notes, pharmacy_fees,age, gender, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?,?)`,
+        `INSERT INTO patient_slip (patient_name, doctor_id, fees_id, reference_token_no, created_by, slip_type_id, notes, pharmacy_fees,age, gender,service_id, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?,?,?)`,
         [
           patient_name,
           doctor_id,
@@ -47,6 +48,7 @@ class PatientSlip {
           pharmacy_fees,
           age,
           gender,
+          service_id,
           new Date(),
         ]
       );
@@ -108,13 +110,15 @@ class PatientSlip {
               f.id as fees_id, f.doctor_fee, st.type_name,
               u.id as created_by, u.name as created_by_name,
               ps.age, ps.gender, ps.deleted_at, ps.delete_note, 
-              ud.name as deleted_by
+              ud.name as deleted_by,
+              s.service_name, s.service_fees 
         FROM patient_slip ps
         LEFT JOIN doctors d ON ps.doctor_id = d.id
         LEFT JOIN fees f ON ps.fees_id = f.id
         LEFT JOIN slip_type st ON ps.slip_type_id = st.id
         LEFT JOIN users u ON ps.created_by = u.id
         LEFT JOIN users ud ON ps.delete_by = ud.id
+        LEFT JOIN services s ON s.id = ps.service_id
       `;
 
     const conditions = [];
@@ -179,17 +183,19 @@ class PatientSlip {
     const [rows] = await pool.execute(
       `
       SELECT ps.*, 
-             d.id as doctor_id, d.doctor_name, d.specialization, 
-             f.id as fees_id, f.doctor_fee, st.type_name,
-             u.id as created_by, u.name as created_by_name,
-             ps.age, ps.gender, ps.deleted_at, ps.delete_note, 
-            ud.name as deleted_by
+            d.id as doctor_id, d.doctor_name, d.specialization, 
+            f.id as fees_id, f.doctor_fee, st.type_name,
+            u.id as created_by, u.name as created_by_name,
+            ps.age, ps.gender, ps.deleted_at, ps.delete_note, 
+            ud.name as deleted_by,
+            s.service_name, s.service_fees 
       FROM patient_slip ps
       left JOIN doctors d ON ps.doctor_id = d.id
       left JOIN fees f ON ps.fees_id = f.id
       left JOIN slip_type st ON ps.slip_type_id = st.id
       left JOIN users u ON ps.created_by = u.id
       left JOIN users ud ON ps.created_by = ud.id
+      LEFT JOIN services s ON s.id = ps.service_id
       WHERE ps.id = ?
     `,
       [id]
@@ -210,6 +216,7 @@ class PatientSlip {
       pharmacy_fees,
       gender,
       age,
+      service_id,
     }
   ) {
     const fields = [];
@@ -255,6 +262,10 @@ class PatientSlip {
     if (gender !== undefined) {
       fields.push("gender = ?");
       values.push(gender);
+    }
+    if (service_id !== undefined) {
+      fields.push("service_id = ?");
+      values.push(service_id);
     }
     // Always update updated_at timestamp
     fields.push("updated_at = NOW()");

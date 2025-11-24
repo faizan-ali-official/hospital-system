@@ -16,7 +16,7 @@ export const registerValidation = [
 ];
 
 export const loginValidation = [
-  body("email").isEmail().withMessage("Valid email is required."),
+  body("username").notEmpty().withMessage("Username is required."),
   body("password").notEmpty().withMessage("Password is required."),
   (req, res, next) => {
     const errors = validationResult(req);
@@ -29,7 +29,8 @@ export const loginValidation = [
 
 export const createUserValidation = [
   body("name").notEmpty().withMessage("Name is required."),
-  body("email").isEmail().withMessage("Valid email is required."),
+  body("username").notEmpty().withMessage("User name is required."),
+  body("email").isEmail().optional().withMessage("Valid email is required."),
   body("roleId").notEmpty().withMessage("Role ID is required."),
   body("password")
     .isLength({ min: 6 })
@@ -59,7 +60,7 @@ export const updateUserValidation = [
   },
 ];
 
-export const userIdParamValidation = [
+export const IdParamValidation = [
   (req, res, next) => {
     if (!/^[0-9]+$/.test(req.params.id)) {
       return res.status(400).json({ errors: [{ msg: "Invalid user ID." }] });
@@ -136,6 +137,10 @@ export const patientSlipValidation = {
       .withMessage("Notes must be an int."),
     body("age").notEmpty().isInt().withMessage("Age must be an integer."),
     body("gender").notEmpty().withMessage("Gender is required."),
+    body("service_id")
+      .optional()
+      .isInt()
+      .withMessage("Service must be an integer."),
     (req, res, next) => {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -179,6 +184,10 @@ export const patientSlipValidation = {
       .optional()
       .isInt()
       .withMessage("Notes must be an int."),
+    body("service_id")
+      .optional()
+      .isInt()
+      .withMessage("Service must be an integer."),
 
     (req, res, next) => {
       const errors = validationResult(req);
@@ -222,3 +231,15 @@ export const patientSlipValidation = {
     },
   ],
 };
+
+export const createAndUpdateServiceValidation = [
+  body("name").notEmpty().withMessage("Service name is required."),
+  body("fees").notEmpty().withMessage("Service fees is required."),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+  },
+];

@@ -23,8 +23,8 @@ class AuthController {
 
   static async login(req, res) {
     try {
-      const { email, password } = req.body;
-      const user = await User.findByEmail(email);
+      const { username, password } = req.body;
+      const user = await User.findByUserName(username);
       if (!user) {
         return res.status(401).json({ message: "Invalid credentials." });
       }
@@ -35,9 +35,10 @@ class AuthController {
       const accessToken = jwt.sign(
         {
           id: user.id,
-          email: user.email,
+          email: user?.email,
           role_id: user.role_id,
           role: user.role_name,
+          username: user.username,
         },
         ACCESS_TOKEN_SECRET,
         { expiresIn: "360m" }
@@ -66,7 +67,7 @@ class AuthController {
         // refreshToken,
       });
     } catch (err) {
-      return res.status(500).json({ message: "Server error." });
+      return res.status(500).json({ message: err.message || "Server error." });
     }
   }
 
