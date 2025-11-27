@@ -29,15 +29,25 @@ function Login() {
   };
 
   const initialValues = {
-    email: "",
+    username: "",
     password: ""
   };
 
   const validationSchema = yup.object({
-    email: yup
+    username: yup
       .string()
-      .required("Email is Required")
-      .email("Email must be valid"),
+      .required("This field is required")
+      .test("email-or-username", "Invalid email or username", function (value) {
+        if (!value) return false;
+        if (value.includes("@")) {
+          return yup.string().email("Email must be valid").isValidSync(value);
+        }
+        return yup
+          .string()
+          .min(3, "Username must be at least 3 characters")
+          .matches(/^[a-zA-Z0-9._-]+$/, "Username is not valid")
+          .isValidSync(value);
+      }),
     password: yup.string().required("Password is Required")
   });
 
@@ -54,16 +64,15 @@ function Login() {
               <p className="text-center pb-8 font-bold text-2xl underline">
                 Login
               </p>
-
               <div className="mb-3">
                 <Field
-                  placeholder="Email"
+                  placeholder="Username"
                   type="text"
-                  name="email"
+                  name="username"
                   className="input w-full py-3 px-3 rounded border outline-none"
                 />
                 <ErrorMessage
-                  name="email"
+                  name="username"
                   className="text-red-500"
                   component="p"
                 />

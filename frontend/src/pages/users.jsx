@@ -14,16 +14,20 @@ const Users = () => {
   const [selectedUser, setSelectedUser] = useState(null);
 
   const onDelete = async () => {
-    try {
-      await axiosClient.delete(`/api/user/${selectedUser?.id}`);
-      const deletedUser = allUsers.filter(
-        (user) => user?.id !== selectedUser?.id
-      );
-      setAllUsers(deletedUser);
-      setSelectedUser(null);
-      toast.success("User deleted successfully!");
-    } catch (err) {
-      console.log(err);
+    if (selectedUser?.id !== user?.id) {
+      try {
+        await axiosClient.delete(`/api/user/${selectedUser?.id}`);
+        const deletedUser = allUsers.filter(
+          (user) => user?.id !== selectedUser?.id
+        );
+        setAllUsers(deletedUser);
+        setSelectedUser(null);
+        toast.success("User deleted successfully!");
+      } catch (err) {
+        toast.error(err?.response?.data?.message || err?.message);
+      }
+    } else {
+      toast.error("User is logged-in");
     }
   };
 
@@ -57,7 +61,7 @@ const Users = () => {
           {allUsers?.map((item) => (
             <tr key={item?.id} className="text-sm hover:bg-gray-50">
               <td className="py-3 px-6 border border-[#004aa3] capitalize">
-                {item?.name}
+                {item?.name || item?.username}
               </td>
               <td className="py-3 px-6 border border-[#004aa3]">
                 {item?.email}

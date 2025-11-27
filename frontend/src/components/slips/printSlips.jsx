@@ -10,18 +10,18 @@ const PrintSlip = forwardRef(({ user }, ref) => {
       <div className="flex flex-col items-center border-b border-black pb-1">
         <img src={Logo} alt="Logo" className="h-15 w-15 object-contain mb-2" />
         <h1 className="text-sm font-bold uppercase tracking-wide text-center">
-          Malik Foundation
+          Malik Khidmat Foundation
         </h1>
         <p className="text-[10px] py-2 text-center">
           Non-profit Organization · Karachi, Pakistan
         </p>
         <p className="text-[16px] text-center">
           <span className="font-semibold">
-            {user?.type_name === "appointment"
+            {user?.slip_type_name === "appointment"
               ? "Token No. : "
               : "Reference Id : "}
           </span>{" "}
-          {user?.type_name === "appointment"
+          {user?.slip_type_name === "appointment"
             ? user?.token_no || "N/A"
             : user?.reference_token_no || "N/A"}
         </p>
@@ -43,12 +43,12 @@ const PrintSlip = forwardRef(({ user }, ref) => {
       </div>
       <div className="mt-2 border-t border-b border-gray-700 py-1">
         <p>
-          <span className="font-semibold">Patient:</span>{" "}
+          <span className="font-semibold capitalize">Patient:</span>{" "}
           {user?.patient_name || "-"}
         </p>
         <p>
           <span className="font-semibold">Doctor:</span>{" "}
-          {user?.doctor_name || "-"}
+          {`Dr. ${user?.doctor_name}` || "-"}
         </p>
         <p>
           <span className="font-semibold">Age:</span> {user?.age || "-"}
@@ -61,17 +61,60 @@ const PrintSlip = forwardRef(({ user }, ref) => {
         <div className="flex justify-between font-semibold border-b border-gray-700 pb-1">
           <span>Sr.</span>
           <span>Detail</span>
-          <span>Total</span>
+          <span></span>
         </div>
-        <div className="flex justify-between mt-1 py-2">
-          <span>01</span>
-          <span className="capitalize">{user?.type_name} fees</span>
-          <span>
-            {user?.type_name === "appointment"
-              ? ` Rs. ${user?.doctor_fee}`
-              : `Rs. ${user?.pharmacy_fees}`}
-          </span>
-        </div>
+        {(() => {
+          let rows = [];
+          let total = 0;
+          let counter = 1;
+          if (user?.slip_type_name === "appointment" && user?.doctor_fee) {
+            rows.push(
+              <div key="appointment" className="flex justify-between mt-1 py-2">
+                <span>{String(counter).padStart(2, "0")}</span>
+                <span>Appointment Fee</span>
+                <span>Rs. {user?.doctor_fee}</span>
+              </div>
+            );
+            total += Number(user?.doctor_fee);
+            counter++;
+          }
+          if (user?.pharmacy_fees) {
+            rows.push(
+              <div key="pharmacy" className="flex justify-between mt-1 py-2">
+                <span>{String(counter).padStart(2, "0")}</span>
+                <span>Pharmacy Fees</span>
+                <span>Rs. {user?.pharmacy_fees}</span>
+              </div>
+            );
+            total += Number(user?.pharmacy_fees);
+            counter++;
+          }
+          if (user?.services?.length) {
+            user.services.forEach((service) => {
+              rows.push(
+                <div
+                  key={service.id}
+                  className="flex justify-between mt-1 py-2"
+                >
+                  <span>{String(counter).padStart(2, "0")}</span>
+                  <span>{service.name}</span>
+                  <span>Rs. {service.fees}</span>
+                </div>
+              );
+              total += Number(service.fees);
+              counter++;
+            });
+          }
+          return (
+            <>
+              {rows}
+              <div className="flex justify-between font-bold border-t border-gray-600 pt-2 mt-2">
+                <span>Total</span>
+                <span>Rs. {total}</span>
+              </div>
+            </>
+          );
+        })()}
       </div>
       <div className="mt-1 text-[10px] py-1 leading-tight">
         <p>Appointment once booked is non-refundable.</p>

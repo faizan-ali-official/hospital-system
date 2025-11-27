@@ -12,7 +12,7 @@ export const registerValidation = [
       return res.status(400).json({ errors: errors.array() });
     }
     next();
-  },
+  }
 ];
 
 export const loginValidation = [
@@ -24,11 +24,11 @@ export const loginValidation = [
       return res.status(400).json({ errors: errors.array() });
     }
     next();
-  },
+  }
 ];
 
 export const createUserValidation = [
-  body("name").notEmpty().withMessage("Name is required."),
+  // body("name").notEmpty().withMessage("Name is required."),
   body("username").notEmpty().withMessage("User name is required."),
   body("email").isEmail().optional().withMessage("Valid email is required."),
   body("roleId").notEmpty().withMessage("Role ID is required."),
@@ -41,7 +41,7 @@ export const createUserValidation = [
       return res.status(400).json({ errors: errors.array() });
     }
     next();
-  },
+  }
 ];
 
 export const updateUserValidation = [
@@ -57,7 +57,7 @@ export const updateUserValidation = [
       return res.status(400).json({ errors: errors.array() });
     }
     next();
-  },
+  }
 ];
 
 export const IdParamValidation = [
@@ -66,7 +66,7 @@ export const IdParamValidation = [
       return res.status(400).json({ errors: [{ msg: "Invalid user ID." }] });
     }
     next();
-  },
+  }
 ];
 
 export const createDoctorValidation = [
@@ -78,7 +78,7 @@ export const createDoctorValidation = [
       return res.status(400).json({ errors: errors.array() });
     }
     next();
-  },
+  }
 ];
 
 export const updateDoctorValidation = [
@@ -96,7 +96,7 @@ export const updateDoctorValidation = [
       return res.status(400).json({ errors: errors.array() });
     }
     next();
-  },
+  }
 ];
 
 export const doctorIdParamValidation = [
@@ -107,7 +107,7 @@ export const doctorIdParamValidation = [
       return res.status(400).json({ errors: errors.array() });
     }
     next();
-  },
+  }
 ];
 
 export const patientSlipValidation = {
@@ -150,7 +150,7 @@ export const patientSlipValidation = {
         return res.status(400).json({ errors: errors.array() });
       }
       next();
-    },
+    }
   ],
 
   update: [
@@ -200,7 +200,7 @@ export const patientSlipValidation = {
         return res.status(400).json({ errors: errors.array() });
       }
       next();
-    },
+    }
   ],
 
   idParam: [
@@ -211,7 +211,7 @@ export const patientSlipValidation = {
         return res.status(400).json({ errors: errors.array() });
       }
       next();
-    },
+    }
   ],
 
   delete: [
@@ -222,7 +222,7 @@ export const patientSlipValidation = {
         return res.status(400).json({ errors: errors.array() });
       }
       next();
-    },
+    }
   ],
 
   status: [
@@ -233,8 +233,8 @@ export const patientSlipValidation = {
         return res.status(400).json({ errors: errors.array() });
       }
       next();
-    },
-  ],
+    }
+  ]
 };
 
 export const createAndUpdateServiceValidation = [
@@ -246,5 +246,5 @@ export const createAndUpdateServiceValidation = [
       return res.status(400).json({ errors: errors.array() });
     }
     next();
-  },
+  }
 ];

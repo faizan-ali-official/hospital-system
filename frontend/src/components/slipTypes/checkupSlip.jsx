@@ -68,7 +68,7 @@ function CheckupSlip() {
         printFn();
       }, 1000);
     } catch (error) {
-      toast.error(error?.response?.data?.msg || error?.message);
+      toast.error(error?.response?.data?.message || error?.message);
     } finally {
       setLoading(false);
     }

@@ -14,10 +14,12 @@ class ServiceController {
 
       const ServiceId = await Service.create({
         name,
-        fees,
+        fees
       });
 
-      return res.status(201).json({ id: ServiceId, name, fees });
+      return res
+        .status(201)
+        .json({ id: ServiceId, service_name: name, service_fees: fees });
     } catch (err) {
       return res.status(500).json({ message: "Server error." });
     }
@@ -55,7 +57,7 @@ class ServiceController {
       }
       const updated = await Service.update(id, {
         name,
-        fees,
+        fees
       });
       if (!updated) {
         return res.status(400).json({ message: "Nothing to update." });
@@ -63,7 +65,7 @@ class ServiceController {
       const updatedService = await Service.findById(id);
       return res.json({
         message: "Service updated successfully.",
-        updatedService,
+        updatedService
       });
     } catch (err) {
       return res.status(500).json({ message: "Server error." });

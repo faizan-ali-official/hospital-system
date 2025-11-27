@@ -7,6 +7,8 @@ import Doctors from "./doctors";
 import Slips from "./slips";
 import Reports from "./reports";
 import DeletedSlips from "./deletedSlip";
+import Services from "./services";
+import ServiceCreate from "./servicesCreate";
 
 export {
   Home,
@@ -17,5 +19,7 @@ export {
   Doctors,
   Slips,
   Reports,
-  DeletedSlips
+  DeletedSlips,
+  Services,
+  ServiceCreate
 };

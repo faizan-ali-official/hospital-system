@@ -6,25 +6,21 @@ import CustomAuthButton from "../components/customButton";
 import { axiosClient } from "../utils/AxiosClient";
 import { useMainContext } from "../context/mainContext";
 import { useNavigate } from "react-router-dom";
-import PasswordInput from "../components/input/passwordInput";
 
-function UserCreate() {
+function ServiceCreate() {
   const [loading, setLoading] = useState(false);
-  const { allUsers, setAllUsers } = useMainContext();
+  const { services, setServices } = useMainContext();
   const navigate = useNavigate();
 
   const onSubmitHandler = async (values, helpers) => {
     try {
       setLoading(true);
-      const data = await axiosClient.post("/api/user/", values);
-      allUsers.push({
-        ...data?.data,
-        role_name: values.roleId === "1" ? "admin" : "user"
-      });
-      setAllUsers(allUsers);
-      navigate("/users");
+      const data = await axiosClient.post("/api/services/", values);
+      services.push(data?.data);
+      setServices(services);
+      navigate("/services");
       helpers.resetForm();
-      toast.success("User created successfully!");
+      toast.success("Service created successfully!");
     } catch (error) {
       console.log(error);
       toast.error(error?.response?.data?.message || error?.message);
@@ -32,32 +28,26 @@ function UserCreate() {
       setLoading(false);
     }
   };
+
   const initialValues = {
-    username: "",
-    email: "",
-    password: "",
-    roleId: ""
+    name: "",
+    fees: ""
   };
 
   const validationSchema = yup.object({
-    username: yup
+    name: yup
       .string()
       .required("Name is required")
       .min(2, "Name must be at least 2 characters"),
-    email: yup
+    fees: yup
       .string()
-      .required("Email is Required")
-      .email("Email must be valid"),
-    roleId: yup
-      .string()
-      .required("Role is required")
-      .oneOf(["1", "2"], "Invalid role"),
-    password: yup.string().required("Password is Required")
+      .required("Fees is Required")
+      .min(2, "fees must be at least 2 characters")
   });
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center">
-      <div className="w-full xl:w-[40%] mx-10 xl:mx-0 py-10 flex items-start  rounded-md shadow-lg  shadow-[#004aa3]">
+      <div className="w-full xl:w-[40%] mx-10 xl:mx-0 py-10 flex items-start  rounded-md shadow-lg shadow-[#004aa3]">
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
@@ -65,59 +55,30 @@ function UserCreate() {
         >
           <Form className="w-full  px-10 py-10  lg:mx-10 ">
             <p className="text-center pb-8 font-bold text-2xl underline">
-              Create User
+              Create Service
             </p>
             <div className="mb-3">
               <Field
-                placeholder="Name"
+                placeholder="Service Name"
                 type="text"
-                name="username"
+                name="name"
                 className="input w-full py-3 px-3 rounded border outline-none"
               />
               <ErrorMessage
-                name="username"
+                name="name"
                 className="text-red-500"
                 component="p"
               />
             </div>
             <div className="mb-3">
               <Field
-                placeholder="Email"
+                placeholder="Service Fees"
                 type="text"
-                name="email"
+                name="fees"
                 className="input w-full py-3 px-3 rounded border outline-none"
               />
               <ErrorMessage
-                name="email"
-                className="text-red-500"
-                component="p"
-              />
-            </div>
-            <div className="mb-3">
-              <Field name="roleId">
-                {({ field, form }) => (
-                  <select
-                    {...field}
-                    className={`input w-full py-3 px-3 rounded border outline-none ${
-                      field.value ? "text-black" : "text-gray-400"
-                    }`}
-                  >
-                    <option value="">Role</option>
-                    <option value="1">Admin</option>
-                    <option value="2">User</option>
-                  </select>
-                )}
-              </Field>
-              <ErrorMessage
-                name="roleId"
-                className="text-red-500"
-                component="p"
-              />
-            </div>
-            <div className="mb-10">
-              <Field name="password" component={PasswordInput} />
-              <ErrorMessage
-                name="password"
+                name="fees"
                 className="text-red-500"
                 component="p"
               />
@@ -136,4 +97,4 @@ function UserCreate() {
   );
 }
 
-export default UserCreate;
+export default ServiceCreate;

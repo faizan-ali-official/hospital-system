@@ -9,7 +9,9 @@ import {
   UserCreate,
   Users,
   Reports,
-  DeletedSlips
+  DeletedSlips,
+  Services,
+  ServiceCreate
 } from "../../pages";
 import Logo from "../../assets/logo.jpeg";
 import { useIsOnline } from "react-use-is-online";
@@ -30,7 +32,7 @@ const RouterPage = () => {
                 className="h-10 w-10 object-contain"
               />
               <h1 className="text-4xl font-extrabold bg-gradient-to-r from-[#004aa3] via-gray-800 to-[#004aa3] text-transparent bg-clip-text drop-shadow-md tracking-wide uppercase">
-                Malik Foundation
+                Malik Khidmat Foundation
               </h1>
             </div>
             <p className="text-sm text-gray-600 font-medium mt-1">
@@ -40,7 +42,9 @@ const RouterPage = () => {
           </div>
           {user?.id && isOnline && (
             <div>
-              <p className="capitalize font-bold">{user?.name}</p>
+              <p className="capitalize font-bold">
+                {user?.name || user?.username}
+              </p>
               <p className="capitalize">{user?.role}</p>
             </div>
           )}
@@ -56,15 +60,15 @@ const RouterPage = () => {
                 <Route path="/usercreate" element={<UserCreate />} />
                 <Route path="/doctors" element={<Doctors />} />
                 <Route path="/doctorcreate" element={<DoctorCreate />} />
+                <Route path="/services" element={<Services />} />
                 <Route path="/patientslip" element={<Slips />} />
                 <Route path="/reports" element={<Reports />} />
                 <Route path="/deletedslips" element={<DeletedSlips />} />
+                <Route path="/servicecreate" element={<ServiceCreate />} />
               </>
             ) : (
               <>
                 <Route path="/" element={<Home />} />
-                <Route path="/users" element={<Users />} />
-                <Route path="/doctors" element={<Doctors />} />
                 <Route path="/patientslip" element={<Slips />} />
               </>
             )}
