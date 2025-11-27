@@ -38,7 +38,7 @@ class AuthController {
           email: user?.email,
           role_id: user.role_id,
           role: user.role_name,
-          username: user.username,
+          username: user.username
         },
         ACCESS_TOKEN_SECRET,
         { expiresIn: "360m" }
@@ -58,12 +58,12 @@ class AuthController {
       return res.json({
         user: {
           id: user.id,
-          name: user.name,
+          name: user.name || user.username,
           email: user.email,
           role_id: user.role_id,
-          role: user.role_name,
+          role: user.role_name
         },
-        accessToken,
+        accessToken
         // refreshToken,
       });
     } catch (err) {
@@ -92,7 +92,7 @@ class AuthController {
           id: user.id,
           email: user.email,
           role_id: user.role_id,
-          role: user.role_name,
+          role: user.role_name
         },
         ACCESS_TOKEN_SECRET,
         { expiresIn: "15m" }
@@ -103,9 +103,9 @@ class AuthController {
           name: user.name,
           email: user.email,
           role_id: user.role_id,
-          role: user.role_name,
+          role: user.role_name
         },
-        accessToken: newAccessToken,
+        accessToken: newAccessToken
       });
     } catch (err) {
       return res.status(500).json({ message: "Server error." });

@@ -8,11 +8,13 @@ import { axiosClient } from "../../utils/AxiosClient";
 import { useMainContext } from "../../context/mainContext";
 import PrintSlip from "../slips/printSlips";
 import Input from "../input/input";
+import Select from "react-select";
+import { customStyles } from "../../styles/customStyle";
 
 function PharmacySlip() {
   const componentRef = useRef(null);
   const [loading, setLoading] = useState(false);
-  const { doctors, feesTypes, allSlips, setAllSlips } = useMainContext();
+  const { doctors, services, allSlips, setAllSlips } = useMainContext();
   const [generatedSlip, setGeneratedSlip] = useState(null);
 
   const printFn = useReactToPrint({
@@ -64,7 +66,7 @@ function PharmacySlip() {
       toast.success("Slip generated successfully!");
     } catch (error) {
       console.log(error);
-      toast.error(error?.response?.data?.msg || error?.message);
+      toast.error(error?.response?.data?.message || error?.message);
     } finally {
       setLoading(false);
     }
@@ -72,6 +74,7 @@ function PharmacySlip() {
   const initialValues = {
     patient_name: "",
     doctor_id: "",
+    service_id: [],
     pharmacy_fees: "",
     reference_token_no: "",
     slip_type_id: 2,
@@ -86,6 +89,11 @@ function PharmacySlip() {
       .required("Name is required")
       .min(2, "Name must be at least 2 characters"),
     doctor_id: yup.string().required("Doctor is required"),
+    service_id: yup
+      .array()
+      .of(yup.string())
+      .min(1, "Please select at least one service")
+      .required("Service is required"),
     pharmacy_fees: yup
       .number()
       .typeError("Fees must be a number")
@@ -159,6 +167,36 @@ function PharmacySlip() {
               className="text-red-500"
               component="p"
             />
+          </div>
+          <div className="mb-3">
+            <Field name="service_id">
+              {({ field, form }) => {
+                const options = services.map((item) => ({
+                  value: item.id,
+                  label: `${item.service_name} (Rs.${item.service_fees})`
+                }));
+                return (
+                  <Select
+                    isMulti
+                    options={options}
+                    value={options.filter((opt) =>
+                      field.value?.includes(opt.value)
+                    )}
+                    placeholder="Select Service"
+                    onChange={(selected) =>
+                      form.setFieldValue(
+                        "service_id",
+                        selected.map((i) => i.value)
+                      )
+                    }
+                    styles={customStyles}
+                    className={`input w-full py-1 px-3 rounded border outline-none ${
+                      field.value?.length ? "text-black" : "text-gray-400"
+                    }`}
+                  />
+                );
+              }}
+            </Field>
           </div>
           <Input
             placeholder="Pharmacy fees"

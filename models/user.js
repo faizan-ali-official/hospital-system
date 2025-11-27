@@ -3,8 +3,8 @@ import pool from "../config/db.js";
 class User {
   static async create({ name, email, password, roleId, username }) {
     const [result] = await pool.execute(
-      "INSERT INTO users (name, email, password, role_id, username, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
-      [name, email, password, roleId || 1, username, new Date()]
+      "INSERT INTO users (email, password, role_id, username, updated_at) VALUES (?, ?, ?, ?, ?)",
+      [email, password, roleId || 1, username, new Date()]
     );
     return result.insertId;
   }
@@ -19,7 +19,7 @@ class User {
 
   static async findByUserName(username) {
     const [rows] = await pool.execute(
-      `SELECT * FROM users WHERE username Like ?`,
+      `SELECT users.*, roles.name as role_name FROM users JOIN roles ON users.role_id = roles.id WHERE users.username Like ?`,
       [`%${username}%`]
     );
     return rows[0];
@@ -28,7 +28,7 @@ class User {
   static async updateRefreshToken(id, refreshToken) {
     await pool.execute("UPDATE users SET refresh_token = ? WHERE id = ?", [
       refreshToken,
-      id,
+      id
     ]);
   }
 

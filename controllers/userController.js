@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 class UserController {
   static async createUser(req, res) {
     try {
-      const { name, email, password, roleId, username } = req.body;
+      const { email, password, roleId, username } = req.body;
       // Check if email already exists
       const existingUser = await User.findByUserName(username);
       if (existingUser) {
@@ -12,14 +12,13 @@ class UserController {
       }
       const hashedPassword = await bcrypt.hash(password, 10);
       const userId = await User.create({
-        name,
-        email: email || '',
+        email: email || "",
         password: hashedPassword,
         roleId,
-        username,
+        username
       });
 
-      return res.status(201).json({ id: userId, name, email, username });
+      return res.status(201).json({ id: userId, email, username });
     } catch (err) {
       return res.status(500).json({ message: err.message || "Server error." });
     }
@@ -35,7 +34,7 @@ class UserController {
           name: user_name,
           email,
           role_name,
-          username,
+          username
         })
       );
       return res.json(safeUsers);
@@ -73,7 +72,7 @@ class UserController {
       const updated = await User.update(id, {
         name,
         password: hashedPassword,
-        roleId,
+        roleId
       });
       if (!updated) {
         return res.status(400).json({ message: "Nothing to update." });
@@ -82,10 +81,11 @@ class UserController {
       return res.json({
         message: "User updated successfully.",
         updatedUser: {
+          id: updatedUser.id,
           name: updatedUser.user_name,
           email: user.email,
-          role_name: updatedUser?.role_name,
-        },
+          role_name: updatedUser?.role_name
+        }
       });
     } catch (err) {
       return res.status(500).json({ message: "Server error." });

@@ -6,16 +6,19 @@ import CustomAuthButton from "../customButton";
 import { axiosClient } from "../../utils/AxiosClient";
 import { useMainContext } from "../../context/mainContext";
 import Input from "../input/input";
+import { customStyles } from "../../styles/customStyle";
+import Select from "react-select";
 
 function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
   const [loading, setLoading] = useState(false);
-  const { doctors, feesTypes, allSlips, setAllSlips } = useMainContext();
-
+  const { doctors, feesTypes, services, allSlips, setAllSlips } =
+    useMainContext();
   const onSubmitHandler = async (values) => {
     const payload = { ...values };
     if (!payload.reference_token_no) {
       delete payload.reference_token_no;
     }
+    console.log(values);
     try {
       setLoading(true);
       const data = await axiosClient.put(
@@ -29,7 +32,7 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
       setAllSlips(updatedData);
       setShowUpdateModal(false);
     } catch (error) {
-      toast.error(error?.response?.data?.msg || error?.message);
+      toast.error(error?.response?.data?.message || error?.message);
     } finally {
       setLoading(false);
     }
@@ -43,6 +46,9 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
     slip_type_id: user.slip_type_id || "",
     ...(user.slip_type_id === 2 && {
       pharmacy_fees: user.pharmacy_fees || "",
+      service_id: Array.isArray(user.services)
+        ? user.services.map((s) => s.id)
+        : [],
       notes: user.notes || ""
     }),
     age: user.age || "",
@@ -59,6 +65,14 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
       is: 1,
       then: (schema) => schema.required("Fees is required"),
       otherwise: (schema) => schema.notRequired()
+    }),
+    service_id: yup.array().when("slip_type_id", {
+      is: 2,
+      then: (schema) =>
+        schema
+          .min(1, "At least one service is required")
+          .required("Service is required"),
+      otherwise: (schema) => schema.strip()
     }),
     reference_token_no: yup.string().when(["slip_type_id", "fees_id"], {
       is: (slip_type_id, fees_id) =>
@@ -163,6 +177,43 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
                 component="p"
               />
             </div>
+            {user.slip_type_id === 2 && (
+              <div className="mb-3">
+                <Field name="service_id">
+                  {({ field, form }) => {
+                    const options = services.map((item) => ({
+                      value: item.id,
+                      label: `${item.service_name} (Rs.${item.service_fees})`
+                    }));
+                    return (
+                      <Select
+                        isMulti
+                        options={options}
+                        value={options.filter((opt) =>
+                          field.value?.includes(opt.value)
+                        )}
+                        placeholder="Select Service"
+                        onChange={(selected) =>
+                          form.setFieldValue(
+                            "service_id",
+                            selected.map((i) => i.value)
+                          )
+                        }
+                        styles={customStyles}
+                        className={`input w-full py-1 px-3 rounded border outline-none ${
+                          field.value?.length ? "text-black" : "text-gray-400"
+                        }`}
+                      />
+                    );
+                  }}
+                </Field>
+                <ErrorMessage
+                  name="service_id"
+                  className="text-red-500"
+                  component="p"
+                />
+              </div>
+            )}
             {user.slip_type_id === 1 ? (
               <div className="mb-3">
                 <Field name="fees_id">
@@ -197,17 +248,19 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
                 errorName="pharmacy_fees"
               />
             )}
-            <Input
-              placeholder="Reference No"
-              name="reference_token_no"
-              errorName="reference_token_no"
-            />
             {user.slip_type_id === 2 && (
-              <Input
-                placeholder="Description (optional)"
-                name="notes"
-                errorName="notes"
-              />
+              <>
+                <Input
+                  placeholder="Reference No"
+                  name="reference_token_no"
+                  errorName="reference_token_no"
+                />
+                <Input
+                  placeholder="Description (optional)"
+                  name="notes"
+                  errorName="notes"
+                />
+              </>
             )}
             <div className=" mt-10 flex justify-center">
               <CustomAuthButton

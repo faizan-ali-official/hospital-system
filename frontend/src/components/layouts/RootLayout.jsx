@@ -1,7 +1,7 @@
 import React from "react";
 import { Sidebar, Menu, MenuItem } from "react-pro-sidebar";
 import { IoMdHome } from "react-icons/io";
-import { HiUser } from "react-icons/hi2";
+import { HiClipboardDocumentList, HiUser } from "react-icons/hi2";
 import { FaUserDoctor, FaSheetPlastic } from "react-icons/fa6";
 import { HiDocumentMagnifyingGlass, HiDocumentMinus } from "react-icons/hi2";
 import { Link, Outlet, useLocation } from "react-router-dom";
@@ -30,7 +30,7 @@ const RootLayout = () => {
   );
 
   return (
-    <div className="flex max-h-[90vh]">
+    <div className="flex max-h-[calc(100vh - 113px)]">
       <div className="w-[250px]">
         <Sidebar breakPoint="lg" toggled={isToggle} onBackdropClick={null}>
           <Menu className="!bg-white !max-h-[90vh] flex flex-col justify-between">
@@ -41,10 +41,20 @@ const RootLayout = () => {
                 text="Slips"
                 Icon={FaSheetPlastic}
               />
-              <CustomMenu link="/users" text="Users" Icon={HiUser} />
-              <CustomMenu link="/doctors" text="Doctors" Icon={FaUserDoctor} />
+
               {user?.role === "admin" && (
                 <>
+                  <CustomMenu link="/users" text="Users" Icon={HiUser} />
+                  <CustomMenu
+                    link="/doctors"
+                    text="Doctors"
+                    Icon={FaUserDoctor}
+                  />
+                  <CustomMenu
+                    link="/services"
+                    text="Services"
+                    Icon={HiClipboardDocumentList}
+                  />
                   <CustomMenu
                     link="/reports"
                     text="Reports"

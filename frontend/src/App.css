@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 .css-ewdv3l {
-  height: 90vh;
+  height: calc(100vh - 113px);
   display: flex;
   flex-direction: column;
   justify-content: space-between;

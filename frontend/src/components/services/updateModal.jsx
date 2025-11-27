@@ -8,20 +8,19 @@ import { useMainContext } from "../../context/mainContext";
 
 function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
   const [loading, setLoading] = useState(false);
-  const { doctors, setDoctors } = useMainContext();
+  const { services, setServices } = useMainContext();
 
   const onSubmitHandler = async (values) => {
     try {
       setLoading(true);
-      await axiosClient.put(`/api/doctor/${user.id}`, values);
-      const updatedData = doctors.map((item) =>
-        item.id === user.id ? { ...item, ...values } : item
+      const update = await axiosClient.put(`/api/services/${user.id}`, values);
+      const updatedData = services.map((item) =>
+        item.id === user.id ? update?.data?.updatedService : item
       );
-      toast.success("Doctor updated successfully!");
-      setDoctors(updatedData);
+      setServices(updatedData);
+      toast.success("Services updated successfully!");
       setShowUpdateModal(false);
     } catch (error) {
-      console.log(error);
       toast.error(error?.response?.data?.message || error?.message);
     } finally {
       setLoading(false);
@@ -29,19 +28,19 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
   };
 
   const initialValues = {
-    doctor_name: user.doctor_name || "",
-    specialization: user.specialization || ""
+    name: user.service_name || "",
+    fees: user.service_fees || ""
   };
 
   const validationSchema = yup.object({
-    doctor_name: yup
+    name: yup
       .string()
       .required("Name is required")
       .min(2, "Name must be at least 2 characters"),
-    specialization: yup
+    fees: yup
       .string()
-      .required("Specialization is Required")
-      .min(2, "Specialization must be at least 2 characters")
+      .required("Fees is Required")
+      .min(2, "Fees must be at least 2 characters")
   });
 
   return (
@@ -53,7 +52,6 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
         >
           &times;
         </button>
-
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
@@ -62,30 +60,30 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
         >
           <Form>
             <p className="text-center font-bold text-xl mb-6 underline">
-              Update Doctor
+              Update Service
             </p>
             <div className="mb-3">
               <Field
-                placeholder="Doctor Name"
+                placeholder="Service Name"
                 type="text"
-                name="doctor_name"
+                name="name"
                 className="input w-full py-3 px-3 rounded border outline-none"
               />
               <ErrorMessage
-                name="doctor_name"
+                name="name"
                 className="text-red-500"
                 component="p"
               />
             </div>
             <div className="mb-3">
               <Field
-                placeholder="Specialization"
+                placeholder="Fees"
                 type="text"
-                name="specialization"
+                name="fees"
                 className="input w-full py-3 px-3 rounded border outline-none"
               />
               <ErrorMessage
-                name="specialization"
+                name="fees"
                 className="text-red-500"
                 component="p"
               />

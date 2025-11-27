@@ -4,7 +4,7 @@ import { useMainContext } from "../context/mainContext";
 const DeletedSlips = () => {
   const { deleteSlips } = useMainContext();
   return (
-    <div className="flex justify-center h-[89vh]">
+    <div className="flex justify-center h-[calc(89vh - 33px)]">
       <div className="w-full xl:w-[90%] flex flex-col overflow-hidden">
         <div className="flex justify-between items-center ">
           <h2 className="text-xl font-bold">Deleted Slips</h2>
@@ -43,14 +43,15 @@ const DeletedSlips = () => {
                       {item?.patient_name}
                     </td>
                     <td className="py-3 px-6 border border-[#004aa3] capitalize">
-                      {item?.deleted_by}
+                      {item?.deleted_by_name}
                     </td>
                     <td className="py-3 px-6 border border-[#004aa3] capitalize">
-                      {item?.type_name}
+                      {item?.slip_type_name}
                     </td>
-
                     <td className="py-3 px-6 border border-[#004aa3]">
-                      {item?.deleted_by}
+                      {new Date(item.deleted_at)
+                        .toLocaleDateString("en-GB")
+                        .replace(/\//g, "-")}
                     </td>
                     <td className="py-3 px-6 border border-[#004aa3]">
                       {item?.delete_note}

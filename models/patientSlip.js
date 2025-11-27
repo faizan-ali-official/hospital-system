@@ -12,7 +12,7 @@ class PatientSlip {
     age,
     gender,
     notes = null,
-    pharmacy_fees = null,
+    pharmacy_fees = null
   }) {
     // If slip_type_name is 'appointment', store appointment fields
     if (slip_type_id === 1) {
@@ -27,7 +27,7 @@ class PatientSlip {
           slip_type_id,
           age,
           gender,
-          new Date(),
+          new Date()
         ]
       );
       return result.insertId;
@@ -47,7 +47,7 @@ class PatientSlip {
           pharmacy_fees,
           age,
           gender,
-          new Date(),
+          new Date()
         ]
       );
       return result.insertId;
@@ -66,7 +66,7 @@ class PatientSlip {
         notes,
         age,
         gender,
-        new Date(),
+        new Date()
       ]
     );
     return result.insertId;
@@ -80,7 +80,7 @@ class PatientSlip {
 
       const slipId = await PatientSlip.create({
         ...slip,
-        token_no,
+        token_no
       });
 
       insertedIds.push(slipId);
@@ -100,13 +100,13 @@ class PatientSlip {
     search,
     limit,
     offset,
-    deleted,
+    deleted
   } = {}) {
     let sql = `
         SELECT ps.*, 
               d.id as doctor_id, d.doctor_name, d.specialization, 
               f.id as fees_id, f.doctor_fee, st.type_name,
-              u.id as created_by, u.name as created_by_name,
+              u.id as created_by, u.username as created_by_name,
               ps.age, ps.gender, ps.deleted_at, ps.delete_note, 
               ud.name as deleted_by,
               s.id AS service_id, s.service_name, s.service_fees 
@@ -175,30 +175,44 @@ class PatientSlip {
     const [rows] = await pool.execute(sql, params);
     return rows;
   }
-
   static async findById(id) {
     const [rows] = await pool.execute(
       `
       SELECT ps.*, 
-            d.id as doctor_id, d.doctor_name, d.specialization, 
-            f.id as fees_id, f.doctor_fee, st.type_name,
-            u.id as created_by, u.name as created_by_name,
-            ps.age, ps.gender, ps.deleted_at, ps.delete_note, 
-            ud.name as deleted_by,
-            s.id as service_id, s.service_name, s.service_fees 
+      d.id as doctor_id, d.doctor_name, d.specialization, 
+      f.id as fees_id, f.doctor_fee, st.type_name AS slip_type_name,
+      u.id as created_by, u.username as created_by_name,
+      ps.age, ps.gender, ps.deleted_at, ps.delete_note, 
+      ud.username as deleted_by_name,
+      s.id AS service_id, s.service_name, s.service_fees 
       FROM patient_slip ps
-      left JOIN doctors d ON ps.doctor_id = d.id
-      left JOIN fees f ON ps.fees_id = f.id
-      left JOIN slip_type st ON ps.slip_type_id = st.id
-      left JOIN users u ON ps.created_by = u.id
-      left JOIN users ud ON ps.created_by = ud.id
+      LEFT JOIN doctors d ON ps.doctor_id = d.id
+      LEFT JOIN fees f ON ps.fees_id = f.id
+      LEFT JOIN slip_type st ON ps.slip_type_id = st.id
+      LEFT JOIN users u ON ps.created_by = u.id
+      LEFT JOIN users ud ON ps.delete_by = ud.id   -- <-- use correct column name
       LEFT JOIN patient_has_service phs ON phs.patient_slip_id = ps.id
       LEFT JOIN services s ON s.id = phs.service_id
       WHERE ps.id = ?
-    `,
+      `,
       [id]
     );
-    return rows;
+
+    if (!rows.length) return null;
+
+    const slip = { ...rows[0], services: [] };
+
+    rows.forEach((row) => {
+      if (row.service_id) {
+        slip.services.push({
+          id: row.service_id,
+          name: row.service_name,
+          fees: row.service_fees
+        });
+      }
+    });
+
+    return slip;
   }
 
   static async update(
@@ -214,7 +228,7 @@ class PatientSlip {
       pharmacy_fees,
       gender,
       age,
-      service_id,
+      service_id
     }
   ) {
     const fields = [];
@@ -368,7 +382,7 @@ class PatientSlip {
     startDate,
     endDate,
     doctor_id,
-    created_by,
+    created_by
   }) {
     let sql = `SELECT COUNT(*) as slips_count, COALESCE(SUM(COALESCE(f.doctor_fee,0)),0) as total_amount
       FROM patient_slip ps
@@ -400,7 +414,7 @@ class PatientSlip {
     startDate,
     endDate,
     doctor_id,
-    created_by,
+    created_by
   }) {
     let sql = `SELECT 
     COUNT(*) AS slips_count,

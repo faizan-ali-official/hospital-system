@@ -19,7 +19,6 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
     try {
       setLoading(true);
       const data = await axiosClient.put(`/api/user/${user.id}`, payload);
-
       const updatedData = allUsers.map((item) =>
         item.id === user.id ? data?.data?.updatedUser : item
       );
@@ -27,13 +26,13 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
       setAllUsers(updatedData);
       setShowUpdateModal(false);
     } catch (error) {
-      toast.error(error?.response?.data?.msg || error?.message);
+      toast.error(error?.response?.data?.message || error?.message);
     } finally {
       setLoading(false);
     }
   };
   const initialValues = {
-    name: user.name || "",
+    name: user.name || user.username || "",
     email: user.email || "",
     roleId: user.role_name === "admin" ? "1" : "2",
     password: ""
