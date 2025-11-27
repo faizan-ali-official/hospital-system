@@ -108,7 +108,7 @@ class PatientSlip {
               f.id as fees_id, f.doctor_fee, st.type_name,
               u.id as created_by, u.username as created_by_name,
               ps.age, ps.gender, ps.deleted_at, ps.delete_note, 
-              ud.name as deleted_by,
+              ud.username as deleted_by,
               s.id AS service_id, s.service_name, s.service_fees 
         FROM patient_slip ps
         LEFT JOIN doctors d ON ps.doctor_id = d.id
