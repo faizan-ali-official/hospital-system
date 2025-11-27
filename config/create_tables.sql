@@ -77,10 +77,24 @@ CREATE TABLE IF NOT EXISTS services (
   updated_at TIMESTAMP NULL
 );
 
-ALTER TABLE patient_slip
-ADD COLUMN service_id INT NULL,
-ADD CONSTRAINT fk_patient_slip_service
-FOREIGN KEY (service_id) REFERENCES services(id);
-
 ALTER TABLE users
 ADD COLUMN username VARCHAR(50) NULL
+
+CREATE TABLE patient_has_service (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+
+    patient_slip_id BIGINT(20) UNSIGNED NOT NULL,
+    service_id INT(11) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    INDEX (patient_slip_id),
+    INDEX (service_id),
+
+    CONSTRAINT fk_phs_slip
+        FOREIGN KEY (patient_slip_id) REFERENCES patient_slip(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_phs_service
+        FOREIGN KEY (service_id) REFERENCES services(id)
+        ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

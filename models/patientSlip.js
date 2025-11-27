@@ -13,7 +13,6 @@ class PatientSlip {
     gender,
     notes = null,
     pharmacy_fees = null,
-    service_id,
   }) {
     // If slip_type_name is 'appointment', store appointment fields
     if (slip_type_id === 1) {
@@ -36,7 +35,7 @@ class PatientSlip {
     // If slip_type_name is 'pharmacy', store pharmacy fields
     if (slip_type_id === 2) {
       const [result] = await pool.execute(
-        `INSERT INTO patient_slip (patient_name, doctor_id, fees_id, reference_token_no, created_by, slip_type_id, notes, pharmacy_fees,age, gender,service_id, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?,?,?)`,
+        `INSERT INTO patient_slip (patient_name, doctor_id, fees_id, reference_token_no, created_by, slip_type_id, notes, pharmacy_fees,age, gender, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?,?)`,
         [
           patient_name,
           doctor_id,
@@ -48,7 +47,6 @@ class PatientSlip {
           pharmacy_fees,
           age,
           gender,
-          service_id,
           new Date(),
         ]
       );
@@ -111,25 +109,24 @@ class PatientSlip {
               u.id as created_by, u.name as created_by_name,
               ps.age, ps.gender, ps.deleted_at, ps.delete_note, 
               ud.name as deleted_by,
-              s.service_name, s.service_fees 
+              s.id AS service_id, s.service_name, s.service_fees 
         FROM patient_slip ps
         LEFT JOIN doctors d ON ps.doctor_id = d.id
         LEFT JOIN fees f ON ps.fees_id = f.id
         LEFT JOIN slip_type st ON ps.slip_type_id = st.id
         LEFT JOIN users u ON ps.created_by = u.id
         LEFT JOIN users ud ON ps.delete_by = ud.id
-        LEFT JOIN services s ON s.id = ps.service_id
+        LEFT JOIN patient_has_service phs ON phs.patient_slip_id = ps.id
+        LEFT JOIN services s ON s.id = phs.service_id
       `;
 
     const conditions = [];
     const params = [];
-    if (startDate && endDate) {
-      conditions.push("DATE(ps.created_at) BETWEEN ? AND ?");
-      params.push(startDate, endDate);
-    } else if (startDate) {
+    if (startDate) {
       conditions.push("DATE(ps.created_at) >= ?");
       params.push(startDate);
-    } else if (endDate) {
+    }
+    if (endDate) {
       conditions.push("DATE(ps.created_at) <= ?");
       params.push(endDate);
     }
@@ -188,19 +185,20 @@ class PatientSlip {
             u.id as created_by, u.name as created_by_name,
             ps.age, ps.gender, ps.deleted_at, ps.delete_note, 
             ud.name as deleted_by,
-            s.service_name, s.service_fees 
+            s.id as service_id, s.service_name, s.service_fees 
       FROM patient_slip ps
       left JOIN doctors d ON ps.doctor_id = d.id
       left JOIN fees f ON ps.fees_id = f.id
       left JOIN slip_type st ON ps.slip_type_id = st.id
       left JOIN users u ON ps.created_by = u.id
       left JOIN users ud ON ps.created_by = ud.id
-      LEFT JOIN services s ON s.id = ps.service_id
+      LEFT JOIN patient_has_service phs ON phs.patient_slip_id = ps.id
+      LEFT JOIN services s ON s.id = phs.service_id
       WHERE ps.id = ?
     `,
       [id]
     );
-    return rows[0];
+    return rows;
   }
 
   static async update(
@@ -263,10 +261,6 @@ class PatientSlip {
       fields.push("gender = ?");
       values.push(gender);
     }
-    if (service_id !== undefined) {
-      fields.push("service_id = ?");
-      values.push(service_id);
-    }
     // Always update updated_at timestamp
     fields.push("updated_at = NOW()");
 
@@ -274,9 +268,42 @@ class PatientSlip {
 
     values.push(id);
     const sql = `UPDATE patient_slip SET ${fields.join(", ")} WHERE id = ?`;
-    const [result] = await pool.execute(sql, values);
+    // const [result] = await pool.execute(sql, values);
 
-    return result.affectedRows > 0;
+    // return result.affectedRows > 0;
+    const conn = await pool.getConnection();
+    try {
+      await conn.beginTransaction();
+
+      // 1) Update patient_slip
+      const [result] = await conn.execute(sql, values);
+
+      if (result.affectedRows === 0) {
+        await conn.rollback();
+        return false;
+      }
+
+      // 2) Delete previous services
+      await conn.execute(
+        `DELETE FROM patient_has_service WHERE patient_slip_id = ?`,
+        [id]
+      );
+
+      // 3) Insert new services (if provided)
+      if (Array.isArray(service_id) && service_id.length > 0) {
+        const valuesToInsert = service_id.map((sid) => [id, sid]);
+        await conn.query(
+          `INSERT INTO patient_has_service (patient_slip_id, service_id) VALUES ?`,
+          [valuesToInsert]
+        );
+      }
+
+      await conn.commit();
+      return true;
+    } catch (err) {
+      await conn.rollback();
+      throw err;
+    }
   }
 
   static async updateStatus(id, status) {
@@ -288,17 +315,42 @@ class PatientSlip {
   }
 
   static async delete(id, delete_note, deleted_by) {
-    const [result] = await pool.execute(
-      `UPDATE patient_slip 
-     SET deleted_at = NOW(), 
-         delete_note = ?, 
-         updated_at = NOW(), 
-         delete_by = ? 
-     WHERE id = ? AND deleted_at IS NULL`,
-      [delete_note, deleted_by, id]
-    );
+    const conn = await pool.getConnection();
 
-    return result.affectedRows > 0;
+    try {
+      await conn.beginTransaction();
+
+      // 1) Soft delete the patient_slip
+      const [result] = await conn.execute(
+        `UPDATE patient_slip 
+       SET deleted_at = NOW(), 
+           delete_note = ?, 
+           updated_at = NOW(), 
+           delete_by = ? 
+       WHERE id = ? AND deleted_at IS NULL`,
+        [delete_note, deleted_by, id]
+      );
+
+      // If slip not updated → no delete
+      if (result.affectedRows === 0) {
+        await conn.rollback();
+        return false;
+      }
+
+      // 2) Delete related service records
+      await conn.execute(
+        `DELETE FROM patient_has_service WHERE patient_slip_id = ?`,
+        [id]
+      );
+
+      await conn.commit();
+      return true;
+    } catch (err) {
+      await conn.rollback();
+      throw err;
+    } finally {
+      conn.release();
+    }
   }
 
   static async getNextTokenNoForToday() {
@@ -350,9 +402,19 @@ class PatientSlip {
     doctor_id,
     created_by,
   }) {
-    let sql = `SELECT COUNT(*) as slips_count, COALESCE(SUM(COALESCE(ps.pharmacy_fees,0)),0) as total_amount
-      FROM patient_slip ps
-      WHERE 1=1 AND ps.slip_type_id = 2`;
+    let sql = `SELECT 
+    COUNT(*) AS slips_count,
+    COALESCE(SUM(total_per_slip), 0) AS total_amount
+    FROM (
+        SELECT 
+            ps.id,
+            COALESCE(CAST(ps.pharmacy_fees AS DECIMAL),0) + 
+            COALESCE(SUM(s.service_fees),0) AS total_per_slip
+        FROM patient_slip ps
+        LEFT JOIN patient_has_service phs ON phs.patient_slip_id = ps.id
+        LEFT JOIN services s ON s.id = phs.service_id
+        WHERE ps.slip_type_id = 2 and ps.deleted_at is null
+    `;
     const params = [];
     if (startDate) {
       sql += " AND DATE(ps.created_at) >= ?";
@@ -370,9 +432,22 @@ class PatientSlip {
       sql += " AND ps.created_by = ?";
       params.push(created_by);
     }
+    sql += ` GROUP BY ps.id, ps.pharmacy_fees ) AS sub`;
 
     const [rows] = await pool.execute(sql, params);
     return rows[0];
+  }
+
+  static async addServices(patient_slip_id, service_ids) {
+    const values = service_ids.map((serviceId) => [patient_slip_id, serviceId]);
+
+    const [result] = await pool.query(
+      `INSERT INTO patient_has_service (patient_slip_id, service_id)
+     VALUES ?`,
+      [values]
+    );
+
+    return result.affectedRows > 0;
   }
 }
 

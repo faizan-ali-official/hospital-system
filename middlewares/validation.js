@@ -139,8 +139,11 @@ export const patientSlipValidation = {
     body("gender").notEmpty().withMessage("Gender is required."),
     body("service_id")
       .optional()
+      .isArray({ min: 1 })
+      .withMessage("Service IDs must be an array."),
+    body("service_id.*")
       .isInt()
-      .withMessage("Service must be an integer."),
+      .withMessage("Each service ID must be an integer."),
     (req, res, next) => {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -186,9 +189,11 @@ export const patientSlipValidation = {
       .withMessage("Notes must be an int."),
     body("service_id")
       .optional()
+      .isArray({ min: 1 })
+      .withMessage("Service IDs must be an array."),
+    body("service_id.*")
       .isInt()
-      .withMessage("Service must be an integer."),
-
+      .withMessage("Each service ID must be an integer."),  
     (req, res, next) => {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
