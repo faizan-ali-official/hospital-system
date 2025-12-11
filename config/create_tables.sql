@@ -78,7 +78,48 @@ CREATE TABLE IF NOT EXISTS services (
 );
 
 ALTER TABLE users
-ADD COLUMN username VARCHAR(50) NULL
+ADD COLUMN username VARCHAR(50) NULL;
+
+CREATE TABLE IF NOT EXISTS community_card_members (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  parent_id INT NULL,
+  full_name VARCHAR(150) NOT NULL,
+  guardian_name VARCHAR(150) NOT NULL,
+  cnic VARCHAR(25) NOT NULL,
+  cast VARCHAR(100) NULL,
+  date_of_birth DATE NULL,
+  current_address TEXT NULL,
+  permanent_address TEXT NULL,
+  contact_number VARCHAR(30) NULL,
+  education VARCHAR(100) NULL,
+  occupation VARCHAR(150) NULL,
+  blood_group VARCHAR(5) NULL,
+  gender ENUM('male', 'female', 'other') NULL,
+  family_members_count INT NULL,
+  card_number VARCHAR(50) NULL,
+  collected_by: INT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NULL,
+  CONSTRAINT fk_cc_parent
+    FOREIGN KEY (parent_id)
+    REFERENCES community_card_members(id)
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS community_card_relations (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  member_id INT NOT NULL,
+  full_name VARCHAR(100) NOT NULL,
+  relation VARCHAR(100) NOT NULL,
+  date_of_birth DATE NULL,
+  cnic VARCHAR(25) NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NULL,
+  CONSTRAINT fk_cc_rel_member
+    FOREIGN KEY (member_id)
+    REFERENCES community_card_members(id)
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE patient_has_service (
     id INT AUTO_INCREMENT PRIMARY KEY,
