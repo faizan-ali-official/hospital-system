@@ -7,6 +7,7 @@ import patientSlipRoutes from "./routes/patientSlip.js";
 import feesRoutes from "./routes/fees.js";
 import reportRoutes from "./routes/report.js";
 import serviceRoutes from "./routes/service.js";
+import communityCardRoutes from "./routes/communityCard.js";
 import pool from "./config/db.js";
 import cors from "cors";
 import { dirname } from "path";
@@ -35,6 +36,7 @@ app.use("/api/patient-slips", patientSlipRoutes);
 app.use("/api/fees", feesRoutes);
 app.use("/api/report", reportRoutes);
 app.use("/api/services", serviceRoutes);
+app.use("/api/community-cards", communityCardRoutes);
 
 app.use(express.static(path.resolve(path.join(__dirname, "./frontend/dist"))));
 

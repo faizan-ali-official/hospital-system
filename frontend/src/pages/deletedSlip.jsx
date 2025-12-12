@@ -12,7 +12,7 @@ const DeletedSlips = () => {
         <h2 className="text-2xl font-bold text-center pb-4 underline">
           Records
         </h2>
-        <div className="overflow-y-auto flex-1">
+        <div className="overflow-y-auto flex-1 max-h-[calc(89vh-80px)]">
           {deleteSlips ? (
             <table className="w-full rounded">
               <thead className="sticky top-0 bg-gray-100 z-10">

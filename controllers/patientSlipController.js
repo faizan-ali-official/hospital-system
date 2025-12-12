@@ -122,7 +122,6 @@ class PatientSlipController {
         offset,
         deleted
       });
-
       const slipsMap = new Map();
 
       slips.forEach((row) => {
