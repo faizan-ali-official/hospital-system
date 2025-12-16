@@ -11,7 +11,9 @@ import {
   Reports,
   DeletedSlips,
   Services,
-  ServiceCreate
+  ServiceCreate,
+  CommunityCard,
+  CommunityCardCreate
 } from "../../pages";
 import Logo from "../../assets/logo.jpeg";
 import { useIsOnline } from "react-use-is-online";
@@ -65,6 +67,11 @@ const RouterPage = () => {
                 <Route path="/reports" element={<Reports />} />
                 <Route path="/deletedslips" element={<DeletedSlips />} />
                 <Route path="/servicecreate" element={<ServiceCreate />} />
+                <Route path="/communitycard" element={<CommunityCard />} />
+                <Route
+                  path="/communitycardcreate"
+                  element={<CommunityCardCreate />}
+                />
               </>
             ) : (
               <>

@@ -11,11 +11,13 @@ const mainContext = createContext({
   allSlips: [],
   feesTypes: [],
   services: [],
+  communityCard: [],
   setAllSlips: () => {},
   setDoctors: () => {},
   setAllUsers: () => {},
   setFeesTypes: () => {},
   setServices: () => {},
+  setCommunityCard: () => {},
   fetchUserProfile: () => {},
   logOutHandler: () => {}
 });
@@ -31,6 +33,7 @@ export const MainContextProvider = ({ children }) => {
   const [allSlips, setAllSlips] = useState([]);
   const [deleteSlips, setDeleteSlips] = useState([]);
   const [services, setServices] = useState([]);
+  const [communityCard, setCommunityCard] = useState([]);
   const [feesTypes, setFeesTypes] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -59,6 +62,8 @@ export const MainContextProvider = ({ children }) => {
       setFeesTypes(feesResp?.data);
       const servicesResp = await axiosClient.get("/api/services/");
       setServices(servicesResp?.data);
+      const communityCardResp = await axiosClient.get("/api/community-cards/");
+      setCommunityCard(communityCardResp?.data);
       const deleteSlipResp = await axiosClient.get(
         "/api/patient-slips?limit=100&offset=0&deleted=true"
       );
@@ -132,6 +137,7 @@ export const MainContextProvider = ({ children }) => {
         feesTypes,
         deleteSlips,
         services,
+        communityCard,
         fetchUserProfile,
         logOutHandler,
         setAllUsers,
@@ -140,6 +146,7 @@ export const MainContextProvider = ({ children }) => {
         setFeesTypes,
         setDeleteSlips,
         setServices,
+        setCommunityCard,
         monitorInternetConnection,
         saveDataOffline
       }}

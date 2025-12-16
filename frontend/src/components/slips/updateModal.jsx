@@ -18,7 +18,6 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
     if (!payload.reference_token_no) {
       delete payload.reference_token_no;
     }
-    console.log(values);
     try {
       setLoading(true);
       const data = await axiosClient.put(

@@ -12,7 +12,10 @@ class CommunityCardController {
         }
       }
 
-      const id = await CommunityCardMember.create({ ...payload, collected_by: req.user.id });
+      const id = await CommunityCardMember.create({
+        ...payload,
+        collected_by: req.user.id
+      });
       const created = await CommunityCardMember.findById(id);
       return res
         .status(201)
@@ -41,7 +44,7 @@ class CommunityCardController {
 
       const members = await CommunityCardMember.findAll({
         parent_id: parentFilter,
-        search: search ? search.trim() : undefined,
+        search: search ? search.trim() : undefined
       });
       return res.json(members);
     } catch (err) {
@@ -66,7 +69,6 @@ class CommunityCardController {
     try {
       const { id } = req.params;
       const payload = req.body;
-
       const existing = await CommunityCardMember.findById(id);
       if (!existing) {
         return res.status(404).json({ message: "Record not found." });
@@ -74,14 +76,16 @@ class CommunityCardController {
 
       if (payload.parent_id !== undefined) {
         if (Number(id) === Number(payload.parent_id)) {
-          return res
-            .status(400)
-            .json({ message: "parent_id cannot be the same as the record id." });
+          return res.status(400).json({
+            message: "parent_id cannot be the same as the record id."
+          });
         }
         if (payload.parent_id !== null) {
           const parent = await CommunityCardMember.findById(payload.parent_id);
           if (!parent) {
-            return res.status(400).json({ message: "Parent record not found." });
+            return res
+              .status(400)
+              .json({ message: "Parent record not found." });
           }
         }
       }
@@ -116,9 +120,12 @@ class CommunityCardController {
     try {
       const { cnic } = req.query;
       if (!cnic || !cnic.trim()) {
-        return res.status(400).json({ message: "cnic query param is required." });
+        return res
+          .status(400)
+          .json({ message: "cnic query param is required." });
       }
       const results = await CommunityCardMember.searchByCnic(cnic.trim());
+      console.log(results);
       return res.json(results);
     } catch (err) {
       return res.status(500).json({ message: "Server error." });
@@ -127,4 +134,3 @@ class CommunityCardController {
 }
 
 export default CommunityCardController;
-
