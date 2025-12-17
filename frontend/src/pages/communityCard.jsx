@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { axiosClient } from "../utils/AxiosClient";
 import { FaSearch, FaTimes } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import MemberDetailModal from "../components/communityCard/memberDetailCard";
 
 const CommunityCard = () => {
   const navigate = useNavigate();
@@ -13,12 +14,13 @@ const CommunityCard = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [searchCard, setSearchCard] = useState("");
-  const [searchedCard, setSearchedCard] = useState([]);
   const [showFilter, setShowFilter] = useState(false);
   const [showNo, setShowNo] = useState(false);
   const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [selectedMember, setSelectedMember] = useState(null);
 
   const Icon = showFilter ? FaTimes : FaSearch;
 
@@ -84,17 +86,20 @@ const CommunityCard = () => {
     }
   };
 
-  const onSearch = async () => {
-    try {
-      const res = await axiosClient.get("/api/community-cards/", {
-        params: { search: searchCard }
-      });
-      setSearchedCard(res.data || []);
-      console.log(res);
-    } catch (err) {
-      toast.error(err?.response?.data?.message || err?.message);
-    }
-  };
+  const filteredCommunityCards = communityCard.filter((item) => {
+    if (!searchCard.trim()) return true;
+    const search = searchCard.toLowerCase();
+    const mainMatch =
+      item?.full_name?.toLowerCase().includes(search) ||
+      item?.cnic?.includes(search);
+    const relationMatch = item?.relations?.some((rel) => {
+      return (
+        rel?.full_name?.toLowerCase().includes(search) ||
+        rel?.cnic?.includes(search)
+      );
+    });
+    return mainMatch || relationMatch;
+  });
 
   return (
     <div className="flex justify-center h-[calc(89vh - 33px)] ">
@@ -117,21 +122,17 @@ const CommunityCard = () => {
             )}
           </div>
         </div>
-        <div className="flex border-b-1 pb-4 mb-2 border-b-[#004aa3]">
-          <input
-            type="text"
-            placeholder="Search by CNIC"
-            value={searchCard}
-            onChange={(e) => setSearchCard(e.target.value)}
-            className="border w-full p-2 mt-4 rounded"
-          />
-          <button
-            onClick={() => onSearch()}
-            className="bg-[#004aa3] text-white px-4 rounded shadow mt-4 ml-5 cursor-pointer"
-          >
-            Search
-          </button>
-        </div>
+        {showFilter && (
+          <div className="flex border-b-1 pb-4 mb-2 border-b-[#004aa3]">
+            <input
+              type="text"
+              placeholder="Search by CNIC and Name"
+              value={searchCard}
+              onChange={(e) => setSearchCard(e.target.value)}
+              className="border w-full p-2 mt-4 rounded"
+            />
+          </div>
+        )}
         <div
           ref={tableContainerRef}
           className={`overflow-y-auto ${
@@ -139,7 +140,7 @@ const CommunityCard = () => {
           } mt-4`}
         >
           {!showNo ? (
-            communityCard ? (
+            filteredCommunityCards ? (
               <table className="w-full rounded">
                 <thead className="sticky top-0 bg-gray-100 z-10">
                   <tr className="text-left text-sm uppercase text-gray-600">
@@ -160,11 +161,18 @@ const CommunityCard = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {communityCard
+                  {filteredCommunityCards
                     .slice()
                     .sort((a, b) => b.id - a.id)
                     .map((item) => (
-                      <tr key={item.id} className="text-sm hover:bg-gray-50">
+                      <tr
+                        key={item.id}
+                        className="text-sm hover:bg-gray-50 cursor-pointer"
+                        onClick={() => {
+                          setSelectedMember(item);
+                          setShowDetailModal(true);
+                        }}
+                      >
                         <td className="py-3 px-6 border border-[#004aa3]">
                           {item?.id}
                         </td>
@@ -184,7 +192,8 @@ const CommunityCard = () => {
                           {user?.role === "admin" && (
                             <>
                               <button
-                                onClick={() => {
+                                onClick={(e) => {
+                                  e.stopPropagation();
                                   navigate("/communitycardcreate", {
                                     state: { data: item }
                                   });
@@ -233,6 +242,16 @@ const CommunityCard = () => {
           )}
         </div>
       </div>
+      {showDetailModal && (
+        <MemberDetailModal
+          data={selectedMember}
+          onClose={() => {
+            setSelectedMember(null);
+            setShowDetailModal(false);
+          }}
+        />
+      )}
+
       {showModal && (
         <DeleteModal
           title="Confirm Deletion"
