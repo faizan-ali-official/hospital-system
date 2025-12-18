@@ -16,32 +16,56 @@ function CheckupSlip() {
   const [generatedSlip, setGeneratedSlip] = useState(null);
 
   const printFn = useReactToPrint({
-    documentTitle: `Pateint Slip ${generatedSlip?.id}`,
+    documentTitle: `Patient Slip ${generatedSlip?.id}`,
     contentRef: componentRef,
     copyStyles: true,
     pageStyle: `
-    @page {
-      size: 80mm auto;
-      margin: 0;
-    }
-    @media print {
-      html, body {
-        width: 80mm;
+      @page {
+        size: 80mm auto;
         margin: 0;
-        padding: 0;
-        font-family: 'Courier New', monospace;
-        font-size: 11px;
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
       }
-      * {
-        box-sizing: border-box;
+      @media print {
+        html {
+          width: 80mm !important;
+          margin: 0 !important;
+          padding: 0 !important;
+        }
+        body {
+          width: 80mm !important;
+          max-width: 80mm !important;
+          margin: 0 !important;
+          padding: 3mm !important;
+          font-family: 'Courier New', monospace;
+          font-size: 10px;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+          box-sizing: border-box !important;
+        }
+        * {
+          box-sizing: border-box !important;
+          max-width: 100% !important;
+        }
+        .no-print {
+          display: none !important;
+        }
+        /* Ensure tables and content fit */
+        table {
+          width: 100% !important;
+          table-layout: fixed !important;
+          border-collapse: collapse !important;
+        }
+        td, th {
+          word-wrap: break-word !important;
+          overflow-wrap: break-word !important;
+          padding: 1mm !important;
+        }
+        /* Prevent text overflow */
+        p, div, span {
+          word-wrap: break-word !important;
+          overflow-wrap: break-word !important;
+        }
       }
-      .no-print {
-        display: none !important;
-      }
-    }
-  `
+    `
   });
 
   const onSubmitHandler = async (values, helpers) => {
