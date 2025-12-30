@@ -139,3 +139,6 @@ CREATE TABLE patient_has_service (
         FOREIGN KEY (service_id) REFERENCES services(id)
         ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+ALTER TABLE patient_slip
+ADD COLUMN is_card_holder BOOLEAN DEFAULT FALSE;

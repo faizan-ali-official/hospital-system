@@ -12,12 +12,13 @@ class PatientSlip {
     age,
     gender,
     notes = null,
-    pharmacy_fees = null
+    pharmacy_fees = null,
+    is_card_holder = false
   }) {
     // If slip_type_name is 'appointment', store appointment fields
     if (slip_type_id === 1) {
       const [result] = await pool.execute(
-        `INSERT INTO patient_slip (patient_name, doctor_id, fees_id, token_no, created_by, slip_type_id, age, gender, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO patient_slip (patient_name, doctor_id, fees_id, token_no, created_by, slip_type_id, age, gender, is_card_holder, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           patient_name,
           doctor_id,
@@ -27,6 +28,7 @@ class PatientSlip {
           slip_type_id,
           age,
           gender,
+          is_card_holder,
           new Date()
         ]
       );
@@ -35,7 +37,7 @@ class PatientSlip {
     // If slip_type_name is 'pharmacy', store pharmacy fields
     if (slip_type_id === 2) {
       const [result] = await pool.execute(
-        `INSERT INTO patient_slip (patient_name, doctor_id, fees_id, reference_token_no, created_by, slip_type_id, notes, pharmacy_fees,age, gender, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?,?)`,
+        `INSERT INTO patient_slip (patient_name, doctor_id, fees_id, reference_token_no, created_by, slip_type_id, notes, pharmacy_fees,age, gender, is_card_holder, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?,?,?)`,
         [
           patient_name,
           doctor_id,
@@ -47,7 +49,8 @@ class PatientSlip {
           pharmacy_fees,
           age,
           gender,
-          new Date()
+          is_card_holder,
+          new Date(),
         ]
       );
       return result.insertId;
@@ -228,7 +231,8 @@ class PatientSlip {
       pharmacy_fees,
       gender,
       age,
-      service_id
+      service_id,
+      is_card_holder
     }
   ) {
     const fields = [];
@@ -257,6 +261,10 @@ class PatientSlip {
     if (notes !== undefined) {
       fields.push("notes = ?");
       values.push(notes);
+    }
+    if (is_card_holder !== undefined) {
+      fields.push("is_card_holder = ?");
+      values.push(is_card_holder);
     }
     // if (slip_type_id !== undefined) {
     //   fields.push("slip_type_id = ?");

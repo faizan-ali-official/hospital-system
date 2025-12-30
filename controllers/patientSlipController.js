@@ -15,7 +15,8 @@ class PatientSlipController {
         pharmacy_fees,
         age,
         gender,
-        service_id
+        service_id,
+        is_card_holder
       } = req.body;
       const created_by = req.user.id;
       if (slip_type_id === 1) {
@@ -28,7 +29,8 @@ class PatientSlipController {
           created_by,
           slip_type_id,
           age,
-          gender
+          gender,
+          is_card_holder
         });
       } else if (slip_type_id === 2) {
         slipId = await PatientSlip.create({
@@ -42,7 +44,8 @@ class PatientSlipController {
           gender,
           notes,
           pharmacy_fees,
-          service_id
+          service_id,
+          is_card_holder
         });
         await PatientSlip.addServices(slipId, service_id);
       } else {
@@ -57,7 +60,8 @@ class PatientSlipController {
           age,
           gender,
           notes,
-          pharmacy_fees
+          pharmacy_fees,
+          is_card_holder
         });
       }
       const fullData = await PatientSlip.findById(slipId);
@@ -129,6 +133,7 @@ class PatientSlipController {
           slipsMap.set(row.id, {
             id: row.id,
             patient_name: row.patient_name,
+            is_card_holder: row.is_card_holder ? true : false,
             doctor_id: row.doctor_id,
             doctor_name: row.doctor_name,
             fees_id: row.fees_id,
@@ -183,6 +188,7 @@ class PatientSlipController {
           slipsMap.set(row.id, {
             id: row.id,
             patient_name: row.patient_name,
+            is_card_holder: row.is_card_holder ? true : false,
             doctor_id: row.doctor_id,
             doctor_name: row.doctor_name,
             fees_id: row.fees_id,
@@ -235,7 +241,8 @@ class PatientSlipController {
         pharmacy_fees,
         gender,
         age,
-        service_id
+        service_id,
+        is_card_holder
       } = req.body;
       const slip = await PatientSlip.findById(id);
       if (!slip) {
@@ -251,7 +258,8 @@ class PatientSlipController {
         pharmacy_fees,
         gender,
         age,
-        service_id
+        service_id,
+        is_card_holder
       });
       if (!updated) {
         return res.status(400).json({ message: "Nothing to update." });
