@@ -16,7 +16,7 @@ class PatientSlipController {
         age,
         gender,
         service_id,
-        is_card_holder
+        is_card_holder,
       } = req.body;
       const created_by = req.user.id;
       if (slip_type_id === 1) {
@@ -30,7 +30,7 @@ class PatientSlipController {
           slip_type_id,
           age,
           gender,
-          is_card_holder
+          is_card_holder,
         });
       } else if (slip_type_id === 2) {
         slipId = await PatientSlip.create({
@@ -45,7 +45,7 @@ class PatientSlipController {
           notes,
           pharmacy_fees,
           service_id,
-          is_card_holder
+          is_card_holder,
         });
         await PatientSlip.addServices(slipId, service_id);
       } else {
@@ -61,7 +61,7 @@ class PatientSlipController {
           gender,
           notes,
           pharmacy_fees,
-          is_card_holder
+          is_card_holder,
         });
       }
       const fullData = await PatientSlip.findById(slipId);
@@ -86,7 +86,7 @@ class PatientSlipController {
       // Attach created_by to all slips
       const slipsWithUser = slips.map((slip) => ({
         ...slip,
-        created_by
+        created_by,
       }));
 
       await PatientSlip.createBulk(slipsWithUser);
@@ -111,7 +111,7 @@ class PatientSlipController {
         search,
         limit,
         offset,
-        deleted
+        deleted,
       } = req.query;
       let slips = await PatientSlip.findAll({
         startDate,
@@ -124,7 +124,7 @@ class PatientSlipController {
         search,
         limit,
         offset,
-        deleted
+        deleted,
       });
       const slipsMap = new Map();
 
@@ -153,7 +153,7 @@ class PatientSlipController {
             delete_note: row.delete_note,
             created_at: row.created_at,
             updated_at: row.updated_at,
-            services: []
+            services: [],
           });
         }
 
@@ -162,7 +162,7 @@ class PatientSlipController {
           slipsMap.get(row.id).services.push({
             id: row.service_id,
             name: row.service_name,
-            fees: row.service_fees
+            fees: row.service_fees,
           });
         }
       });
@@ -180,50 +180,7 @@ class PatientSlipController {
       if (!slip) {
         return res.status(404).json({ message: "Patient slip not found." });
       }
-
-      const slipsMap = new Map();
-      console.log(slip, "slipss");
-
-      slip.forEach((row) => {
-        if (!slipsMap.has(row.id)) {
-          slipsMap.set(row.id, {
-            id: row.id,
-            patient_name: row.patient_name,
-            is_card_holder: row.is_card_holder ? true : false,
-            doctor_id: row.doctor_id,
-            doctor_name: row.doctor_name,
-            fees_id: row.fees_id,
-            token_no: row.token_no,
-            reference_token_no: row.reference_token_no,
-            created_by: row.created_by,
-            slip_type_id: row.slip_type_id,
-            pharmacy_fees: row.pharmacy_fees,
-            notes: row.notes,
-            doctor_fee: row.doctor_fee,
-            slip_type_name: row.type_name,
-            created_by_name: row.created_by_name,
-            deleted_by_name: row.deleted_by,
-            age: row.age,
-            gender: row.gender,
-            deleted_at: row.deleted_at,
-            delete_note: row.delete_note,
-            created_at: row.created_at,
-            updated_at: row.updated_at,
-            services: []
-          });
-        }
-
-        // Add service only if it exists
-        if (row.service_id !== null) {
-          slipsMap.get(row.id).services.push({
-            id: row.service_id,
-            name: row.service_name,
-            fees: row.service_fees
-          });
-        }
-      });
-
-      return res.json(Array.from(slipsMap.values()));
+      return res.json(slip);
     } catch (err) {
       return res.status(500).json({ message: "Server error. " + err.message });
     }
@@ -243,7 +200,7 @@ class PatientSlipController {
         gender,
         age,
         service_id,
-        is_card_holder
+        is_card_holder,
       } = req.body;
       const slip = await PatientSlip.findById(id);
       if (!slip) {
@@ -260,7 +217,7 @@ class PatientSlipController {
         gender,
         age,
         service_id,
-        is_card_holder
+        is_card_holder,
       });
       if (!updated) {
         return res.status(400).json({ message: "Nothing to update." });
@@ -269,7 +226,7 @@ class PatientSlipController {
 
       return res.json({
         message: "Patient slip updated successfully.",
-        updatedData: data
+        updatedData: data,
       });
     } catch (err) {
       return res.status(500).json({ message: "Server error." });

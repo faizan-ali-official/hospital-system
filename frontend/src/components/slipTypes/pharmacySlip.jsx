@@ -318,7 +318,7 @@ function PharmacySlip() {
 
       setLoader(false);
     } catch (err) {
-      toast.error("Invalid reference number");
+      toast.error(err?.response?.data?.message || "Invalid reference number");
       setLoader(false);
     }
   };
