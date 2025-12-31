@@ -182,6 +182,7 @@ class PatientSlipController {
       }
 
       const slipsMap = new Map();
+      console.log(slip, "slipss");
 
       slip.forEach((row) => {
         if (!slipsMap.has(row.id)) {

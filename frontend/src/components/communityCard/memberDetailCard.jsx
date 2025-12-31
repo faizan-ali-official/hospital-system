@@ -2,6 +2,18 @@ import React from "react";
 
 const MemberDetailModal = ({ data, onClose }) => {
   if (!data) return null;
+  console.log(data);
+  const formatDate = (d) =>
+    new Date(d).toISOString().split("T")[0].split("-").reverse().join("-");
+
+  const calculateAge = (d) => {
+    const dob = new Date(d);
+    const t = new Date();
+    let a = t.getFullYear() - dob.getFullYear();
+    return t < new Date(t.getFullYear(), dob.getMonth(), dob.getDate())
+      ? a - 1
+      : a;
+  };
 
   return (
     <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
@@ -27,16 +39,22 @@ const MemberDetailModal = ({ data, onClose }) => {
               <b>CNIC:</b> {data.cnic}
             </p>
             <p>
-              <b>Guardian:</b> {data.guardian_name}
+              <b>Guardian:</b> {data.guardian_name || "N/A"}
             </p>
             <p>
-              <b>Contact:</b> {data.contact_number}
+              <b>Contact:</b> {data.contact_number || "N/A"}
             </p>
             <p>
-              <b>Card No:</b> {data.card_number}
+              <b>Card No:</b> {data.card_number || "N/A"}
             </p>
             <p>
-              <b>Address:</b> {data.current_address}
+              <b>Address:</b> {data.current_address || "N/A"}
+            </p>
+            <p>
+              <b>DOB:</b> {formatDate(data.date_of_birth) || "N/A"}
+            </p>
+            <p>
+              <b>Age:</b> {calculateAge(data.date_of_birth) ?? "N/A"}
             </p>
           </div>
         </div>
@@ -59,6 +77,13 @@ const MemberDetailModal = ({ data, onClose }) => {
                   </p>
                   <p>
                     <b>CNIC:</b> {rel.cnic || "N/A"}
+                  </p>
+                  <p>
+                    <b>DOB:</b> {formatDate(rel.date_of_birth) || "N/A"}
+                  </p>
+                  <p>
+                    <b>Age:</b>{" "}
+                    {`${calculateAge(rel.date_of_birth)} years` ?? "N/A"}
                   </p>
                 </div>
               ))}

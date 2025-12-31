@@ -105,7 +105,8 @@ function CheckupSlip() {
     reference_token_no: "",
     slip_type_id: 1,
     age: "",
-    gender: ""
+    gender: "",
+    is_card_holder: false
   };
 
   const validationSchema = yup.object({
@@ -129,7 +130,6 @@ function CheckupSlip() {
       otherwise: (schema) => schema.notRequired()
     })
   });
-
   return (
     <div>
       <Formik
@@ -137,92 +137,110 @@ function CheckupSlip() {
         validationSchema={validationSchema}
         onSubmit={onSubmitHandler}
       >
-        <Form className="px-10 py-10  lg:mx-10 ">
-          <Input
-            placeholder="Patient Name"
-            name="patient_name"
-            errorName="patient_name"
-          />
-          <div className="mb-3">
-            <Field name="doctor_id">
-              {({ field, form }) => (
-                <select
-                  {...field}
-                  className={`input w-full py-3 px-3 rounded border outline-none ${
-                    field.value ? "text-black" : "text-gray-400"
-                  }`}
-                >
-                  <option value="">Select Doctor</option>
-                  {doctors.map((item) => {
-                    return (
-                      <option
-                        value={item?.id}
-                      >{`Dr. ${item?.doctor_name}`}</option>
-                    );
-                  })}
-                </select>
-              )}
-            </Field>
-            <ErrorMessage
-              name="doctor_id"
-              className="text-red-500"
-              component="p"
+        {({ values, setFieldValue }) => (
+          <Form className="px-10 py-10  lg:mx-10 ">
+            <Input
+              placeholder="Patient Name"
+              name="patient_name"
+              errorName="patient_name"
             />
-          </div>
-          <Input placeholder="Age" name="age" errorName="age" />
-          <div className="mb-3">
-            <Field name="gender">
-              {({ field, form }) => (
-                <select
-                  {...field}
-                  className={`input w-full py-3 px-3 rounded border outline-none ${
-                    field.value ? "text-black" : "text-gray-400"
-                  }`}
-                >
-                  <option value="">Select Gender</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                </select>
-              )}
-            </Field>
-            <ErrorMessage
-              name="gender"
-              className="text-red-500"
-              component="p"
-            />
-          </div>
-          <div className="mb-3">
-            <Field name="fees_id">
-              {({ field, form }) => (
-                <select
-                  {...field}
-                  className={`input w-full py-3 px-3 rounded border outline-none ${
-                    field.value ? "text-black" : "text-gray-400"
-                  }`}
-                >
-                  <option value="">Slip Type</option>
-                  {feesTypes.map((item) => {
-                    return (
-                      <option value={item?.id}>{`${item?.doctor_fee}`}</option>
-                    );
-                  })}
-                </select>
-              )}
-            </Field>
-            <ErrorMessage
-              name="fees_id"
-              className="text-red-500"
-              component="p"
-            />
-          </div>
-          <div className=" mt-10 flex justify-center">
-            <CustomAuthButton
-              isLoading={loading}
-              text="Generate"
-              type="submit"
-            />
-          </div>
-        </Form>
+            <div className="mb-3">
+              <Field name="doctor_id">
+                {({ field, form }) => (
+                  <select
+                    {...field}
+                    className={`input w-full py-3 px-3 rounded border outline-none ${
+                      field.value ? "text-black" : "text-gray-400"
+                    }`}
+                  >
+                    <option value="">Select Doctor</option>
+                    {doctors.map((item) => {
+                      return (
+                        <option
+                          value={item?.id}
+                        >{`Dr. ${item?.doctor_name}`}</option>
+                      );
+                    })}
+                  </select>
+                )}
+              </Field>
+              <ErrorMessage
+                name="doctor_id"
+                className="text-red-500"
+                component="p"
+              />
+            </div>
+            <Input placeholder="Age" name="age" errorName="age" />
+            <div className="mb-3">
+              <Field name="gender">
+                {({ field, form }) => (
+                  <select
+                    {...field}
+                    className={`input w-full py-3 px-3 rounded border outline-none ${
+                      field.value ? "text-black" : "text-gray-400"
+                    }`}
+                  >
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                  </select>
+                )}
+              </Field>
+              <ErrorMessage
+                name="gender"
+                className="text-red-500"
+                component="p"
+              />
+            </div>
+            <div className="mb-3">
+              <Field name="fees_id">
+                {({ field, form }) => (
+                  <select
+                    {...field}
+                    className={`input w-full py-3 px-3 rounded border outline-none ${
+                      field.value ? "text-black" : "text-gray-400"
+                    }`}
+                  >
+                    <option value="">Slip Type</option>
+                    {feesTypes.map((item) => {
+                      return (
+                        <option
+                          value={item?.id}
+                        >{`${item?.doctor_fee}`}</option>
+                      );
+                    })}
+                  </select>
+                )}
+              </Field>
+              <ErrorMessage
+                name="fees_id"
+                className="text-red-500"
+                component="p"
+              />
+            </div>
+            <div className="flex items-center gap-2 mt-3">
+              <input
+                type="checkbox"
+                id="is_card_holder"
+                checked={values.is_card_holder}
+                onChange={(e) =>
+                  setFieldValue("is_card_holder", e.target.checked)
+                }
+                className="w-4 h-4 cursor-pointer accent-[#004aa3]"
+              />
+              <label htmlFor="is_card_holder" className="text-sm font-medium">
+                Card Holder
+              </label>
+            </div>
+            <div className=" mt-10 flex justify-center">
+              <CustomAuthButton
+                isLoading={loading}
+                text="Generate"
+                type="submit"
+              />
+            </div>
+          </Form>
+        )}
       </Formik>
       {generatedSlip && (
         <>

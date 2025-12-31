@@ -51,7 +51,8 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
       notes: user.notes || ""
     }),
     age: user.age || "",
-    gender: user.gender || ""
+    gender: user.gender || "",
+    is_card_holder: user.is_card_holder || false
   };
 
   const validationSchema = yup.object({
@@ -118,104 +119,21 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
           onSubmit={onSubmitHandler}
           enableReinitialize
         >
-          <Form>
-            <p className="text-center pb-8 font-bold text-2xl underline">
-              {user?.type_name?.replace(/\b\w/g, (char) => char.toUpperCase())}{" "}
-              Slip
-            </p>
-            <Input
-              placeholder="Patient Name"
-              name="patient_name"
-              errorName="patient_name"
-            />
-            <div className="mb-3">
-              <Field name="doctor_id">
-                {({ field, form }) => (
-                  <select
-                    {...field}
-                    className={`input w-full py-3 px-3 rounded border outline-none ${
-                      field.value ? "text-black" : "text-gray-400"
-                    }`}
-                  >
-                    <option value="">Select Doctor</option>
-                    {doctors.map((item) => {
-                      return (
-                        <option
-                          value={item?.id}
-                        >{`Dr. ${item?.doctor_name}`}</option>
-                      );
-                    })}
-                  </select>
-                )}
-              </Field>
-              <ErrorMessage
-                name="doctor_id"
-                className="text-red-500"
-                component="p"
+          {({ values, setFieldValue }) => (
+            <Form>
+              <p className="text-center pb-8 font-bold text-2xl underline">
+                {user?.type_name?.replace(/\b\w/g, (char) =>
+                  char.toUpperCase()
+                )}{" "}
+                Slip
+              </p>
+              <Input
+                placeholder="Patient Name"
+                name="patient_name"
+                errorName="patient_name"
               />
-            </div>
-            <Input placeholder="Age" name="age" errorName="age" />
-            <div className="mb-3">
-              <Field name="gender">
-                {({ field, form }) => (
-                  <select
-                    {...field}
-                    className={`input w-full py-3 px-3 rounded border outline-none ${
-                      field.value ? "text-black" : "text-gray-400"
-                    }`}
-                  >
-                    <option value="">Select Gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                  </select>
-                )}
-              </Field>
-              <ErrorMessage
-                name="gender"
-                className="text-red-500"
-                component="p"
-              />
-            </div>
-            {user.slip_type_id === 2 && (
               <div className="mb-3">
-                <Field name="service_id">
-                  {({ field, form }) => {
-                    const options = services.map((item) => ({
-                      value: item.id,
-                      label: `${item.service_name} (Rs.${item.service_fees})`
-                    }));
-                    return (
-                      <Select
-                        isMulti
-                        options={options}
-                        value={options.filter((opt) =>
-                          field.value?.includes(opt.value)
-                        )}
-                        placeholder="Select Service"
-                        onChange={(selected) =>
-                          form.setFieldValue(
-                            "service_id",
-                            selected.map((i) => i.value)
-                          )
-                        }
-                        styles={customStyles}
-                        className={`input w-full py-1 px-3 rounded border outline-none ${
-                          field.value?.length ? "text-black" : "text-gray-400"
-                        }`}
-                      />
-                    );
-                  }}
-                </Field>
-                <ErrorMessage
-                  name="service_id"
-                  className="text-red-500"
-                  component="p"
-                />
-              </div>
-            )}
-            {user.slip_type_id === 1 ? (
-              <div className="mb-3">
-                <Field name="fees_id">
+                <Field name="doctor_id">
                   {({ field, form }) => (
                     <select
                       {...field}
@@ -223,52 +141,159 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
                         field.value ? "text-black" : "text-gray-400"
                       }`}
                     >
-                      <option value="">Slip Type</option>
-                      {feesTypes.map((item) => {
+                      <option value="">Select Doctor</option>
+                      {doctors.map((item) => {
                         return (
                           <option
                             value={item?.id}
-                          >{`${item?.doctor_fee}`}</option>
+                          >{`Dr. ${item?.doctor_name}`}</option>
                         );
                       })}
                     </select>
                   )}
                 </Field>
                 <ErrorMessage
-                  name="fees_id"
+                  name="doctor_id"
                   className="text-red-500"
                   component="p"
                 />
               </div>
-            ) : (
-              <Input
-                placeholder="Pharmacy fees"
-                name="pharmacy_fees"
-                errorName="pharmacy_fees"
-              />
-            )}
-            {user.slip_type_id === 2 && (
-              <>
-                <Input
-                  placeholder="Reference No"
-                  name="reference_token_no"
-                  errorName="reference_token_no"
+              <Input placeholder="Age" name="age" errorName="age" />
+              <div className="mb-3">
+                <Field name="gender">
+                  {({ field, form }) => (
+                    <select
+                      {...field}
+                      className={`input w-full py-3 px-3 rounded border outline-none ${
+                        field.value ? "text-black" : "text-gray-400"
+                      }`}
+                    >
+                      <option value="">Select Gender</option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                    </select>
+                  )}
+                </Field>
+                <ErrorMessage
+                  name="gender"
+                  className="text-red-500"
+                  component="p"
                 />
+              </div>
+              {user.slip_type_id === 2 && (
+                <div className="mb-3">
+                  <Field name="service_id">
+                    {({ field, form }) => {
+                      const options = services.map((item) => ({
+                        value: item.id,
+                        label: `${item.service_name} (Rs.${item.service_fees})`
+                      }));
+                      return (
+                        <Select
+                          isMulti
+                          options={options}
+                          value={options.filter((opt) =>
+                            field.value?.includes(opt.value)
+                          )}
+                          placeholder="Select Service"
+                          onChange={(selected) =>
+                            form.setFieldValue(
+                              "service_id",
+                              selected.map((i) => i.value)
+                            )
+                          }
+                          styles={customStyles}
+                          className={`input w-full py-1 px-3 rounded border outline-none ${
+                            field.value?.length ? "text-black" : "text-gray-400"
+                          }`}
+                        />
+                      );
+                    }}
+                  </Field>
+                  <ErrorMessage
+                    name="service_id"
+                    className="text-red-500"
+                    component="p"
+                  />
+                </div>
+              )}
+              {user.slip_type_id === 1 ? (
+                <div className="mb-3">
+                  <Field name="fees_id">
+                    {({ field, form }) => (
+                      <select
+                        {...field}
+                        className={`input w-full py-3 px-3 rounded border outline-none ${
+                          field.value ? "text-black" : "text-gray-400"
+                        }`}
+                      >
+                        <option value="">Slip Type</option>
+                        {feesTypes.map((item) => {
+                          return (
+                            <option
+                              value={item?.id}
+                            >{`${item?.doctor_fee}`}</option>
+                          );
+                        })}
+                      </select>
+                    )}
+                  </Field>
+                  <ErrorMessage
+                    name="fees_id"
+                    className="text-red-500"
+                    component="p"
+                  />
+                </div>
+              ) : (
                 <Input
-                  placeholder="Description (optional)"
-                  name="notes"
-                  errorName="notes"
+                  placeholder="Pharmacy fees"
+                  name="pharmacy_fees"
+                  errorName="pharmacy_fees"
                 />
-              </>
-            )}
-            <div className=" mt-10 flex justify-center">
-              <CustomAuthButton
-                isLoading={loading}
-                text="Generate"
-                type="submit"
-              />
-            </div>
-          </Form>
+              )}
+
+              {user.slip_type_id === 1 && (
+                <div className="flex items-center gap-2 mt-3">
+                  <input
+                    type="checkbox"
+                    id="is_card_holder"
+                    checked={values.is_card_holder}
+                    onChange={(e) =>
+                      setFieldValue("is_card_holder", e.target.checked)
+                    }
+                    className="w-4 h-4 cursor-pointer accent-[#004aa3]"
+                  />
+                  <label
+                    htmlFor="is_card_holder"
+                    className="text-sm font-medium"
+                  >
+                    Card Holder
+                  </label>
+                </div>
+              )}
+              {user.slip_type_id === 2 && (
+                <>
+                  <Input
+                    placeholder="Reference No"
+                    name="reference_token_no"
+                    errorName="reference_token_no"
+                  />
+                  <Input
+                    placeholder="Description (optional)"
+                    name="notes"
+                    errorName="notes"
+                  />
+                </>
+              )}
+              <div className=" mt-10 flex justify-center">
+                <CustomAuthButton
+                  isLoading={loading}
+                  text="Generate"
+                  type="submit"
+                />
+              </div>
+            </Form>
+          )}
         </Formik>
       </div>
     </div>

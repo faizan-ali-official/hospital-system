@@ -50,7 +50,7 @@ class PatientSlip {
           age,
           gender,
           is_card_holder,
-          new Date(),
+          new Date()
         ]
       );
       return result.insertId;
@@ -93,6 +93,7 @@ class PatientSlip {
   }
 
   static async findAll({
+    id,
     startDate,
     endDate,
     doctor_id,
@@ -125,6 +126,10 @@ class PatientSlip {
 
     const conditions = [];
     const params = [];
+    if (id) {
+      conditions.push("ps.id = ?");
+      params.push(id);
+    }
     if (startDate) {
       conditions.push("DATE(ps.created_at) >= ?");
       params.push(startDate);
@@ -179,28 +184,29 @@ class PatientSlip {
     return rows;
   }
   static async findById(id) {
+    console.log(id, "id");
     const [rows] = await pool.execute(
       `
       SELECT ps.*, 
-      d.id as doctor_id, d.doctor_name, d.specialization, 
-      f.id as fees_id, f.doctor_fee, st.type_name AS slip_type_name,
-      u.id as created_by, u.username as created_by_name,
-      ps.age, ps.gender, ps.deleted_at, ps.delete_note, 
-      ud.username as deleted_by_name,
-      s.id AS service_id, s.service_name, s.service_fees 
+             d.id AS doctor_id, d.doctor_name, d.specialization, 
+             f.id AS fees_id, f.doctor_fee, st.type_name AS slip_type_name,
+             u.id AS created_by, u.username AS created_by_name,
+             ps.age, ps.gender, ps.deleted_at, ps.delete_note, 
+             ud.username AS deleted_by_name,
+             s.id AS service_id, s.service_name, s.service_fees
       FROM patient_slip ps
       LEFT JOIN doctors d ON ps.doctor_id = d.id
       LEFT JOIN fees f ON ps.fees_id = f.id
       LEFT JOIN slip_type st ON ps.slip_type_id = st.id
       LEFT JOIN users u ON ps.created_by = u.id
-      LEFT JOIN users ud ON ps.delete_by = ud.id   -- <-- use correct column name
+      LEFT JOIN users ud ON ps.delete_by = ud.id
       LEFT JOIN patient_has_service phs ON phs.patient_slip_id = ps.id
       LEFT JOIN services s ON s.id = phs.service_id
       WHERE ps.id = ?
       `,
       [id]
     );
-
+    console.log(rows, "rows");
     if (!rows.length) return null;
 
     const slip = { ...rows[0], services: [] };

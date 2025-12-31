@@ -183,7 +183,7 @@ const CommunityCard = () => {
                           {item?.cnic}
                         </td>
                         <td className="py-3 px-6 border border-[#004aa3] capitalize">
-                          {item?.card_number}
+                          {item?.card_number || "N/A"}
                         </td>
                         <td className="py-3 px-6 border border-[#004aa3] capitalize">
                           {item?.contact_number}
@@ -206,6 +206,7 @@ const CommunityCard = () => {
                                 onClick={() => {
                                   setSelectedUser(item);
                                   setShowModal(true);
+                                  setShowDetailModal(false);
                                 }}
                                 className="bg-[#004aa3] text-white px-3 py-1 rounded mr-1 mt-1"
                               >

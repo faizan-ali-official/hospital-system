@@ -2,6 +2,7 @@ import React, { forwardRef } from "react";
 import Logo from "../../assets/logo.jpeg";
 
 const PrintSlip = forwardRef(({ user }, ref) => {
+  console.log(user, "user");
   return (
     <div
       ref={ref}
@@ -10,7 +11,7 @@ const PrintSlip = forwardRef(({ user }, ref) => {
       <div className="flex flex-col items-center border-b border-black pb-1">
         <img src={Logo} alt="Logo" className="h-15 w-15 object-contain mb-2" />
         <h1 className="text-sm font-bold uppercase tracking-wide text-center">
-          Malik Khidmat Foundation
+          Malik Medical Health Center
         </h1>
         <p className="text-[10px] py-2 text-center">
           Non-profit Organization · Karachi, Pakistan
@@ -108,6 +109,12 @@ const PrintSlip = forwardRef(({ user }, ref) => {
           return (
             <>
               {rows}
+              <div className="text-center">
+                {user?.is_card_holder &&
+                  `Fees is ${
+                    user?.doctor_fee * 2
+                  } but you are card holder so 50% is off`}
+              </div>
               <div className="flex justify-between font-bold border-t border-gray-600 pt-2 mt-2">
                 <span>Total</span>
                 <span>Rs. {total}</span>
@@ -119,9 +126,9 @@ const PrintSlip = forwardRef(({ user }, ref) => {
       <div className="mt-1 text-[10px] py-1 leading-tight">
         <p>Appointment once booked is non-refundable.</p>
       </div>
-      <div className="flex justify-between text-[10px] mt-2 pt-3 border-t border-gray-700">
-        <span>📞 0300-6254553</span>
-        <span>info@malikkhidmatfoundation.com</span>
+      <div className="text-center text-[10px] mt-2 pt-3 border-t border-gray-700">
+        <p>📞0300-6254553</p>
+        <p>info@malikkhidmatfoundation.com</p>
       </div>
       <p className="text-center text-[10px] mt-4 text-black italic pb-3">
         Developed by UA Digital

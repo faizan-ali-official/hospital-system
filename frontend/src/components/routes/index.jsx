@@ -34,7 +34,7 @@ const RouterPage = () => {
                 className="h-10 w-10 object-contain"
               />
               <h1 className="text-4xl font-extrabold bg-gradient-to-r from-[#004aa3] via-gray-800 to-[#004aa3] text-transparent bg-clip-text drop-shadow-md tracking-wide uppercase">
-                Malik Khidmat Foundation
+                Malik Medical Health Center
               </h1>
             </div>
             <p className="text-sm text-gray-600 font-medium mt-1">

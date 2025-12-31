@@ -71,18 +71,17 @@ function CommunityCardCreate() {
       .string()
       .matches(/^03[0-9]{9}$/, "Contact number must be like 03XXXXXXXXX")
       .required("Contact number is required"),
-    occupation: yup.string().required("Occupation is required"),
+    occupation: yup.string(),
     blood_group: yup
       .string()
       .oneOf(
         ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
         "Invalid blood group"
-      )
-      .required("Blood group is required"),
+      ),
     family_members_count: yup
       .number()
       .typeError("Family members must be a number"),
-    card_number: yup.string().required("Card number is required"),
+    card_number: yup.string(),
     date_of_birth: yup.string(),
     gender: yup
       .string()
@@ -97,7 +96,6 @@ function CommunityCardCreate() {
         cnic: yup
           .string()
           .matches(/^[0-9]{5}-[0-9]{7}-[0-9]{1}$/, "Invalid CNIC")
-          .required("CNIC is required")
       })
     )
   });
