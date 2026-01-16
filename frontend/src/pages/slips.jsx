@@ -80,6 +80,87 @@ const Slips = () => {
     `
   });
 
+  const handlePrint = () => {
+    if (!tableContainerRef?.current) return;
+
+    const printContent = tableContainerRef.current.innerHTML;
+    const printWindow = window.open("", "", "width=1000,height=800");
+
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Records Report</title>
+          <style>
+            /* Define A4 Page Setup */
+            @page {
+              size: A4;
+              margin: 15mm; /* Standard margin for A4 */
+            }
+  
+            body {
+              font-family: Arial, sans-serif;
+              margin: 0;
+              padding: 0;
+              color: #333;
+            }
+  
+            h2 {
+              text-align: center;
+              text-decoration: underline;
+              margin-bottom: 20px;
+            }
+  
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              table-layout: auto; /* Allows columns to adjust to content */
+              font-size: 12px; /* Standard readable size for A4 */
+            }
+  
+            th, td {
+              border: 1px solid #004aa3;
+              padding: 10px 8px;
+              text-align: left;
+              word-wrap: break-word;
+            }
+  
+            th {
+              background-color: #f3f4f6 !important;
+              -webkit-print-color-adjust: exact; /* Ensures background prints */
+            }
+  
+            /* Handle the hidden elements */
+            .print-hidden {
+              display: none !important;
+            }
+  
+            @media print {
+              .print-hidden {
+                display: none !important;
+              }
+              /* Avoid breaking a row across two pages if possible */
+              tr {
+                page-break-inside: avoid;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          <h2 style="text-align: center;">Patient Records</h2>
+          ${printContent}
+          <script>
+            // Ensure the window prints only after content is loaded
+            window.onload = function() {
+              window.print();
+              // Optional: window.close(); 
+            };
+          </script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+  };
+
   const limit = 100;
 
   const fetchSlips = async () => {
@@ -173,6 +254,7 @@ const Slips = () => {
             setFilteredSearch={setAllSlips}
             setShowNo={setShowNo}
             showNo={showNo}
+            handlePrint={handlePrint}
           />
         )}
         <div
@@ -203,7 +285,7 @@ const Slips = () => {
                       Created By
                     </th>
                     <th className="py-3 px-6 border border-[#004aa3]">Fees</th>
-                    <th className="py-3 px-6 border border-[#004aa3] text-center">
+                    <th className="py-3 px-6 border border-[#004aa3] text-center print-hidden">
                       Actions
                     </th>
                   </tr>
@@ -245,7 +327,7 @@ const Slips = () => {
                                 : 0)
                             : item?.doctor_fee}
                         </td>
-                        <td className="py-3 px-6 border border-[#004aa3] text-center">
+                        <td className="py-3 px-6 border border-[#004aa3] text-center print-hidden">
                           <button
                             onClick={() => {
                               setGeneratedSlip(item);

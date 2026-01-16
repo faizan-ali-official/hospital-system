@@ -184,7 +184,6 @@ class PatientSlip {
     return rows;
   }
   static async findById(id) {
-    console.log(id, "id");
     const [rows] = await pool.execute(
       `
       SELECT ps.*, 
@@ -206,7 +205,6 @@ class PatientSlip {
       `,
       [id]
     );
-    console.log(rows, "rows");
     if (!rows.length) return null;
 
     const slip = { ...rows[0], services: [] };

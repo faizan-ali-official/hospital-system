@@ -125,7 +125,6 @@ class CommunityCardController {
           .json({ message: "cnic query param is required." });
       }
       const results = await CommunityCardMember.searchByCnic(cnic.trim());
-      console.log(results);
       return res.json(results);
     } catch (err) {
       return res.status(500).json({ message: "Server error." });

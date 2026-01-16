@@ -2,7 +2,6 @@ import React from "react";
 
 const MemberDetailModal = ({ data, onClose }) => {
   if (!data) return null;
-  console.log(data);
   const formatDate = (d) =>
     new Date(d).toISOString().split("T")[0].split("-").reverse().join("-");
 

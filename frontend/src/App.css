@@ -42,6 +42,12 @@
   animation-name: dot3_;
 }
 
+@media print {
+  .print-hidden {
+    display: none;
+  }
+}
+
 /* @media print {
   body * {
     visibility: hidden;

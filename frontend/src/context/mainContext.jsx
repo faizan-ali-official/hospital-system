@@ -87,7 +87,6 @@ export const MainContextProvider = ({ children }) => {
 
   useEffect(() => {
     fetchUserProfile();
-    // monitorInternetConnection();
   }, []);
 
   const saveDataOffline = (data) => {
@@ -106,16 +105,6 @@ export const MainContextProvider = ({ children }) => {
     } catch (error) {
       console.error("Sync failed, will retry later", error);
     }
-  };
-
-  const monitorInternetConnection = () => {
-    window.addEventListener("online", () => {
-      console.log("Internet connected, syncing...");
-      syncDataOnline();
-    });
-    window.addEventListener("offline", () => {
-      console.log("Internet disconnected, saving offline.");
-    });
   };
 
   if (loading) {
@@ -147,7 +136,6 @@ export const MainContextProvider = ({ children }) => {
         setDeleteSlips,
         setServices,
         setCommunityCard,
-        monitorInternetConnection,
         saveDataOffline
       }}
     >

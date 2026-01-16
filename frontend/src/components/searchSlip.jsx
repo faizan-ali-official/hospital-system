@@ -9,7 +9,8 @@ function SearchSlip({
   isreport,
   endpoint,
   setShowNo,
-  showNo
+  showNo,
+  handlePrint
 }) {
   const { doctors, today, allUsers } = useMainContext();
   const [doctorName, setDoctorName] = useState("");
@@ -189,7 +190,20 @@ function SearchSlip({
           </div>
         )}
       </div>
-      <h2 className="text-2xl font-bold text-center pb-4 underline">Records</h2>
+
+      <div className="flex justify-between">
+        <div />
+        <h2 className="text-2xl font-bold text-center pb-4 underline">
+          Records
+        </h2>
+        <button
+          onClick={() => handlePrint()}
+          disabled={loading}
+          className="bg-[#004aa3] w-[80px] text-white flex justify-center rounded xl:mt-0 pt-3"
+        >
+          Print
+        </button>
+      </div>
     </>
   );
 }

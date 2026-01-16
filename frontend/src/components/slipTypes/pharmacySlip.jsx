@@ -305,7 +305,6 @@ function PharmacySlip() {
         toast.info("No data found for this reference");
         return;
       }
-      console.log(res);
       const d = res.data;
       setValues((prev) => ({
         ...prev,
@@ -332,7 +331,6 @@ function PharmacySlip() {
       allSlips.push({ ...data?.data.data });
       helpers.resetForm();
       setAllSlips(allSlips);
-      console.log(data?.data?.data);
       setGeneratedSlip(data?.data?.data);
       setTimeout(() => printFn(), 1000);
       toast.success("Slip generated successfully!");

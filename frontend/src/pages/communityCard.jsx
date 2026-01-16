@@ -34,7 +34,10 @@ const CommunityCard = () => {
         `/api/community-cards?limit=${limit}&offset=${offset}&deleted=true`
       );
       const newSlips = response?.data;
-      setCommunityCard((prevSlips) => [...prevSlips, ...newSlips]);
+      setCommunityCard((prevSlips) => {
+        const merged = [...prevSlips, ...newSlips];
+        return [...new Map(merged.map((item) => [item.id, item])).values()];
+      });
       setOffset((prevOffset) => prevOffset + limit);
       if (newSlips.length < limit) {
         setHasMore(false);
@@ -136,7 +139,7 @@ const CommunityCard = () => {
         <div
           ref={tableContainerRef}
           className={`overflow-y-auto ${
-            showFilter ? "max-h-[calc(89vh-350px)]" : "max-h-[calc(89vh-80px)]"
+            showFilter ? "max-h-[calc(89vh-220px)]" : "max-h-[calc(89vh-80px)]"
           } mt-4`}
         >
           {!showNo ? (
@@ -155,7 +158,7 @@ const CommunityCard = () => {
                     <th className="py-3 px-6 border border-[#004aa3]">
                       Contact Number
                     </th>
-                    <th className="py-3 px-6 border border-[#004aa3] text-center">
+                    <th className="py-3 px-6 border border-[#004aa3] text-center ">
                       Actions
                     </th>
                   </tr>
@@ -188,7 +191,7 @@ const CommunityCard = () => {
                         <td className="py-3 px-6 border border-[#004aa3] capitalize">
                           {item?.contact_number}
                         </td>
-                        <td className="py-3 px-6 border border-[#004aa3] text-center">
+                        <td className="py-3 px-6 border border-[#004aa3] text-center ">
                           {user?.role === "admin" && (
                             <>
                               <button

@@ -138,7 +138,6 @@ function CommunityCardCreate() {
       });
       setParentResults(res.data || []);
     } catch (err) {
-      console.error("CNIC search error:", err);
       setParentResults([]);
     } finally {
       setParentLoading(false);

@@ -120,15 +120,15 @@ function CheckupSlip() {
     gender: yup
       .string()
       .required("Gender is required")
-      .oneOf(["Male", "Female"], "Invalid gender"),
-    reference_token_no: yup.string().when("fees_id", {
-      is: "3",
-      then: (schema) =>
-        schema
-          .required("Reference No is required")
-          .min(2, "Reference No must be at least 2 characters"),
-      otherwise: (schema) => schema.notRequired()
-    })
+      .oneOf(["Male", "Female"], "Invalid gender")
+    // reference_token_no: yup.string().when("fees_id", {
+    //   is: "3",
+    //   then: (schema) =>
+    //     schema
+    //       .required("Reference No is required")
+    //       .min(2, "Reference No must be at least 2 characters"),
+    //   otherwise: (schema) => schema.notRequired()
+    // })
   });
   return (
     <div>

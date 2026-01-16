@@ -2,7 +2,6 @@ import React, { forwardRef } from "react";
 import Logo from "../../assets/logo.jpeg";
 
 const PrintSlip = forwardRef(({ user }, ref) => {
-  console.log(user, "user");
   return (
     <div
       ref={ref}
