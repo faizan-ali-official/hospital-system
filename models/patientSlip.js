@@ -399,7 +399,7 @@ class PatientSlip {
     let sql = `SELECT COUNT(*) as slips_count, COALESCE(SUM(COALESCE(f.doctor_fee,0)),0) as total_amount
       FROM patient_slip ps
       LEFT JOIN fees f ON ps.fees_id = f.id
-      WHERE 1=1 AND ps.slip_type_id = 1`;
+      WHERE 1=1 AND ps.slip_type_id = 1 and ps.deleted_at is null`;
     const params = [];
     if (startDate) {
       sql += " AND DATE(ps.created_at) >= ?";
