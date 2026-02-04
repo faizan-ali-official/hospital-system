@@ -12,13 +12,14 @@ function SearchSlip({
   showNo,
   handlePrint
 }) {
-  const { doctors, today, allUsers } = useMainContext();
+  const { doctors, today, allUsers, discounts } = useMainContext();
   const [doctorName, setDoctorName] = useState("");
   const [patientName, setPatientName] = useState("");
   const [user, setUser] = useState("");
   const [slipType, setSlipType] = useState("");
   const [slipId, setSlipID] = useState("");
   const [status, setStatus] = useState("");
+  const [discountFilter, setDiscountFilter] = useState("");
   const [loading, setLoading] = useState(false);
   const [startDate, setStartDate] = useState(() => {
     return today.toISOString().split("T")[0];
@@ -37,7 +38,8 @@ function SearchSlip({
         ...(slipType && { slip_type_id: Number(slipType) }),
         ...(status && { status }),
         ...(startDate && { startDate }),
-        ...(endDate && { endDate })
+        ...(endDate && { endDate }),
+        ...(discountFilter && { discount_id: discountFilter })
       };
 
       let apiUrl = "/api/patient-slips";
@@ -131,6 +133,21 @@ function SearchSlip({
                   <option value="">Select Type</option>
                   <option value="1">appointment</option>
                   <option value="2">pharmacy</option>
+                </select>
+              </div>
+              <div className="flex flex-col min-w-[14%]">
+                <label className="mb-1 text-sm text-gray-700">Discount</label>
+                <select
+                  value={discountFilter}
+                  onChange={(e) => setDiscountFilter(e.target.value)}
+                  className="border p-2 rounded"
+                >
+                  <option value="">All</option>
+                  {discounts?.map((d) => (
+                    <option key={d.id} value={d.id}>
+                      {d.discount_name} ({d.discount_percentage}%)
+                    </option>
+                  ))}
                 </select>
               </div>
             </>

@@ -9,6 +9,8 @@ import Reports from "./reports";
 import DeletedSlips from "./deletedSlip";
 import Services from "./services";
 import ServiceCreate from "./servicesCreate";
+import Discounts from "./discounts";
+import DiscountCreate from "./discountsCreate";
 import CommunityCardCreate from "./communityCardCreate";
 import CommunityCard from "./communityCard";
 
@@ -24,6 +26,8 @@ export {
   DeletedSlips,
   Services,
   ServiceCreate,
+  Discounts,
+  DiscountCreate,
   CommunityCard,
   CommunityCardCreate
 };

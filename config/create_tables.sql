@@ -97,7 +97,7 @@ CREATE TABLE IF NOT EXISTS community_card_members (
   gender ENUM('male', 'female', 'other') NULL,
   family_members_count INT NULL,
   card_number VARCHAR(50) NULL,
-  collected_by: INT NOT NULL,
+  collected_by INT NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NULL,
   CONSTRAINT fk_cc_parent
@@ -141,4 +141,19 @@ CREATE TABLE patient_has_service (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 ALTER TABLE patient_slip
+ADD COLUMN delete_by int DEFAULT null;
+
+ALTER TABLE patient_slip
 ADD COLUMN is_card_holder BOOLEAN DEFAULT FALSE;
+
+CREATE TABLE IF NOT EXISTS discounts (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  discount_name VARCHAR(100) NOT NULL,
+  discount_percentage DECIMAL(5,2) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NULL
+);
+
+ALTER TABLE patient_slip
+ADD COLUMN discount_id INT NULL,
+ADD CONSTRAINT fk_ps_discount FOREIGN KEY (discount_id) REFERENCES discounts(id) ON DELETE SET NULL;

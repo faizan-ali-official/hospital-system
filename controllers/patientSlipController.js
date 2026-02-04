@@ -1,5 +1,32 @@
 import PatientSlip from "../models/patientSlip.js";
 
+function applyDiscountToSlip(slip) {
+  let totalFees = 0;
+  if (slip.slip_type_id === 1) {
+    totalFees = Number(slip.doctor_fee) || 0;
+  } else if (slip.slip_type_id === 2) {
+    const pharmacyFees = Number(slip.pharmacy_fees) || 0;
+    const servicesTotal =
+      (slip.services || []).reduce((sum, s) => sum + (Number(s.fees) || 0), 0) || 0;
+    totalFees = pharmacyFees + servicesTotal;
+  }
+  slip.fees_before_discount = totalFees;
+  // Discount only applies to appointment slips (slip_type_id 1)
+  if (
+    slip.slip_type_id === 1 &&
+    slip.discount_id &&
+    slip.discount_percentage != null
+  ) {
+    const discountAmount =
+      totalFees * (Number(slip.discount_percentage) / 100);
+    slip.fees_after_discount =
+      Math.round((totalFees - discountAmount) * 100) / 100;
+  } else {
+    slip.fees_after_discount = totalFees;
+  }
+  return slip;
+}
+
 class PatientSlipController {
   static async createPatientSlip(req, res) {
     let slipId;
@@ -17,6 +44,7 @@ class PatientSlipController {
         gender,
         service_id,
         is_card_holder,
+        discount_id,
       } = req.body;
       const created_by = req.user.id;
       if (slip_type_id === 1) {
@@ -31,6 +59,7 @@ class PatientSlipController {
           age,
           gender,
           is_card_holder,
+          discount_id,
         });
       } else if (slip_type_id === 2) {
         slipId = await PatientSlip.create({
@@ -62,12 +91,14 @@ class PatientSlipController {
           notes,
           pharmacy_fees,
           is_card_holder,
+          discount_id,
         });
       }
       const fullData = await PatientSlip.findById(slipId);
+      const slipWithDiscount = applyDiscountToSlip(fullData);
       return res
         .status(201)
-        .json({ data: fullData, message: "Created Successfully" });
+        .json({ data: slipWithDiscount, message: "Created Successfully" });
     } catch (err) {
       console.log(err);
       return res.status(500).json({ message: "Server error. " + err.message });
@@ -112,6 +143,7 @@ class PatientSlipController {
         limit,
         offset,
         deleted,
+        discount_id,
       } = req.query;
       let slips = await PatientSlip.findAll({
         startDate,
@@ -125,6 +157,7 @@ class PatientSlipController {
         limit,
         offset,
         deleted,
+        discount_id,
       });
       const slipsMap = new Map();
 
@@ -153,6 +186,9 @@ class PatientSlipController {
             delete_note: row.delete_note,
             created_at: row.created_at,
             updated_at: row.updated_at,
+            discount_id: row.discount_id,
+            discount_name: row.discount_name,
+            discount_percentage: row.discount_percentage,
             services: [],
           });
         }
@@ -167,7 +203,10 @@ class PatientSlipController {
         }
       });
 
-      return res.json(Array.from(slipsMap.values()));
+      const slipsWithDiscount = Array.from(slipsMap.values()).map((slip) =>
+        applyDiscountToSlip(slip)
+      );
+      return res.json(slipsWithDiscount);
     } catch (err) {
       return res.status(500).json({ message: "Server error. " + err.message });
     }
@@ -180,7 +219,8 @@ class PatientSlipController {
       if (!slip) {
         return res.status(404).json({ message: "Patient slip not found." });
       }
-      return res.json(slip);
+      const slipWithDiscount = applyDiscountToSlip(slip);
+      return res.json(slipWithDiscount);
     } catch (err) {
       return res.status(500).json({ message: "Server error. " + err.message });
     }
@@ -201,6 +241,7 @@ class PatientSlipController {
         age,
         service_id,
         is_card_holder,
+        discount_id,
       } = req.body;
       const slip = await PatientSlip.findById(id);
       if (!slip) {
@@ -218,15 +259,17 @@ class PatientSlipController {
         age,
         service_id,
         is_card_holder,
+        discount_id,
       });
       if (!updated) {
         return res.status(400).json({ message: "Nothing to update." });
       }
       const data = await PatientSlip.findById(id);
+      const slipWithDiscount = applyDiscountToSlip(data);
 
       return res.json({
         message: "Patient slip updated successfully.",
-        updatedData: data,
+        updatedData: slipWithDiscount,
       });
     } catch (err) {
       return res.status(500).json({ message: "Server error." });

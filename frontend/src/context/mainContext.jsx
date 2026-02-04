@@ -11,12 +11,14 @@ const mainContext = createContext({
   allSlips: [],
   feesTypes: [],
   services: [],
+  discounts: [],
   communityCard: [],
   setAllSlips: () => {},
   setDoctors: () => {},
   setAllUsers: () => {},
   setFeesTypes: () => {},
   setServices: () => {},
+  setDiscounts: () => {},
   setCommunityCard: () => {},
   fetchUserProfile: () => {},
   logOutHandler: () => {}
@@ -33,6 +35,7 @@ export const MainContextProvider = ({ children }) => {
   const [allSlips, setAllSlips] = useState([]);
   const [deleteSlips, setDeleteSlips] = useState([]);
   const [services, setServices] = useState([]);
+  const [discounts, setDiscounts] = useState([]);
   const [communityCard, setCommunityCard] = useState([]);
   const [feesTypes, setFeesTypes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -63,7 +66,10 @@ export const MainContextProvider = ({ children }) => {
       const servicesResp = await axiosClient.get("/api/services/");
       setServices(servicesResp?.data);
       const communityCardResp = await axiosClient.get("/api/community-cards/");
+      setServices(servicesResp?.data);
       setCommunityCard(communityCardResp?.data);
+      const discountsResp = await axiosClient.get("/api/discounts/");
+      setDiscounts(discountsResp?.data);
       const deleteSlipResp = await axiosClient.get(
         "/api/patient-slips?limit=100&offset=0&deleted=true"
       );
@@ -126,6 +132,7 @@ export const MainContextProvider = ({ children }) => {
         feesTypes,
         deleteSlips,
         services,
+        discounts,
         communityCard,
         fetchUserProfile,
         logOutHandler,
@@ -135,6 +142,7 @@ export const MainContextProvider = ({ children }) => {
         setFeesTypes,
         setDeleteSlips,
         setServices,
+        setDiscounts,
         setCommunityCard,
         saveDataOffline
       }}

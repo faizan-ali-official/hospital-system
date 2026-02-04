@@ -1,7 +1,7 @@
 import React from "react";
 import { Sidebar, Menu, MenuItem } from "react-pro-sidebar";
 import { IoMdHome } from "react-icons/io";
-import { HiClipboardDocumentList, HiUser } from "react-icons/hi2";
+import { HiClipboardDocumentList, HiUser, HiTag } from "react-icons/hi2";
 import { FaUserDoctor, FaSheetPlastic } from "react-icons/fa6";
 import { FaAddressCard } from "react-icons/fa";
 import { HiDocumentMagnifyingGlass, HiDocumentMinus } from "react-icons/hi2";
@@ -55,6 +55,11 @@ const RootLayout = () => {
                     link="/services"
                     text="Services"
                     Icon={HiClipboardDocumentList}
+                  />
+                  <CustomMenu
+                    link="/discounts"
+                    text="Discounts"
+                    Icon={HiTag}
                   />
                   <CustomMenu
                     link="/communitycard"

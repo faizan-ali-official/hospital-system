@@ -285,6 +285,9 @@ const Slips = () => {
                       Created By
                     </th>
                     <th className="py-3 px-6 border border-[#004aa3]">Fees</th>
+                    <th className="py-3 px-6 border border-[#004aa3]">
+                      Discount Fees
+                    </th>
                     <th className="py-3 px-6 border border-[#004aa3] text-center print-hidden">
                       Actions
                     </th>
@@ -317,15 +320,29 @@ const Slips = () => {
                           {item?.created_by_name}
                         </td>
                         <td className="py-3 px-6 border border-[#004aa3]">
-                          {item?.slip_type_name === "pharmacy"
-                            ? Number(item?.pharmacy_fees) +
-                              (Array.isArray(item?.services)
-                                ? item.services.reduce(
-                                    (sum, s) => sum + Number(s.fees || 0),
-                                    0
-                                  )
-                                : 0)
-                            : item?.doctor_fee}
+                          {item?.fees_before_discount != null
+                            ? item.fees_before_discount
+                            : item?.slip_type_name === "pharmacy"
+                              ? Number(item?.pharmacy_fees) +
+                                (Array.isArray(item?.services)
+                                  ? item.services.reduce(
+                                      (sum, s) => sum + Number(s.fees || 0),
+                                      0
+                                    )
+                                  : 0)
+                              : item?.doctor_fee}
+                        </td>
+                        <td className="py-3 px-6 border border-[#004aa3]">
+                          {item?.discount_id ? (
+                            <span className="text-green-600 font-medium">
+                              {item.fees_after_discount}{" "}
+                              <span className="text-gray-500 text-xs">
+                                ({item.discount_name} - {item.discount_percentage}%)
+                              </span>
+                            </span>
+                          ) : (
+                            <span className="text-gray-400">No Discount</span>
+                          )}
                         </td>
                         <td className="py-3 px-6 border border-[#004aa3] text-center print-hidden">
                           <button

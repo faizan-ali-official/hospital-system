@@ -12,6 +12,8 @@ import {
   DeletedSlips,
   Services,
   ServiceCreate,
+  Discounts,
+  DiscountCreate,
   CommunityCard,
   CommunityCardCreate
 } from "../../pages";
@@ -67,6 +69,8 @@ const RouterPage = () => {
                 <Route path="/reports" element={<Reports />} />
                 <Route path="/deletedslips" element={<DeletedSlips />} />
                 <Route path="/servicecreate" element={<ServiceCreate />} />
+                <Route path="/discounts" element={<Discounts />} />
+                <Route path="/discountcreate" element={<DiscountCreate />} />
                 <Route path="/communitycard" element={<CommunityCard />} />
                 <Route
                   path="/communitycardcreate"

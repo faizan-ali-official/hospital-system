@@ -13,12 +13,13 @@ class PatientSlip {
     gender,
     notes = null,
     pharmacy_fees = null,
-    is_card_holder = false
+    is_card_holder = false,
+    discount_id = null
   }) {
     // If slip_type_name is 'appointment', store appointment fields
     if (slip_type_id === 1) {
       const [result] = await pool.execute(
-        `INSERT INTO patient_slip (patient_name, doctor_id, fees_id, token_no, created_by, slip_type_id, age, gender, is_card_holder, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO patient_slip (patient_name, doctor_id, fees_id, token_no, created_by, slip_type_id, age, gender, is_card_holder, discount_id, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           patient_name,
           doctor_id,
@@ -29,6 +30,7 @@ class PatientSlip {
           age,
           gender,
           is_card_holder,
+          discount_id,
           new Date()
         ]
       );
@@ -37,7 +39,7 @@ class PatientSlip {
     // If slip_type_name is 'pharmacy', store pharmacy fields
     if (slip_type_id === 2) {
       const [result] = await pool.execute(
-        `INSERT INTO patient_slip (patient_name, doctor_id, fees_id, reference_token_no, created_by, slip_type_id, notes, pharmacy_fees,age, gender, is_card_holder, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?,?,?)`,
+        `INSERT INTO patient_slip (patient_name, doctor_id, fees_id, reference_token_no, created_by, slip_type_id, notes, pharmacy_fees, age, gender, is_card_holder, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           patient_name,
           doctor_id,
@@ -57,7 +59,7 @@ class PatientSlip {
     }
     // Default: store all fields
     const [result] = await pool.execute(
-      `INSERT INTO patient_slip (patient_name, doctor_id, fees_id, token_no, reference_token_no, created_by, slip_type_id, notes,age,gender,updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO patient_slip (patient_name, doctor_id, fees_id, token_no, reference_token_no, created_by, slip_type_id, notes, age, gender, discount_id, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         patient_name,
         doctor_id,
@@ -69,6 +71,7 @@ class PatientSlip {
         notes,
         age,
         gender,
+        discount_id,
         new Date()
       ]
     );
@@ -104,7 +107,8 @@ class PatientSlip {
     search,
     limit,
     offset,
-    deleted
+    deleted,
+    discount_id
   } = {}) {
     let sql = `
         SELECT ps.*, 
@@ -113,7 +117,8 @@ class PatientSlip {
               u.id as created_by, u.username as created_by_name,
               ps.age, ps.gender, ps.deleted_at, ps.delete_note, 
               ud.username as deleted_by,
-              s.id AS service_id, s.service_name, s.service_fees 
+              s.id AS service_id, s.service_name, s.service_fees,
+              disc.id AS discount_id, disc.discount_name, disc.discount_percentage
         FROM patient_slip ps
         LEFT JOIN doctors d ON ps.doctor_id = d.id
         LEFT JOIN fees f ON ps.fees_id = f.id
@@ -122,6 +127,7 @@ class PatientSlip {
         LEFT JOIN users ud ON ps.delete_by = ud.id
         LEFT JOIN patient_has_service phs ON phs.patient_slip_id = ps.id
         LEFT JOIN services s ON s.id = phs.service_id
+        LEFT JOIN discounts disc ON ps.discount_id = disc.id
       `;
 
     const conditions = [];
@@ -167,6 +173,10 @@ class PatientSlip {
     } else {
       conditions.push("ps.deleted_at IS NULL");
     }
+    if (discount_id) {
+      conditions.push("ps.discount_id = ?");
+      params.push(Number(discount_id));
+    }
 
     if (conditions.length > 0) {
       sql += " WHERE " + conditions.join(" AND ");
@@ -192,7 +202,8 @@ class PatientSlip {
              u.id AS created_by, u.username AS created_by_name,
              ps.age, ps.gender, ps.deleted_at, ps.delete_note, 
              ud.username AS deleted_by_name,
-             s.id AS service_id, s.service_name, s.service_fees
+             s.id AS service_id, s.service_name, s.service_fees,
+             disc.id AS discount_id, disc.discount_name, disc.discount_percentage
       FROM patient_slip ps
       LEFT JOIN doctors d ON ps.doctor_id = d.id
       LEFT JOIN fees f ON ps.fees_id = f.id
@@ -201,6 +212,7 @@ class PatientSlip {
       LEFT JOIN users ud ON ps.delete_by = ud.id
       LEFT JOIN patient_has_service phs ON phs.patient_slip_id = ps.id
       LEFT JOIN services s ON s.id = phs.service_id
+      LEFT JOIN discounts disc ON ps.discount_id = disc.id
       WHERE ps.id = ?
       `,
       [id]
@@ -236,7 +248,8 @@ class PatientSlip {
       gender,
       age,
       service_id,
-      is_card_holder
+      is_card_holder,
+      discount_id
     }
   ) {
     const fields = [];
@@ -269,6 +282,10 @@ class PatientSlip {
     if (is_card_holder !== undefined) {
       fields.push("is_card_holder = ?");
       values.push(is_card_holder);
+    }
+    if (discount_id !== undefined) {
+      fields.push("discount_id = ?");
+      values.push(discount_id);
     }
     // if (slip_type_id !== undefined) {
     //   fields.push("slip_type_id = ?");
@@ -396,9 +413,14 @@ class PatientSlip {
     doctor_id,
     created_by
   }) {
-    let sql = `SELECT COUNT(*) as slips_count, COALESCE(SUM(COALESCE(f.doctor_fee,0)),0) as total_amount
+    let sql = `SELECT 
+      COUNT(*) as slips_count, 
+      ROUND(COALESCE(SUM(
+        COALESCE(f.doctor_fee, 0) * (1 - COALESCE(disc.discount_percentage, 0) / 100)
+      ), 0), 2) as total_amount
       FROM patient_slip ps
       LEFT JOIN fees f ON ps.fees_id = f.id
+      LEFT JOIN discounts disc ON ps.discount_id = disc.id
       WHERE 1=1 AND ps.slip_type_id = 1 and ps.deleted_at is null`;
     const params = [];
     if (startDate) {

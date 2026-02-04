@@ -12,7 +12,8 @@ import Input from "../input/input";
 function CheckupSlip() {
   const componentRef = useRef(null);
   const [loading, setLoading] = useState(false);
-  const { doctors, feesTypes, allSlips, setAllSlips } = useMainContext();
+  const { doctors, feesTypes, discounts, allSlips, setAllSlips } =
+    useMainContext();
   const [generatedSlip, setGeneratedSlip] = useState(null);
 
   const printFn = useReactToPrint({
@@ -73,6 +74,9 @@ function CheckupSlip() {
     if (!payload.reference_token_no) {
       delete payload.reference_token_no;
     }
+    if (!payload.discount_id) {
+      delete payload.discount_id;
+    }
     let data;
     try {
       setLoading(true);
@@ -106,7 +110,8 @@ function CheckupSlip() {
     slip_type_id: 1,
     age: "",
     gender: "",
-    is_card_holder: false
+    is_card_holder: false,
+    discount_id: ""
   };
 
   const validationSchema = yup.object({
@@ -218,7 +223,26 @@ function CheckupSlip() {
                 component="p"
               />
             </div>
-            <div className="flex items-center gap-2 mt-3">
+            <div className="mb-3">
+              <Field name="discount_id">
+                {({ field }) => (
+                  <select
+                    {...field}
+                    className={`input w-full py-3 px-3 rounded border outline-none ${
+                      field.value ? "text-black" : "text-gray-400"
+                    }`}
+                  >
+                    <option value="">No Discount</option>
+                    {discounts?.map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.discount_name} ({item.discount_percentage}%)
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </Field>
+            </div>
+            {/* <div className="flex items-center gap-2 mt-3">
               <input
                 type="checkbox"
                 id="is_card_holder"
@@ -231,7 +255,7 @@ function CheckupSlip() {
               <label htmlFor="is_card_holder" className="text-sm font-medium">
                 Card Holder
               </label>
-            </div>
+            </div> */}
             <div className=" mt-10 flex justify-center">
               <CustomAuthButton
                 isLoading={loading}

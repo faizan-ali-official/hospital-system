@@ -11,12 +11,17 @@ import Select from "react-select";
 
 function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
   const [loading, setLoading] = useState(false);
-  const { doctors, feesTypes, services, allSlips, setAllSlips } =
+  const { doctors, feesTypes, services, discounts, allSlips, setAllSlips } =
     useMainContext();
   const onSubmitHandler = async (values) => {
     const payload = { ...values };
     if (!payload.reference_token_no) {
       delete payload.reference_token_no;
+    }
+    if (user.slip_type_id !== 1) {
+      delete payload.discount_id;
+    } else if (!payload.discount_id) {
+      delete payload.discount_id;
     }
     try {
       setLoading(true);
@@ -52,7 +57,8 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
     }),
     age: user.age || "",
     gender: user.gender || "",
-    is_card_holder: user.is_card_holder || false
+    is_card_holder: user.is_card_holder || false,
+    ...(user.slip_type_id === 1 && { discount_id: user.discount_id || "" })
   };
 
   const validationSchema = yup.object({
@@ -253,7 +259,27 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
               )}
 
               {user.slip_type_id === 1 && (
-                <div className="flex items-center gap-2 mt-3">
+                <>
+                  <div className="mb-3">
+                    <Field name="discount_id">
+                      {({ field }) => (
+                        <select
+                          {...field}
+                          className={`input w-full py-3 px-3 rounded border outline-none ${
+                            field.value ? "text-black" : "text-gray-400"
+                          }`}
+                        >
+                          <option value="">No Discount</option>
+                          {discounts?.map((item) => (
+                            <option key={item.id} value={item.id}>
+                              {item.discount_name} ({item.discount_percentage}%)
+                            </option>
+                          ))}
+                        </select>
+                      )}
+                    </Field>
+                  </div>
+                  <div className="flex items-center gap-2 mt-3">
                   <input
                     type="checkbox"
                     id="is_card_holder"
@@ -270,6 +296,7 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
                     Card Holder
                   </label>
                 </div>
+                </>
               )}
               {user.slip_type_id === 2 && (
                 <>

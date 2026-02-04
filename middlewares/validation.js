@@ -144,6 +144,10 @@ export const patientSlipValidation = {
     body("service_id.*")
       .isInt()
       .withMessage("Each service ID must be an integer."),
+    body("discount_id")
+      .optional()
+      .isInt()
+      .withMessage("Discount ID must be an integer."),
     (req, res, next) => {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -194,6 +198,10 @@ export const patientSlipValidation = {
     body("service_id.*")
       .isInt()
       .withMessage("Each service ID must be an integer."),
+    body("discount_id")
+      .optional()
+      .isInt()
+      .withMessage("Discount ID must be an integer."),
     (req, res, next) => {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -240,6 +248,22 @@ export const patientSlipValidation = {
 export const createAndUpdateServiceValidation = [
   body("name").notEmpty().withMessage("Service name is required."),
   body("fees").notEmpty().withMessage("Service fees is required."),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+  }
+];
+
+export const createAndUpdateDiscountValidation = [
+  body("name").notEmpty().withMessage("Discount name is required."),
+  body("percentage")
+    .notEmpty()
+    .withMessage("Discount percentage is required.")
+    .isFloat({ min: 0, max: 100 })
+    .withMessage("Percentage must be between 0 and 100."),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

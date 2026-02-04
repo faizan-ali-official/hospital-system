@@ -108,6 +108,12 @@ const PrintSlip = forwardRef(({ user }, ref) => {
           return (
             <>
               {rows}
+              {user?.discount_id && user?.discount_name && (
+                <div className="flex justify-between mt-1 py-2 text-green-700">
+                  <span>Discount ({user.discount_name}):</span>
+                  <span>-{user.discount_percentage}%</span>
+                </div>
+              )}
               <div className="text-center">
                 {user?.is_card_holder &&
                   `Fees is ${
@@ -115,8 +121,19 @@ const PrintSlip = forwardRef(({ user }, ref) => {
                   } but you are card holder so 50% is off`}
               </div>
               <div className="flex justify-between font-bold border-t border-gray-600 pt-2 mt-2">
-                <span>Total</span>
-                <span>Rs. {total}</span>
+                <span>
+                  {user?.fees_after_discount != null &&
+                  user?.fees_after_discount !== total
+                    ? "Total (After Discount)"
+                    : "Total"}
+                </span>
+                <span>
+                  Rs.{" "}
+                  {user?.fees_after_discount != null &&
+                  user?.fees_after_discount !== total
+                    ? user.fees_after_discount
+                    : total}
+                </span>
               </div>
             </>
           );
