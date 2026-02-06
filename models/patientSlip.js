@@ -14,7 +14,7 @@ class PatientSlip {
     notes = null,
     pharmacy_fees = null,
     is_card_holder = false,
-    discount_id = null
+    discount_id = null,
   }) {
     // If slip_type_name is 'appointment', store appointment fields
     if (slip_type_id === 1) {
@@ -31,7 +31,7 @@ class PatientSlip {
           gender,
           is_card_holder,
           discount_id,
-          new Date()
+          new Date(),
         ]
       );
       return result.insertId;
@@ -52,7 +52,7 @@ class PatientSlip {
           age,
           gender,
           is_card_holder,
-          new Date()
+          new Date(),
         ]
       );
       return result.insertId;
@@ -72,7 +72,7 @@ class PatientSlip {
         age,
         gender,
         discount_id,
-        new Date()
+        new Date(),
       ]
     );
     return result.insertId;
@@ -86,7 +86,7 @@ class PatientSlip {
 
       const slipId = await PatientSlip.create({
         ...slip,
-        token_no
+        token_no,
       });
 
       insertedIds.push(slipId);
@@ -108,7 +108,7 @@ class PatientSlip {
     limit,
     offset,
     deleted,
-    discount_id
+    discount_id,
   } = {}) {
     let sql = `
         SELECT ps.*, 
@@ -168,9 +168,9 @@ class PatientSlip {
       conditions.push("ps.patient_name LIKE ?");
       params.push(`%${search}%`);
     }
-    if (deleted) {
+    if (deleted === "true") {
       conditions.push("ps.deleted_at IS NOT NULL");
-    } else {
+    } else if (deleted === "false") {
       conditions.push("ps.deleted_at IS NULL");
     }
     if (discount_id) {
@@ -179,7 +179,7 @@ class PatientSlip {
     }
 
     if (conditions.length > 0) {
-      sql += " WHERE ps.deleted_at is null AND " + conditions.join(" AND ");
+      sql += " WHERE " + conditions.join(" AND ");
     }
     sql += " ORDER BY ps.created_at DESC";
     if (limit) {
@@ -226,7 +226,7 @@ class PatientSlip {
         slip.services.push({
           id: row.service_id,
           name: row.service_name,
-          fees: row.service_fees
+          fees: row.service_fees,
         });
       }
     });
@@ -249,7 +249,7 @@ class PatientSlip {
       age,
       service_id,
       is_card_holder,
-      discount_id
+      discount_id,
     }
   ) {
     const fields = [];
@@ -411,7 +411,7 @@ class PatientSlip {
     startDate,
     endDate,
     doctor_id,
-    created_by
+    created_by,
   }) {
     let sql = `SELECT 
       COUNT(*) as slips_count, 
@@ -448,7 +448,7 @@ class PatientSlip {
     startDate,
     endDate,
     doctor_id,
-    created_by
+    created_by,
   }) {
     let sql = `SELECT 
     COUNT(*) AS slips_count,
