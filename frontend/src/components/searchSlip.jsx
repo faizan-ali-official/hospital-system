@@ -10,7 +10,9 @@ function SearchSlip({
   endpoint,
   setShowNo,
   showNo,
-  handlePrint
+  handlePrint,
+  setStartShareDate,
+  setShareEndDate
 }) {
   const { doctors, today, allUsers, discounts } = useMainContext();
   const [doctorName, setDoctorName] = useState("");
@@ -101,7 +103,7 @@ function SearchSlip({
           </div>
           {!isreport ? (
             <>
-              <div className="flex flex-col min-w-[14%]">
+              {/* <div className="flex flex-col min-w-[14%]">
                 <label className="mb-1 text-sm text-gray-700">
                   Patient Name
                 </label>
@@ -112,7 +114,7 @@ function SearchSlip({
                   onChange={(e) => setPatientName(e.target.value)}
                   className="border p-2 rounded"
                 />
-              </div>
+              </div> */}
               <div className="flex flex-col min-w-[14%]">
                 <label className="mb-1 text-sm text-gray-700">Slip ID</label>
                 <input
@@ -173,7 +175,12 @@ function SearchSlip({
             <input
               type="date"
               value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
+              onChange={(e) => {
+                setStartDate(e.target.value);
+                if (setStartShareDate) {
+                  setStartShareDate(e.target.value);
+                }
+              }}
               className="border p-2 rounded"
             />
           </div>
@@ -182,7 +189,12 @@ function SearchSlip({
             <input
               type="date"
               value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
+              onChange={(e) => {
+                setEndDate(e.target.value);
+                if (setShareEndDate) {
+                  setShareEndDate(e.target.value);
+                }
+              }}
               className="border p-2 rounded"
             />
           </div>

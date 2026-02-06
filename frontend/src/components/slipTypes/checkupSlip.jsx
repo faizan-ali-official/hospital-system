@@ -126,14 +126,6 @@ function CheckupSlip() {
       .string()
       .required("Gender is required")
       .oneOf(["Male", "Female"], "Invalid gender")
-    // reference_token_no: yup.string().when("fees_id", {
-    //   is: "3",
-    //   then: (schema) =>
-    //     schema
-    //       .required("Reference No is required")
-    //       .min(2, "Reference No must be at least 2 characters"),
-    //   otherwise: (schema) => schema.notRequired()
-    // })
   });
   return (
     <div>
@@ -242,20 +234,6 @@ function CheckupSlip() {
                 )}
               </Field>
             </div>
-            {/* <div className="flex items-center gap-2 mt-3">
-              <input
-                type="checkbox"
-                id="is_card_holder"
-                checked={values.is_card_holder}
-                onChange={(e) =>
-                  setFieldValue("is_card_holder", e.target.checked)
-                }
-                className="w-4 h-4 cursor-pointer accent-[#004aa3]"
-              />
-              <label htmlFor="is_card_holder" className="text-sm font-medium">
-                Card Holder
-              </label>
-            </div> */}
             <div className=" mt-10 flex justify-center">
               <CustomAuthButton
                 isLoading={loading}

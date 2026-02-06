@@ -164,62 +164,59 @@ const CommunityCard = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredCommunityCards
-                    .slice()
-                    .sort((a, b) => b.id - a.id)
-                    .map((item) => (
-                      <tr
-                        key={item.id}
-                        className="text-sm hover:bg-gray-50 cursor-pointer"
-                        onClick={() => {
-                          setSelectedMember(item);
-                          setShowDetailModal(true);
-                        }}
-                      >
-                        <td className="py-3 px-6 border border-[#004aa3]">
-                          {item?.id}
-                        </td>
-                        <td className="py-3 px-6 border border-[#004aa3] capitalize">
-                          {item?.full_name}
-                        </td>
-                        <td className="py-3 px-6 border border-[#004aa3] capitalize">
-                          {item?.cnic}
-                        </td>
-                        <td className="py-3 px-6 border border-[#004aa3] capitalize">
-                          {item?.card_number || "N/A"}
-                        </td>
-                        <td className="py-3 px-6 border border-[#004aa3] capitalize">
-                          {item?.contact_number}
-                        </td>
-                        <td className="py-3 px-6 border border-[#004aa3] text-center ">
-                          {user?.role === "admin" && (
-                            <>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  navigate("/communitycardcreate", {
-                                    state: { data: item }
-                                  });
-                                }}
-                                className="bg-[#004aa3] text-white px-3 py-1 rounded mr-1 mt-1"
-                              >
-                                Edit
-                              </button>
-                              <button
-                                onClick={() => {
-                                  setSelectedUser(item);
-                                  setShowModal(true);
-                                  setShowDetailModal(false);
-                                }}
-                                className="bg-[#004aa3] text-white px-3 py-1 rounded mr-1 mt-1"
-                              >
-                                Delete
-                              </button>
-                            </>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
+                  {filteredCommunityCards.slice().map((item) => (
+                    <tr
+                      key={item.id}
+                      className="text-sm hover:bg-gray-50 cursor-pointer"
+                      onClick={() => {
+                        setSelectedMember(item);
+                        setShowDetailModal(true);
+                      }}
+                    >
+                      <td className="py-3 px-6 border border-[#004aa3]">
+                        {item?.id}
+                      </td>
+                      <td className="py-3 px-6 border border-[#004aa3] capitalize">
+                        {item?.full_name}
+                      </td>
+                      <td className="py-3 px-6 border border-[#004aa3] capitalize">
+                        {item?.cnic}
+                      </td>
+                      <td className="py-3 px-6 border border-[#004aa3] capitalize">
+                        {item?.card_number || "N/A"}
+                      </td>
+                      <td className="py-3 px-6 border border-[#004aa3] capitalize">
+                        {item?.contact_number}
+                      </td>
+                      <td className="py-3 px-6 border border-[#004aa3] text-center ">
+                        {user?.role === "admin" && (
+                          <>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate("/communitycardcreate", {
+                                  state: { data: item }
+                                });
+                              }}
+                              className="bg-[#004aa3] text-white px-3 py-1 rounded mr-1 mt-1"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => {
+                                setSelectedUser(item);
+                                setShowModal(true);
+                                setShowDetailModal(false);
+                              }}
+                              className="bg-[#004aa3] text-white px-3 py-1 rounded mr-1 mt-1"
+                            >
+                              Delete
+                            </button>
+                          </>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             ) : (

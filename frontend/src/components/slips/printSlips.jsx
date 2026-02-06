@@ -2,11 +2,18 @@ import React, { forwardRef } from "react";
 import Logo from "../../assets/logo.jpeg";
 
 const PrintSlip = forwardRef(({ user }, ref) => {
+  const isEmergency = Number(user?.doctor_fee) === 300;
+
   return (
     <div
       ref={ref}
       className="w-[80mm] mx-auto bg-white text-black font-mono text-[11px] px-2 py-1"
     >
+      {isEmergency && (
+        <div className="w-full text-center bg-black text-white text-[12px] font-bold py-1 mb-1">
+          🚨 EMERGENCY
+        </div>
+      )}
       <div className="flex flex-col items-center border-b border-black pb-1">
         <img src={Logo} alt="Logo" className="h-15 w-15 object-contain mb-2" />
         <h1 className="text-sm font-bold uppercase tracking-wide text-center">
@@ -35,9 +42,11 @@ const PrintSlip = forwardRef(({ user }, ref) => {
         <div className="text-right">
           <p>
             <span className="font-semibold">Date:</span>{" "}
-            {new Date(user?.created_at)
-              .toLocaleDateString("en-GB")
-              .replace(/\//g, "-") || "N/A"}
+            {user?.created_at
+              ? new Date(user.created_at)
+                  .toLocaleDateString("en-GB")
+                  .replace(/\//g, "-")
+              : "N/A"}
           </p>
         </div>
       </div>
@@ -48,7 +57,7 @@ const PrintSlip = forwardRef(({ user }, ref) => {
         </p>
         <p>
           <span className="font-semibold">Doctor:</span>{" "}
-          {`Dr. ${user?.doctor_name}` || "-"}
+          {user?.doctor_name ? `Dr. ${user.doctor_name}` : "-"}
         </p>
         <p>
           <span className="font-semibold">Age:</span> {user?.age || "-"}
@@ -61,34 +70,38 @@ const PrintSlip = forwardRef(({ user }, ref) => {
         <div className="flex justify-between font-semibold border-b border-gray-700 pb-1">
           <span>Sr.</span>
           <span>Detail</span>
-          <span></span>
+          <span>Amount</span>
         </div>
+
         {(() => {
           let rows = [];
           let total = 0;
           let counter = 1;
+
           if (user?.slip_type_name === "appointment" && user?.doctor_fee) {
             rows.push(
               <div key="appointment" className="flex justify-between mt-1 py-2">
                 <span>{String(counter).padStart(2, "0")}</span>
                 <span>Appointment Fee</span>
-                <span>Rs. {user?.doctor_fee}</span>
+                <span>Rs. {user.doctor_fee}</span>
               </div>
             );
-            total += Number(user?.doctor_fee);
+            total += Number(user.doctor_fee);
             counter++;
           }
+
           if (user?.pharmacy_fees) {
             rows.push(
               <div key="pharmacy" className="flex justify-between mt-1 py-2">
                 <span>{String(counter).padStart(2, "0")}</span>
                 <span>Pharmacy Fees</span>
-                <span>Rs. {user?.pharmacy_fees}</span>
+                <span>Rs. {user.pharmacy_fees}</span>
               </div>
             );
-            total += Number(user?.pharmacy_fees);
+            total += Number(user.pharmacy_fees);
             counter++;
           }
+
           if (user?.services?.length) {
             user.services.forEach((service) => {
               rows.push(
@@ -105,21 +118,25 @@ const PrintSlip = forwardRef(({ user }, ref) => {
               counter++;
             });
           }
+
           return (
             <>
               {rows}
+
               {user?.discount_id && user?.discount_name && (
-                <div className="flex justify-between mt-1 py-2 text-green-700">
-                  <span>Discount ({user.discount_name}):</span>
+                <div className="flex justify-between mt-1 py-2">
+                  <span>Discount ({user.discount_name})</span>
                   <span>-{user.discount_percentage}%</span>
                 </div>
               )}
-              <div className="text-center">
-                {user?.is_card_holder &&
-                  `Fees is ${
-                    user?.doctor_fee * 2
-                  } but you are card holder so 50% is off`}
-              </div>
+
+              {user?.is_card_holder ? (
+                <div className="text-center text-[10px] mt-1">
+                  Fees is {user?.doctor_fee * 2} but you are card holder so 50%
+                  off
+                </div>
+              ) : null}
+
               <div className="flex justify-between font-bold border-t border-gray-600 pt-2 mt-2">
                 <span>
                   {user?.fees_after_discount != null &&
@@ -139,13 +156,20 @@ const PrintSlip = forwardRef(({ user }, ref) => {
           );
         })()}
       </div>
+      {isEmergency && (
+        <div className="mt-2 text-center text-[11px] font-semibold pt-2">
+          ⏰ Please visit the doctor for check-up after 20 minutes
+        </div>
+      )}
       <div className="mt-1 text-[10px] py-1 leading-tight">
         <p>Appointment once booked is non-refundable.</p>
       </div>
+
       <div className="text-center text-[10px] mt-2 pt-3 border-t border-gray-700">
-        <p>📞0300-6254553</p>
+        <p>📞 0300-6254553</p>
         <p>info@malikkhidmatfoundation.com</p>
       </div>
+
       <p className="text-center text-[10px] mt-4 text-black italic pb-3">
         Developed by UA Digital
       </p>

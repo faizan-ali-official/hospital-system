@@ -12,7 +12,7 @@ import { FaFilter, FaTimes } from "react-icons/fa";
 const Slips = () => {
   const componentRef = useRef(null);
   const tableContainerRef = useRef(null);
-  const { allSlips, user, setDeleteSlips, deleteSlips, setAllSlips } =
+  const { allSlips, user, setDeleteSlips, today, deleteSlips, setAllSlips } =
     useMainContext();
   const [showModal, setShowModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -24,6 +24,18 @@ const Slips = () => {
   const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [startShareDate, setStartShareDate] = useState(() => {
+    return today.toISOString().split("T")[0];
+  });
+  const [endShareDate, setShareEndDate] = useState(() => {
+    return today.toISOString().split("T")[0];
+  });
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const [year, month, day] = dateString.split("-");
+    return `${day}-${month}-${year}`;
+  };
 
   const Icon = showFilter ? FaTimes : FaFilter;
 
@@ -83,24 +95,108 @@ const Slips = () => {
   const handlePrint = () => {
     if (!tableContainerRef?.current) return;
 
-    const printContent = tableContainerRef.current.innerHTML;
+    const clonedTable = tableContainerRef.current.cloneNode(true);
+    const table = clonedTable.querySelector("table");
+    if (!table) return;
+
+    const rows = table.querySelectorAll("tr");
+
+    let createdByIndex = -1;
+    let actionsIndex = -1;
+    let feeIndex = -1;
+    let totalFees = 0;
+
+    const headerCells = rows[0].querySelectorAll("th");
+
+    headerCells.forEach((th, index) => {
+      const text = th.innerText.toLowerCase();
+
+      if (text.includes("created")) createdByIndex = index;
+      if (text.includes("action")) actionsIndex = index;
+      if (text.includes("fee")) feeIndex = index;
+    });
+
+    const srTh = document.createElement("th");
+    srTh.innerText = "Sr No";
+    rows[0].insertBefore(srTh, rows[0].children[0]);
+
+    rows.forEach((row, rowIndex) => {
+      if (rowIndex === 0) return;
+
+      const cells = row.querySelectorAll("td");
+
+      const srTd = document.createElement("td");
+      srTd.innerText = rowIndex;
+      row.insertBefore(srTd, row.children[0]);
+
+      if (feeIndex !== -1 && cells[feeIndex]) {
+        totalFees = allSlips.reduce((sum, item) => {
+          let baseFee = 0;
+
+          if (item?.fees_before_discount != null) {
+            baseFee = Number(item.fees_before_discount);
+          } else if (item?.slip_type_name === "pharmacy") {
+            const pharmacyFee = Number(item?.pharmacy_fees || 0);
+            const servicesFee = Array.isArray(item?.services)
+              ? item.services.reduce(
+                  (sSum, s) => sSum + Number(s?.fees || 0),
+                  0
+                )
+              : 0;
+            baseFee = pharmacyFee + servicesFee;
+          } else {
+            baseFee = Number(item?.doctor_fee || 0);
+          }
+          const discountPercent = Number(item?.discount_percentage || 0);
+          const discountedAmount = baseFee - baseFee * (discountPercent / 100);
+          return sum + discountedAmount;
+        }, 0);
+      }
+
+      if (createdByIndex !== -1 && cells[createdByIndex]) {
+        cells[createdByIndex].remove();
+      }
+
+      if (actionsIndex !== -1 && cells[actionsIndex]) {
+        cells[actionsIndex].remove();
+      }
+    });
+
+    if (createdByIndex !== -1) headerCells[createdByIndex]?.remove();
+    if (actionsIndex !== -1) headerCells[actionsIndex]?.remove();
+
+    if (feeIndex !== -1) {
+      const totalRow = document.createElement("tr");
+
+      const labelTd = document.createElement("td");
+      labelTd.colSpan = feeIndex;
+      labelTd.style.fontWeight = "bold";
+      labelTd.innerText = "Total Fees";
+
+      const valueTd = document.createElement("td");
+      valueTd.style.fontWeight = "bold";
+      valueTd.innerText = `Rs. ${totalFees}`;
+
+      totalRow.appendChild(labelTd);
+      totalRow.appendChild(valueTd);
+
+      table.appendChild(totalRow);
+    }
+
     const printWindow = window.open("", "", "width=1000,height=800");
 
     printWindow.document.write(`
       <html>
         <head>
-          <title>Records Report</title>
+          <title>Patient Records</title>
           <style>
-            /* Define A4 Page Setup */
             @page {
               size: A4;
-              margin: 15mm; /* Standard margin for A4 */
+              margin: 15mm;
             }
   
             body {
               font-family: Arial, sans-serif;
-              margin: 0;
-              padding: 0;
               color: #333;
             }
   
@@ -113,51 +209,44 @@ const Slips = () => {
             table {
               width: 100%;
               border-collapse: collapse;
-              table-layout: auto; /* Allows columns to adjust to content */
-              font-size: 12px; /* Standard readable size for A4 */
+              font-size: 12px;
             }
   
             th, td {
               border: 1px solid #004aa3;
-              padding: 10px 8px;
+              padding: 8px;
               text-align: left;
-              word-wrap: break-word;
             }
   
             th {
-              background-color: #f3f4f6 !important;
-              -webkit-print-color-adjust: exact; /* Ensures background prints */
+              background-color: #f3f4f6;
+              -webkit-print-color-adjust: exact;
             }
   
-            /* Handle the hidden elements */
-            .print-hidden {
-              display: none !important;
+            tr {
+              page-break-inside: avoid;
             }
-  
-            @media print {
-              .print-hidden {
-                display: none !important;
-              }
-              /* Avoid breaking a row across two pages if possible */
-              tr {
-                page-break-inside: avoid;
-              }
-            }
+
+            .date-range { font-size: 1.1em; color: #555; margin-bottom: 10px;text-align:center }
           </style>
         </head>
         <body>
-          <h2 style="text-align: center;">Patient Records</h2>
-          ${printContent}
+          <h2>Malik Medical Health Center</h2>
+          <div class="date-range">
+          <strong>Report Period: </strong> ${formatDate(
+            startShareDate
+          )} <strong>to</strong> ${formatDate(endShareDate)}
+          </div>
+          ${clonedTable.innerHTML}
           <script>
-            // Ensure the window prints only after content is loaded
-            window.onload = function() {
+            window.onload = function () {
               window.print();
-              // Optional: window.close(); 
             };
           </script>
         </body>
       </html>
     `);
+
     printWindow.document.close();
   };
 
@@ -168,7 +257,7 @@ const Slips = () => {
     setLoading(true);
     try {
       const response = await axiosClient.get(
-        `/api/patient-slips?limit=${limit}&offset=${offset}&deleted=true`
+        `/api/patient-slips?limit=${limit}&offset=${offset}&deleted=false`
       );
       const newSlips = response?.data;
       setAllSlips((prevSlips) => [...prevSlips, ...newSlips]);
@@ -255,6 +344,10 @@ const Slips = () => {
             setShowNo={setShowNo}
             showNo={showNo}
             handlePrint={handlePrint}
+            startShareDate={startShareDate}
+            setStartShareDate={setStartShareDate}
+            endShareDate={endShareDate}
+            setShareEndDate={setShareEndDate}
           />
         )}
         <div
@@ -294,93 +387,91 @@ const Slips = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {allSlips
-                    .slice()
-                    .sort((a, b) => b.id - a.id)
-                    .map((item) => (
-                      <tr key={item.id} className="text-sm hover:bg-gray-50">
-                        <td className="py-3 px-6 border border-[#004aa3]">
-                          {item?.id}
-                        </td>
-                        <td className="py-3 px-6 border border-[#004aa3] capitalize">
-                          {item?.patient_name}
-                        </td>
-                        <td className="py-3 px-6 border border-[#004aa3] capitalize">
-                          {item?.doctor_name}
-                        </td>
-                        <td className="py-3 px-6 border border-[#004aa3] capitalize">
-                          {item?.slip_type_name || item?.type_name}
-                        </td>
-                        <td className="py-3 px-6 border border-[#004aa3] capitalize">
-                          {new Date(item.created_at)
-                            .toLocaleDateString("en-GB")
-                            .replace(/\//g, "-")}
-                        </td>
-                        <td className="py-3 px-6 border border-[#004aa3] capitalize">
-                          {item?.created_by_name}
-                        </td>
-                        <td className="py-3 px-6 border border-[#004aa3]">
-                          {item?.fees_before_discount != null
-                            ? item.fees_before_discount
-                            : item?.slip_type_name === "pharmacy"
-                              ? Number(item?.pharmacy_fees) +
-                                (Array.isArray(item?.services)
-                                  ? item.services.reduce(
-                                      (sum, s) => sum + Number(s.fees || 0),
-                                      0
-                                    )
-                                  : 0)
-                              : item?.doctor_fee}
-                        </td>
-                        <td className="py-3 px-6 border border-[#004aa3]">
-                          {item?.discount_id ? (
-                            <span className="text-green-600 font-medium">
-                              {item.fees_after_discount}{" "}
-                              <span className="text-gray-500 text-xs">
-                                ({item.discount_name} - {item.discount_percentage}%)
-                              </span>
+                  {allSlips.slice().map((item) => (
+                    <tr key={item.id} className="text-sm hover:bg-gray-50">
+                      <td className="py-3 px-6 border border-[#004aa3]">
+                        {item?.id}
+                      </td>
+                      <td className="py-3 px-6 border border-[#004aa3] capitalize">
+                        {item?.patient_name}
+                      </td>
+                      <td className="py-3 px-6 border border-[#004aa3] capitalize">
+                        {item?.doctor_name}
+                      </td>
+                      <td className="py-3 px-6 border border-[#004aa3] capitalize">
+                        {item?.slip_type_name || item?.type_name}
+                      </td>
+                      <td className="py-3 px-6 border border-[#004aa3] capitalize">
+                        {new Date(item.created_at)
+                          .toLocaleDateString("en-GB")
+                          .replace(/\//g, "-")}
+                      </td>
+                      <td className="py-3 px-6 border border-[#004aa3] capitalize">
+                        {item?.created_by_name}
+                      </td>
+                      <td className="py-3 px-6 border border-[#004aa3]">
+                        {item?.fees_before_discount != null
+                          ? item.fees_before_discount
+                          : item?.slip_type_name === "pharmacy"
+                          ? Number(item?.pharmacy_fees) +
+                            (Array.isArray(item?.services)
+                              ? item.services.reduce(
+                                  (sum, s) => sum + Number(s.fees || 0),
+                                  0
+                                )
+                              : 0)
+                          : item?.doctor_fee}
+                      </td>
+                      <td className="py-3 px-6 border border-[#004aa3]">
+                        {item?.discount_id ? (
+                          <span className="text-black font-medium">
+                            {item.fees_after_discount}{" "}
+                            <span className="text-gray-500 text-xs">
+                              ({item.discount_name} - {item.discount_percentage}
+                              %)
                             </span>
-                          ) : (
-                            <span className="text-gray-400">No Discount</span>
-                          )}
-                        </td>
-                        <td className="py-3 px-6 border border-[#004aa3] text-center print-hidden">
-                          <button
-                            onClick={() => {
-                              setGeneratedSlip(item);
-                              setTimeout(() => {
-                                printFn();
-                              }, 1000);
-                            }}
-                            className="bg-[#004aa3] text-white px-3 py-1 rounded mr-1 "
-                          >
-                            View
-                          </button>
-                          {user?.role === "admin" && (
-                            <>
-                              <button
-                                onClick={() => {
-                                  setSelectedUser(item);
-                                  setShowUpdateModal(true);
-                                }}
-                                className="bg-[#004aa3] text-white px-3 py-1 rounded mr-1 mt-1"
-                              >
-                                Edit
-                              </button>
-                              <button
-                                onClick={() => {
-                                  setSelectedUser(item);
-                                  setShowModal(true);
-                                }}
-                                className="bg-[#004aa3] text-white px-3 py-1 rounded mr-1 mt-1"
-                              >
-                                Delete
-                              </button>
-                            </>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
+                          </span>
+                        ) : (
+                          <span className="text-gray-400">No Discount</span>
+                        )}
+                      </td>
+                      <td className="py-3 px-6 border border-[#004aa3] text-center print-hidden">
+                        <button
+                          onClick={() => {
+                            setGeneratedSlip(item);
+                            setTimeout(() => {
+                              printFn();
+                            }, 1000);
+                          }}
+                          className="bg-[#004aa3] text-white px-3 py-1 rounded mr-1 "
+                        >
+                          View
+                        </button>
+                        {user?.role === "admin" && (
+                          <>
+                            <button
+                              onClick={() => {
+                                setSelectedUser(item);
+                                setShowUpdateModal(true);
+                              }}
+                              className="bg-[#004aa3] text-white px-3 py-1 rounded mr-1 mt-1"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => {
+                                setSelectedUser(item);
+                                setShowModal(true);
+                              }}
+                              className="bg-[#004aa3] text-white px-3 py-1 rounded mr-1 mt-1"
+                            >
+                              Delete
+                            </button>
+                          </>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             ) : (

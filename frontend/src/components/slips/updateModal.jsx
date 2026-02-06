@@ -279,23 +279,6 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
                       )}
                     </Field>
                   </div>
-                  <div className="flex items-center gap-2 mt-3">
-                  <input
-                    type="checkbox"
-                    id="is_card_holder"
-                    checked={values.is_card_holder}
-                    onChange={(e) =>
-                      setFieldValue("is_card_holder", e.target.checked)
-                    }
-                    className="w-4 h-4 cursor-pointer accent-[#004aa3]"
-                  />
-                  <label
-                    htmlFor="is_card_holder"
-                    className="text-sm font-medium"
-                  >
-                    Card Holder
-                  </label>
-                </div>
                 </>
               )}
               {user.slip_type_id === 2 && (
