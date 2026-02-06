@@ -179,7 +179,7 @@ class PatientSlip {
     }
 
     if (conditions.length > 0) {
-      sql += " WHERE " + conditions.join(" AND ");
+      sql += " WHERE ps.deleted_at is null AND " + conditions.join(" AND ");
     }
     sql += " ORDER BY ps.created_at DESC";
     if (limit) {
