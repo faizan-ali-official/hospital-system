@@ -110,7 +110,7 @@ function CheckupSlip() {
     slip_type_id: 1,
     age: "",
     gender: "",
-    is_card_holder: false,
+    // is_card_holder: false,
     discount_id: ""
   };
 

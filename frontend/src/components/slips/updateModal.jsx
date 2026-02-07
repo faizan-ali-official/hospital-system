@@ -57,7 +57,7 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
     }),
     age: user.age || "",
     gender: user.gender || "",
-    is_card_holder: user.is_card_holder || false,
+    // is_card_holder: user.is_card_holder || false,
     ...(user.slip_type_id === 1 && { discount_id: user.discount_id || "" })
   };
 

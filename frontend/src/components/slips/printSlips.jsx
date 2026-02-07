@@ -130,12 +130,12 @@ const PrintSlip = forwardRef(({ user }, ref) => {
                 </div>
               )}
 
-              {user?.is_card_holder ? (
+              {/* {user?.is_card_holder ? (
                 <div className="text-center text-[10px] mt-1">
                   Fees is {user?.doctor_fee * 2} but you are card holder so 50%
                   off
                 </div>
-              ) : null}
+              ) : null} */}
 
               <div className="flex justify-between font-bold border-t border-gray-600 pt-2 mt-2">
                 <span>

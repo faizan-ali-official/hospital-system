@@ -43,7 +43,7 @@ class PatientSlipController {
         age,
         gender,
         service_id,
-        is_card_holder,
+        // is_card_holder,
         discount_id,
       } = req.body;
       const created_by = req.user.id;
@@ -58,7 +58,7 @@ class PatientSlipController {
           slip_type_id,
           age,
           gender,
-          is_card_holder,
+          // is_card_holder,
           discount_id,
         });
       } else if (slip_type_id === 2) {
@@ -74,7 +74,7 @@ class PatientSlipController {
           notes,
           pharmacy_fees,
           service_id,
-          is_card_holder,
+          // is_card_holder,
         });
         await PatientSlip.addServices(slipId, service_id);
       } else {
@@ -90,7 +90,7 @@ class PatientSlipController {
           gender,
           notes,
           pharmacy_fees,
-          is_card_holder,
+          // is_card_holder,
           discount_id,
         });
       }
@@ -166,7 +166,7 @@ class PatientSlipController {
           slipsMap.set(row.id, {
             id: row.id,
             patient_name: row.patient_name,
-            is_card_holder: row.is_card_holder ? true : false,
+            // is_card_holder: row.is_card_holder ? true : false,
             doctor_id: row.doctor_id,
             doctor_name: row.doctor_name,
             fees_id: row.fees_id,
@@ -240,7 +240,7 @@ class PatientSlipController {
         gender,
         age,
         service_id,
-        is_card_holder,
+        // is_card_holder,
         discount_id,
       } = req.body;
       const slip = await PatientSlip.findById(id);
@@ -258,7 +258,7 @@ class PatientSlipController {
         gender,
         age,
         service_id,
-        is_card_holder,
+        // is_card_holder,
         discount_id,
       });
       if (!updated) {
