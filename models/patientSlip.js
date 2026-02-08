@@ -170,7 +170,7 @@ class PatientSlip {
     }
     if (deleted === "true") {
       conditions.push("ps.deleted_at IS NOT NULL");
-    } else if (deleted === "false") {
+    } else if (deleted === "false" || deleted === undefined || !deleted) {
       conditions.push("ps.deleted_at IS NULL");
     }
     if (discount_id) {

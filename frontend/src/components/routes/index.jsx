@@ -81,6 +81,7 @@ const RouterPage = () => {
               <>
                 <Route path="/" element={<Home />} />
                 <Route path="/patientslip" element={<Slips />} />
+                <Route path="/communitycard" element={<CommunityCard />} />
               </>
             )}
           </Route>

@@ -42,7 +42,11 @@ const RootLayout = () => {
                 text="Slips"
                 Icon={FaSheetPlastic}
               />
-
+              <CustomMenu
+                link="/communitycard"
+                text="Community Card"
+                Icon={FaAddressCard}
+              />
               {user?.role === "admin" && (
                 <>
                   <CustomMenu link="/users" text="Users" Icon={HiUser} />
@@ -60,11 +64,6 @@ const RootLayout = () => {
                     link="/discounts"
                     text="Discounts"
                     Icon={HiTag}
-                  />
-                  <CustomMenu
-                    link="/communitycard"
-                    text="Community Card"
-                    Icon={FaAddressCard}
                   />
                   <CustomMenu
                     link="/reports"
