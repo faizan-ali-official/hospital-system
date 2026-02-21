@@ -1,17 +1,19 @@
 export const customStyles = {
-  control: (base) => ({
+  control: (base, state) => ({
     ...base,
-    border: "none",
-    boxShadow: "none",
-    borderRadius: "8px",
-    backgroundColor: "#F9FAFB"
+    minHeight: "40px",
+    border: "1px solid #e2e8f0",
+    boxShadow: state.isFocused ? "0 0 0 2px rgba(0, 74, 163, 0.2)" : "none",
+    borderRadius: "0.5rem",
+    backgroundColor: "#ffffff",
   }),
   valueContainer: (base) => ({
     ...base,
-    padding: 0
+    padding: "6px 10px",
   }),
   multiValue: (base) => ({
     ...base,
-    backgroundColor: "#e5e7eb"
-  })
+    backgroundColor: "#f1f5f9",
+    borderRadius: "0.375rem",
+  }),
 };

@@ -7,7 +7,8 @@ import PrintSlip from "../components/slips/printSlips";
 import { useReactToPrint } from "react-to-print";
 import { toast } from "react-toastify";
 import { axiosClient } from "../utils/AxiosClient";
-import { FaFilter, FaTimes } from "react-icons/fa";
+import { HiMagnifyingGlass, HiOutlinePrinter } from "react-icons/hi2";
+import { FaFilter, FaTimes, FaEllipsisV } from "react-icons/fa";
 
 const Slips = () => {
   const componentRef = useRef(null);
@@ -37,7 +38,23 @@ const Slips = () => {
     return `${day}-${month}-${year}`;
   };
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [actionMenuId, setActionMenuId] = useState(null);
   const Icon = showFilter ? FaTimes : FaFilter;
+
+  const filteredBySearch = allSlips?.filter((item) => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    const slipId = String(item?.id ?? "");
+    const patientName = (item?.patient_name ?? "").toLowerCase();
+    return slipId.includes(q) || patientName.includes(q);
+  }) ?? [];
+
+  useEffect(() => {
+    const closeMenu = () => setActionMenuId(null);
+    document.addEventListener("click", closeMenu);
+    return () => document.removeEventListener("click", closeMenu);
+  }, []);
 
   const printFn = useReactToPrint({
     documentTitle: `Patient Slip ${generatedSlip?.id}`,
@@ -328,16 +345,40 @@ const Slips = () => {
   };
 
   return (
-    <div className="flex justify-center h-[calc(89vh - 33px)]">
-      <div className="w-full xl:w-[90%] flex flex-col overflow-hidden">
-        <div className="flex justify-between items-center ">
-          <h2 className="text-xl font-bold">Patient Slips</h2>
-          <Icon
-            size={25}
+    <div className="flex justify-center min-h-0 flex-1">
+      <div className="w-full xl:w-[95%] flex flex-col overflow-hidden">
+        <h2 className="text-2xl font-bold text-slate-800 mb-4">Patient Slips</h2>
+
+        {/* Control bar */}
+        <div className="flex flex-wrap items-center gap-3 mb-4">
+          <div className="relative flex-1 min-w-[200px] max-w-md">
+            <HiMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
+            <input
+              type="text"
+              placeholder="Search by Slip ID or Patient name"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="h-10 w-full rounded-lg border border-slate-200 bg-white py-0 pl-10 pr-4 text-sm text-slate-800 placeholder-slate-400 outline-none focus:border-[#004aa3] focus:ring-2 focus:ring-[#004aa3]/20"
+            />
+          </div>
+          <button
+            type="button"
             onClick={() => setShowFilter(!showFilter)}
-            className="text-[#004aa3] cursor-pointer"
-          />
+            className="flex h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
+          >
+            <Icon className="w-4 h-4 text-slate-500" />
+            Filter
+          </button>
+          <button
+            type="button"
+            onClick={() => handlePrint()}
+            className="flex h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
+          >
+            <HiOutlinePrinter className="w-4 h-4" />
+            Print
+          </button>
         </div>
+
         {showFilter && (
           <SearchSlip
             setFilteredSearch={setAllSlips}
@@ -350,151 +391,156 @@ const Slips = () => {
             setShareEndDate={setShareEndDate}
           />
         )}
+
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-base font-semibold text-slate-800">Records</h3>
+        </div>
         <div
           ref={tableContainerRef}
-          className={`overflow-y-auto ${
-            showFilter ? "max-h-[calc(89vh-350px)]" : "max-h-[calc(89vh-80px)]"
-          } mt-4`}
+          className={`overflow-y-auto flex-1 min-h-0 rounded-xl border border-slate-200 bg-white ${
+            showFilter ? "max-h-[calc(100vh-420px)]" : "max-h-[calc(100vh-220px)]"
+          }`}
         >
           {!showNo ? (
-            allSlips ? (
-              <table className="w-full rounded">
-                <thead className="sticky top-0 bg-gray-100 z-10">
-                  <tr className="text-left text-sm uppercase text-gray-600">
-                    <th className="py-3 px-6 border border-[#004aa3]">
-                      Slip ID
-                    </th>
-                    <th className="py-3 px-6 border border-[#004aa3]">
-                      Patient Name
-                    </th>
-                    <th className="py-3 px-6 border border-[#004aa3]">
-                      Doctor
-                    </th>
-                    <th className="py-3 px-6 border border-[#004aa3]">
-                      Slip Type
-                    </th>
-                    <th className="py-3 px-6 border border-[#004aa3]">Date</th>
-                    <th className="py-3 px-6 border border-[#004aa3]">
-                      Created By
-                    </th>
-                    <th className="py-3 px-6 border border-[#004aa3]">Fees</th>
-                    <th className="py-3 px-6 border border-[#004aa3]">
-                      Discount Fees
-                    </th>
-                    <th className="py-3 px-6 border border-[#004aa3] text-center print-hidden">
-                      Actions
-                    </th>
+            filteredBySearch.length > 0 ? (
+              <table className="w-full">
+                <thead className="sticky top-0 z-10 bg-white border-b border-slate-200">
+                  <tr className="text-left text-xs font-semibold uppercase tracking-wide text-slate-600">
+                    <th className="py-3 px-4">Slip ID</th>
+                    <th className="py-3 px-4">Patient Name</th>
+                    <th className="py-3 px-4">Doctor</th>
+                    <th className="py-3 px-4">Slip Type</th>
+                    <th className="py-3 px-4">Date</th>
+                    <th className="py-3 px-4">Created By</th>
+                    <th className="py-3 px-4">Fees</th>
+                    <th className="py-3 px-4">Discount Fees</th>
+                    <th className="py-3 px-4 text-right print-hidden">Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {allSlips.slice().map((item) => (
-                    <tr key={item.id} className="text-sm hover:bg-gray-50">
-                      <td className="py-3 px-6 border border-[#004aa3]">
-                        {item?.id}
+                  {filteredBySearch.map((item) => (
+                    <tr
+                      key={item.id}
+                      className="border-b border-slate-100 text-sm text-slate-800 hover:bg-slate-50/80 transition-colors"
+                    >
+                      <td className="py-3 px-4 font-medium">{item?.id}</td>
+                      <td className="py-3 px-4 capitalize">{item?.patient_name}</td>
+                      <td className="py-3 px-4 capitalize">{item?.doctor_name}</td>
+                      <td className="py-3 px-4">
+                        <span
+                          className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                            (item?.slip_type_name || item?.type_name) === "pharmacy"
+                              ? "bg-sky-100 text-sky-700"
+                              : "bg-emerald-100 text-emerald-700"
+                          }`}
+                        >
+                          {item?.slip_type_name || item?.type_name || "—"}
+                        </span>
                       </td>
-                      <td className="py-3 px-6 border border-[#004aa3] capitalize">
-                        {item?.patient_name}
+                      <td className="py-3 px-4">
+                        {new Date(item.created_at).toLocaleDateString("en-GB").replace(/\//g, "-")}
                       </td>
-                      <td className="py-3 px-6 border border-[#004aa3] capitalize">
-                        {item?.doctor_name}
-                      </td>
-                      <td className="py-3 px-6 border border-[#004aa3] capitalize">
-                        {item?.slip_type_name || item?.type_name}
-                      </td>
-                      <td className="py-3 px-6 border border-[#004aa3] capitalize">
-                        {new Date(item.created_at)
-                          .toLocaleDateString("en-GB")
-                          .replace(/\//g, "-")}
-                      </td>
-                      <td className="py-3 px-6 border border-[#004aa3] capitalize">
-                        {item?.created_by_name}
-                      </td>
-                      <td className="py-3 px-6 border border-[#004aa3]">
+                      <td className="py-3 px-4 capitalize">{item?.created_by_name}</td>
+                      <td className="py-3 px-4">
                         {item?.fees_before_discount != null
                           ? item.fees_before_discount
                           : item?.slip_type_name === "pharmacy"
                           ? Number(item?.pharmacy_fees) +
                             (Array.isArray(item?.services)
-                              ? item.services.reduce(
-                                  (sum, s) => sum + Number(s.fees || 0),
-                                  0
-                                )
+                              ? item.services.reduce((sum, s) => sum + Number(s.fees || 0), 0)
                               : 0)
                           : item?.doctor_fee}
                       </td>
-                      <td className="py-3 px-6 border border-[#004aa3]">
+                      <td className="py-3 px-4">
                         {item?.discount_id ? (
-                          <span className="text-black font-medium">
+                          <span className="text-slate-700">
                             {item.fees_after_discount}{" "}
-                            <span className="text-gray-500 text-xs">
-                              ({item.discount_name} - {item.discount_percentage}
-                              %)
+                            <span className="text-slate-400 text-xs">
+                              ({item.discount_name} - {item.discount_percentage}%)
                             </span>
                           </span>
                         ) : (
-                          <span className="text-gray-400">No Discount</span>
+                          <span className="text-slate-400">No Discount</span>
                         )}
                       </td>
-                      <td className="py-3 px-6 border border-[#004aa3] text-center print-hidden">
-                        <button
-                          onClick={() => {
-                            setGeneratedSlip(item);
-                            setTimeout(() => {
-                              printFn();
-                            }, 1000);
-                          }}
-                          className="bg-[#004aa3] text-white px-3 py-1 rounded mr-1 "
-                        >
-                          View
-                        </button>
-                        {user?.role === "admin" && (
-                          <>
-                            <button
-                              onClick={() => {
-                                setSelectedUser(item);
-                                setShowUpdateModal(true);
-                              }}
-                              className="bg-[#004aa3] text-white px-3 py-1 rounded mr-1 mt-1"
+                      <td className="py-3 px-4 text-right print-hidden">
+                        <div className="relative inline-block">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setActionMenuId(actionMenuId === item.id ? null : item.id);
+                            }}
+                            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+                            aria-label="Actions"
+                          >
+                            <FaEllipsisV className="w-4 h-4" />
+                          </button>
+                          {actionMenuId === item.id && (
+                            <div
+                              className="absolute right-0 top-full z-20 mt-1 w-40 rounded-lg border border-slate-200 bg-white py-1 shadow-lg"
+                              onClick={(e) => e.stopPropagation()}
                             >
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => {
-                                setSelectedUser(item);
-                                setShowModal(true);
-                              }}
-                              className="bg-[#004aa3] text-white px-3 py-1 rounded mr-1 mt-1"
-                            >
-                              Delete
-                            </button>
-                          </>
-                        )}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setGeneratedSlip(item);
+                                  setTimeout(() => printFn(), 1000);
+                                  setActionMenuId(null);
+                                }}
+                                className="block w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50"
+                              >
+                                View
+                              </button>
+                              {user?.role === "admin" && (
+                                <>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setSelectedUser(item);
+                                      setShowUpdateModal(true);
+                                      setActionMenuId(null);
+                                    }}
+                                    className="block w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50"
+                                  >
+                                    Edit
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setSelectedUser(item);
+                                      setShowModal(true);
+                                      setActionMenuId(null);
+                                    }}
+                                    className="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50"
+                                  >
+                                    Delete
+                                  </button>
+                                </>
+                              )}
+                            </div>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             ) : (
-              <div className="min-h-[400px] flex items-center justify-center text-gray-500 text-lg">
+              <div className="flex min-h-[320px] items-center justify-center text-slate-500">
                 No data found
               </div>
             )
           ) : (
-            <div className="h-[40vh] flex items-center justify-center">
-              <p className="text-center font-bold text-xl text-[#004aa3]">
-                No Data Found
-              </p>
+            <div className="flex min-h-[320px] items-center justify-center">
+              <p className="text-center font-semibold text-slate-600">No data found for this filter.</p>
             </div>
           )}
           {loading && (
-            <div className="flex justify-center items-center text-[#004aa3] py-4 font-bold">
-              Loading more data...
-            </div>
+            <div className="flex justify-center py-4 text-sm text-slate-500">Loading more...</div>
           )}
-          {!hasMore && (
-            <div className="flex justify-center items-center py-4 text-[#004aa3] font-bold">
-              End of records.
-            </div>
+          {!hasMore && filteredBySearch.length > 0 && (
+            <div className="flex justify-center py-3 text-xs text-slate-400">End of records</div>
           )}
         </div>
       </div>

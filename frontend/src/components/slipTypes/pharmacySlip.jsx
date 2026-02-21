@@ -12,6 +12,9 @@ import Select from "react-select";
 import { customStyles } from "../../styles/customStyle";
 import BtnLoader from "../loader/btnLoader";
 
+const slipFieldClass =
+  "input w-full h-10 py-0 px-3 rounded-lg border border-slate-200 text-sm outline-none focus:border-[#004aa3] focus:ring-2 focus:ring-[#004aa3]/20";
+
 function PharmacySlip() {
   const componentRef = useRef(null);
   const [loading, setLoading] = useState(false);
@@ -125,64 +128,62 @@ function PharmacySlip() {
         onSubmit={onSubmitHandler}
       >
         {({ values, setValues, setFieldValue }) => (
-          <Form className="px-10 py-10 lg:mx-10">
-            <div className="flex  justify-end ">
+          <Form className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 p-0">
+            <div className="flex gap-2 sm:col-span-2 items-center">
               <Input
                 placeholder="Reference No"
                 name="reference_token_no"
                 errorName="reference_token_no"
+                showLabel={false}
+                compact
+                className="h-10 py-0 px-3 flex-1"
               />
               <button
+                type="button"
                 onClick={() =>
                   fetchByReference(values.reference_token_no, setValues)
                 }
                 disabled={loader}
-                className="bg-[#004aa3] w-[80px] flex text-white py-2 h-12 ml-2 justify-center rounded mt-5 xl:mt-0"
+                className="h-10 rounded-lg bg-[#004aa3] px-4 text-sm font-semibold text-white shadow shrink-0"
               >
                 {loader ? <BtnLoader /> : "Search"}
               </button>
             </div>
-
-            <Input
-              placeholder="Patient Name"
-              name="patient_name"
-              errorName="patient_name"
-            />
-            <div className="mb-3">
+            <div className="sm:col-span-2">
+              <Input
+                placeholder="Patient Name"
+                name="patient_name"
+                errorName="patient_name"
+                showLabel={false}
+                compact
+                className="h-10 py-0 px-3"
+              />
+            </div>
+            <div>
               <Field name="doctor_id">
                 {({ field }) => (
                   <select
                     {...field}
-                    className={`input w-full py-3 px-3 rounded border outline-none ${
-                      field.value ? "text-black" : "text-gray-400"
-                    }`}
+                    className={`${slipFieldClass} ${field.value ? "text-slate-800" : "text-slate-400"}`}
                   >
                     <option value="">Select Doctor</option>
                     {doctors.map((item) => (
-                      <option
-                        key={item.id}
-                        value={item.id}
-                      >{`Dr. ${item.doctor_name}`}</option>
+                      <option key={item.id} value={item.id}>{`Dr. ${item.doctor_name}`}</option>
                     ))}
                   </select>
                 )}
               </Field>
-              <ErrorMessage
-                name="doctor_id"
-                className="text-red-500"
-                component="p"
-              />
+              <ErrorMessage name="doctor_id" className="text-red-500 text-xs mt-0.5" component="p" />
             </div>
-
-            <Input placeholder="Age" name="age" errorName="age" />
-            <div className="mb-3">
+            <div>
+              <Input placeholder="Age" name="age" errorName="age" showLabel={false} compact className="h-10 py-0 px-3" />
+            </div>
+            <div>
               <Field name="gender">
                 {({ field }) => (
                   <select
                     {...field}
-                    className={`input w-full py-3 px-3 rounded border outline-none ${
-                      field.value ? "text-black" : "text-gray-400"
-                    }`}
+                    className={`${slipFieldClass} ${field.value ? "text-slate-800" : "text-slate-400"}`}
                   >
                     <option value="">Select Gender</option>
                     <option value="Male">Male</option>
@@ -190,14 +191,9 @@ function PharmacySlip() {
                   </select>
                 )}
               </Field>
-              <ErrorMessage
-                name="gender"
-                className="text-red-500"
-                component="p"
-              />
+              <ErrorMessage name="gender" className="text-red-500 text-xs mt-0.5" component="p" />
             </div>
-
-            <div className="mb-3">
+            <div className="sm:col-span-2">
               <Field name="service_id">
                 {({ field, form }) => {
                   const options = services.map((item) => ({
@@ -208,48 +204,45 @@ function PharmacySlip() {
                     <Select
                       isMulti
                       options={options}
-                      value={options.filter((opt) =>
-                        field.value?.includes(opt.value)
-                      )}
+                      value={options.filter((opt) => field.value?.includes(opt.value))}
                       placeholder="Select Service"
                       onChange={(selected) =>
-                        form.setFieldValue(
-                          "service_id",
-                          selected.map((i) => i.value)
-                        )
+                        form.setFieldValue("service_id", selected.map((i) => i.value))
                       }
                       styles={customStyles}
-                      className={`input w-full py-1 px-3 rounded border outline-none ${
-                        field.value?.length ? "text-black" : "text-gray-400"
-                      }`}
+                      classNamePrefix="slip-select"
                     />
                   );
                 }}
               </Field>
-              <ErrorMessage
-                name="service_id"
-                className="text-red-500"
-                component="p"
+              <ErrorMessage name="service_id" className="text-red-500 text-xs mt-0.5" component="p" />
+            </div>
+            <div>
+              <Input
+                placeholder="Pharmacy Fees"
+                name="pharmacy_fees"
+                errorName="pharmacy_fees"
+                showLabel={false}
+                compact
+                className="h-10 py-0 px-3"
               />
             </div>
-
-            <Input
-              placeholder="Pharmacy Fees"
-              name="pharmacy_fees"
-              errorName="pharmacy_fees"
-            />
-
-            <Input
-              placeholder="Description (optional)"
-              name="notes"
-              errorName="notes"
-            />
-
-            <div className="mt-10 flex justify-center">
+            <div>
+              <Input
+                placeholder="Description (optional)"
+                name="notes"
+                errorName="notes"
+                showLabel={false}
+                compact
+                className="h-10 py-0 px-3"
+              />
+            </div>
+            <div className="sm:col-span-2 flex justify-center pt-3">
               <CustomAuthButton
                 isLoading={loading}
                 text="Generate"
                 type="submit"
+                className="!rounded-xl !py-2.5 !text-sm"
               />
             </div>
           </Form>

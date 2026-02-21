@@ -1,90 +1,164 @@
-import React from "react";
+import React, { useState } from "react";
 import { Sidebar, Menu, MenuItem } from "react-pro-sidebar";
 import { IoMdHome } from "react-icons/io";
-import { HiClipboardDocumentList, HiUser, HiTag } from "react-icons/hi2";
+import {
+  HiClipboardDocumentList,
+  HiUser,
+  HiTag,
+  HiArrowRightOnRectangle,
+  HiChevronLeft,
+} from "react-icons/hi2";
+import Logo from "../../assets/logo.jpeg";
 import { FaUserDoctor, FaSheetPlastic } from "react-icons/fa6";
 import { FaAddressCard } from "react-icons/fa";
 import { HiDocumentMagnifyingGlass, HiDocumentMinus } from "react-icons/hi2";
 import { Link, Outlet, useLocation } from "react-router-dom";
-import CustomAuthButton from "../customButton";
 import { useMainContext } from "../../context/mainContext";
 
+const SIDEBAR_BG = "#ffffff";
+const THEME_PRIMARY = "#004aa3";
+const TEXT_DARK = "#171717";
+const navItemClass =
+  "flex items-center gap-3 w-full py-2.5 px-3 text-sm font-medium transition-all duration-200 rounded-r-lg";
+
 const RootLayout = () => {
+  const [collapsed, setCollapsed] = useState(false);
   const isToggle = true;
   const location = useLocation();
   const { logOutHandler, user } = useMainContext();
 
+  const isActive = (link) => location.pathname === link;
+
   const CustomMenu = ({ link, text, Icon }) => (
     <MenuItem
-      icon={<Icon className="text-2xl" />}
-      style={{
-        backgroundColor: location.pathname === link ? "#004aa3" : "#fff",
-        borderRadius: location.pathname === link ? "10px" : 0
-      }}
-      className={`font-bold p-2 ${
-        location.pathname === link ? "text-white" : "text-black"
-      }`}
       component={<Link to={link} />}
+      className="!mb-0.5"
+      style={{ backgroundColor: "transparent" }}
     >
-      {text}
+      <span
+        className={`${navItemClass} border-l-4 ${
+          isActive(link)
+            ? "border-l-[#004aa3] bg-[#004aa3]/10"
+            : "border-transparent hover:bg-slate-100"
+        }`}
+        style={{
+          color: isActive(link) ? THEME_PRIMARY : TEXT_DARK,
+        }}
+      >
+        <Icon className="w-5 h-5 flex-shrink-0 text-inherit" />
+        {!collapsed && <span>{text}</span>}
+      </span>
     </MenuItem>
   );
 
   return (
-    <div className="flex max-h-[calc(100vh - 113px)]">
-      <div className="w-[250px]">
-        <Sidebar breakPoint="lg" toggled={isToggle} onBackdropClick={null}>
-          <Menu className="!bg-white !max-h-[90vh] flex flex-col justify-between">
-            <div>
-              <CustomMenu link="/" text="Home" Icon={IoMdHome} />
-              <CustomMenu
-                link="/patientslip"
-                text="Slips"
-                Icon={FaSheetPlastic}
-              />
-              <CustomMenu
-                link="/communitycard"
-                text="Community Card"
-                Icon={FaAddressCard}
-              />
-              {user?.role === "admin" && (
-                <>
-                  <CustomMenu link="/users" text="Users" Icon={HiUser} />
-                  <CustomMenu
-                    link="/doctors"
-                    text="Doctors"
-                    Icon={FaUserDoctor}
-                  />
-                  <CustomMenu
-                    link="/services"
-                    text="Services"
-                    Icon={HiClipboardDocumentList}
-                  />
-                  <CustomMenu
-                    link="/discounts"
-                    text="Discounts"
-                    Icon={HiTag}
-                  />
-                  <CustomMenu
-                    link="/reports"
-                    text="Reports"
-                    Icon={HiDocumentMagnifyingGlass}
-                  />
-                  <CustomMenu
-                    link="/deletedslips"
-                    text="Deleted Slips"
-                    Icon={HiDocumentMinus}
-                  />
-                </>
-              )}
+    <div className="flex h-full min-h-0 w-full">
+      <div className="flex-shrink-0 h-full overflow-hidden flex flex-col">
+        <Sidebar
+          collapsed={collapsed}
+          breakPoint="lg"
+          toggled={isToggle}
+          onBackdropClick={null}
+          rootStyles={{
+            backgroundColor: SIDEBAR_BG,
+            borderRight: "1px solid #e2e8f0",
+            height: "100%",
+            minHeight: "0",
+          }}
+        >
+          <div className="flex flex-col h-full min-h-0 py-3">
+            <div className="flex-shrink-0 flex items-center justify-between gap-2 px-3 mb-4">
+              <div className="flex items-center gap-2 min-w-0">
+                <img
+                  src={Logo}
+                  alt="MMHC"
+                  className="h-9 w-9 flex-shrink-0 rounded-lg object-cover border border-slate-200"
+                />
+                {!collapsed && (
+                  <span className="text-sm font-semibold truncate" style={{ color: TEXT_DARK }}>
+                    MMHC
+                  </span>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => setCollapsed((c) => !c)}
+                className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-slate-200 text-slate-800 hover:bg-slate-300 transition-colors"
+                aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+              >
+                <HiChevronLeft
+                  className={`w-4 h-4 transition-transform ${collapsed ? "rotate-180" : ""}`}
+                />
+              </button>
             </div>
-            <div className="m-4 mb-6">
-              <CustomAuthButton text="Logout" onClick={() => logOutHandler()} />
+            <Menu
+              className="sidebar-menu !bg-transparent !border-0 flex-1 min-h-0 overflow-y-hidden overflow-x-hidden"
+              menuItemStyles={{
+                button: {
+                  padding: "0 8px",
+                  "&:hover": { backgroundColor: "transparent" },
+                },
+              }}
+            >
+              <div className="px-2 space-y-0">
+                <CustomMenu link="/" text="Home" Icon={IoMdHome} />
+                <CustomMenu
+                  link="/patientslip"
+                  text="Slips"
+                  Icon={FaSheetPlastic}
+                />
+                <CustomMenu
+                  link="/communitycard"
+                  text="Community Card"
+                  Icon={FaAddressCard}
+                />
+                {user?.role === "admin" && (
+                  <>
+                    <CustomMenu link="/users" text="Employees" Icon={HiUser} />
+                    <CustomMenu
+                      link="/doctors"
+                      text="Doctors"
+                      Icon={FaUserDoctor}
+                    />
+                    <CustomMenu
+                      link="/services"
+                      text="Services"
+                      Icon={HiClipboardDocumentList}
+                    />
+                    <CustomMenu
+                      link="/discounts"
+                      text="Discounts"
+                      Icon={HiTag}
+                    />
+                    <CustomMenu
+                      link="/reports"
+                      text="Reports"
+                      Icon={HiDocumentMagnifyingGlass}
+                    />
+                    <CustomMenu
+                      link="/deletedslips"
+                      text="Deleted Slips"
+                      Icon={HiDocumentMinus}
+                    />
+                  </>
+                )}
+              </div>
+            </Menu>
+            <div className="flex-shrink-0 p-2 border-t border-slate-200">
+              <button
+                type="button"
+                onClick={() => logOutHandler()}
+                className={`${navItemClass} w-full justify-center border-l-transparent hover:bg-red-50 hover:text-red-600`}
+                style={{ color: TEXT_DARK }}
+              >
+                <HiArrowRightOnRectangle className="w-5 h-5" />
+                {!collapsed && <span>Logout</span>}
+              </button>
             </div>
-          </Menu>
+          </div>
         </Sidebar>
       </div>
-      <main className="flex-1 p-4 bg-gray-50">
+      <main className="flex-1 min-w-0 min-h-0 overflow-y-auto p-4 sm:p-6 bg-slate-50/80">
         <Outlet />
       </main>
     </div>

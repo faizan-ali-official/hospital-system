@@ -1,55 +1,42 @@
 import React, { useState } from "react";
 import CheckupSlip from "../components/slipTypes/checkupSlip";
 import PharmacySlip from "../components/slipTypes/pharmacySlip";
+import { HiDocumentText, HiCube } from "react-icons/hi2";
+
+const TABS = [
+  { id: "appointment", label: "Appointment Slip", Icon: HiDocumentText },
+  { id: "pharmacy", label: "Pharmacy Slip", Icon: HiCube },
+];
 
 function Home() {
-  const [selectedType, setSelectedType] = useState("doctor");
+  const [activeTab, setActiveTab] = useState("appointment");
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center">
-      <div className="w-full xl:w-[60%] lg:w-[80%] mx-10 xl:mx-0 py-10 items-start rounded-md shadow-lg shadow-[#004aa3]">
-        <div className="flex">
-          {selectedType && (
+    <div className="w-full max-w-4xl mx-auto">
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-lg shadow-slate-200/50 overflow-hidden">
+        {/* Tab bar */}
+        <div className="flex border-b border-slate-200 bg-slate-50/60">
+          {TABS.map((tab) => (
             <button
-              className="pl-10 text-3xl cursor-pointer"
-              onClick={() => setSelectedType("")}
+              key={tab.id}
+              type="button"
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex-1 flex items-center justify-center gap-2 py-4 px-4 text-sm font-semibold transition-all duration-200 ${
+                activeTab === tab.id
+                  ? "text-[#004aa3] bg-white border-b-2 border-[#004aa3] shadow-sm"
+                  : "text-slate-500 hover:text-slate-700 hover:bg-slate-100/80"
+              }`}
             >
-              ←
+              <tab.Icon className="w-5 h-5 flex-shrink-0" />
+              {tab.label}
             </button>
-          )}
-          <p className="text-center pb-2 font-bold text-2xl underline w-full capitalize">
-            {selectedType} Slip
-          </p>
+          ))}
         </div>
-        {!selectedType ? (
-          <>
-            <p className="text-center pb-6 font-semibold text-xl w-full ">
-              Kindly select an option
-            </p>
-            <div className="flex justify-around">
-              <div
-                className="w-[40%] min-h-[20vh] bg-[#004aa3] rounded-xl"
-                onClick={() => setSelectedType("doctor")}
-              >
-                <p className="flex justify-center h-[100%] items-center font-bold text-white text-2xl cursor-pointer">
-                  Appointment Slip
-                </p>
-              </div>
-              <div
-                className="w-[40%] min-h-[20vh] bg-[#004aa3] rounded-xl cursor-pointer"
-                onClick={() => setSelectedType("pharmacy")}
-              >
-                <p className="flex justify-center h-[100%] items-center font-bold text-white text-2xl">
-                  Pharmacy Slip
-                </p>
-              </div>
-            </div>
-          </>
-        ) : selectedType === "doctor" ? (
-          <CheckupSlip />
-        ) : (
-          <PharmacySlip />
-        )}
+
+        {/* Form content - compact so form + Generate fit without scrolling */}
+        <div className="p-4 sm:p-5">
+          {activeTab === "appointment" ? <CheckupSlip /> : <PharmacySlip />}
+        </div>
       </div>
     </div>
   );

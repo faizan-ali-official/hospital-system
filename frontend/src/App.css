@@ -1,5 +1,50 @@
 @import "tailwindcss";
 
+/* Sidebar: white background, full height, own scroll */
+.pro-sidebar {
+  background-color: #ffffff !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
+}
+.pro-sidebar .pro-sidebar-inner {
+  background-color: #ffffff !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+.pro-sidebar .pro-menu-item a {
+  display: flex;
+  width: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Hide sidebar scrollbar completely (content still scrolls with wheel/touch) */
+.pro-sidebar,
+.pro-sidebar .pro-sidebar-inner,
+.pro-sidebar .sidebar-menu,
+.pro-sidebar ul,
+.pro-sidebar div,
+.pro-sidebar * {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+.pro-sidebar::-webkit-scrollbar,
+.pro-sidebar .pro-sidebar-inner::-webkit-scrollbar,
+.pro-sidebar .sidebar-menu::-webkit-scrollbar,
+.pro-sidebar ul::-webkit-scrollbar,
+.pro-sidebar div::-webkit-scrollbar,
+.pro-sidebar *::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
 .css-ewdv3l {
   height: calc(100vh - 113px);
   display: flex;

@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import RootLayout from "../layouts/RootLayout";
 import {
   DoctorCreate,
@@ -17,44 +17,73 @@ import {
   CommunityCard,
   CommunityCardCreate
 } from "../../pages";
-import Logo from "../../assets/logo.jpeg";
 import { useIsOnline } from "react-use-is-online";
 import { useMainContext } from "../../context/mainContext";
+import { HiChevronDown } from "react-icons/hi2";
+
+const pathToSection = {
+  "/": "Home",
+  "/patientslip": "Slips",
+  "/communitycard": "Community Card",
+  "/users": "Employees",
+  "/usercreate": "Employees",
+  "/doctors": "Doctors",
+  "/doctorcreate": "Doctors",
+  "/services": "Services",
+  "/servicecreate": "Services",
+  "/discounts": "Discounts",
+  "/discountcreate": "Discounts",
+  "/reports": "Reports",
+  "/deletedslips": "Deleted Slips",
+  "/communitycardcreate": "Community Card",
+};
+
+function getSectionLabel(pathname) {
+  return pathToSection[pathname] ?? (pathname.slice(1).split("/")[0] || "Home");
+}
+
+function getInitials(name) {
+  if (!name || typeof name !== "string") return "—";
+  const parts = name.trim().split(/\s+/);
+  if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  return name.slice(0, 2).toUpperCase();
+}
 
 const RouterPage = () => {
   const { user } = useMainContext();
   const { isOnline, isOffline } = useIsOnline();
+  const location = useLocation();
+  const isLoginPage = location.pathname === "/login";
+  const sectionLabel = getSectionLabel(location.pathname);
+
+  if (isLoginPage) {
+    return <Routes><Route path="/login" element={<Login />} /></Routes>;
+  }
+
   return (
-    <>
-      <div className="bg-white border-b border-[#004aa3] shadow-lg shadow-[#004aa3]/30">
-        <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-10 py-6 gap-3 flex items-center justify-between">
-          <div className=" ">
-            <div className=" flex items-center">
-              <img
-                src={Logo}
-                alt="Malik Foundation Logo"
-                className="h-10 w-10 object-contain"
-              />
-              <h1 className="text-4xl font-extrabold bg-gradient-to-r from-[#004aa3] via-gray-800 to-[#004aa3] text-transparent bg-clip-text drop-shadow-md tracking-wide uppercase">
-                Malik Medical Health Center
-              </h1>
-            </div>
-            <p className="text-sm text-gray-600 font-medium mt-1">
-              Non-profit organization · Non-governmental organization (NGO) ·
-              Charity organization
-            </p>
-          </div>
+    <div className="flex flex-col h-screen overflow-hidden">
+      {/* Thin green bar */}
+      <div className="flex-shrink-0 h-1 bg-emerald-500" />
+      <header className="flex-shrink-0 z-40 bg-slate-100 border-b border-slate-200">
+        <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
+          <span className="inline-flex items-center rounded-full bg-emerald-500/15 px-4 py-1.5 text-sm font-medium text-emerald-800">
+            {sectionLabel}
+          </span>
           {user?.id && isOnline && (
-            <div>
-              <p className="capitalize font-bold">
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-sky-200 text-sm font-semibold text-sky-800">
+                {getInitials(user?.name || user?.username)}
+              </div>
+              <span className="hidden sm:inline text-sm font-medium text-slate-800 capitalize truncate max-w-[160px]">
                 {user?.name || user?.username}
-              </p>
-              <p className="capitalize">{user?.role}</p>
+              </span>
+              <HiChevronDown className="w-4 h-4 text-slate-500 flex-shrink-0" aria-hidden />
             </div>
           )}
         </div>
-      </div>
-      <Routes>
+      </header>
+      <div className="flex-1 min-h-0 overflow-hidden">
+        <Routes>
         {user?.id || isOffline ? (
           <Route element={<RootLayout />}>
             {user?.role === "admin" ? (
@@ -85,11 +114,10 @@ const RouterPage = () => {
               </>
             )}
           </Route>
-        ) : (
-          <Route path="/login" element={<Login />} />
-        )}
-      </Routes>
-    </>
+        ) : null}
+        </Routes>
+      </div>
+    </div>
   );
 };
 
