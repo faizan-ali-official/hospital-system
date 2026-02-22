@@ -8,6 +8,9 @@ import { useMainContext } from "../context/mainContext";
 import { useNavigate } from "react-router-dom";
 import PasswordInput from "../components/input/passwordInput";
 
+const fieldClass =
+  "input w-full h-10 py-0 px-3 rounded-lg border border-slate-200 text-sm outline-none focus:border-[#004aa3] focus:ring-2 focus:ring-[#004aa3]/20";
+
 function UserCreate() {
   const [loading, setLoading] = useState(false);
   const { allUsers, setAllUsers } = useMainContext();
@@ -26,12 +29,12 @@ function UserCreate() {
       helpers.resetForm();
       toast.success("User created successfully!");
     } catch (error) {
-      console.log(error);
       toast.error(error?.response?.data?.message || error?.message);
     } finally {
       setLoading(false);
     }
   };
+
   const initialValues = {
     username: "",
     email: "",
@@ -46,91 +49,95 @@ function UserCreate() {
       .min(2, "Name must be at least 2 characters"),
     email: yup
       .string()
-      .required("Email is Required")
+      .required("Email is required")
       .email("Email must be valid"),
     roleId: yup
       .string()
       .required("Role is required")
       .oneOf(["1", "2"], "Invalid role"),
-    password: yup.string().required("Password is Required")
+    password: yup.string().required("Password is required")
   });
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center">
-      <div className="w-full xl:w-[40%] mx-10 xl:mx-0 py-10 flex items-start  rounded-md shadow-lg  shadow-[#004aa3]">
-        <Formik
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={onSubmitHandler}
-        >
-          <Form className="w-full  px-10 py-10  lg:mx-10 ">
-            <p className="text-center pb-8 font-bold text-2xl underline">
-              Create User
-            </p>
-            <div className="mb-3">
-              <Field
-                placeholder="Name"
-                type="text"
-                name="username"
-                className="input w-full py-3 px-3 rounded border outline-none"
-              />
-              <ErrorMessage
-                name="username"
-                className="text-red-500"
-                component="p"
-              />
-            </div>
-            <div className="mb-3">
-              <Field
-                placeholder="Email"
-                type="text"
-                name="email"
-                className="input w-full py-3 px-3 rounded border outline-none"
-              />
-              <ErrorMessage
-                name="email"
-                className="text-red-500"
-                component="p"
-              />
-            </div>
-            <div className="mb-3">
-              <Field name="roleId">
-                {({ field, form }) => (
-                  <select
-                    {...field}
-                    className={`input w-full py-3 px-3 rounded border outline-none ${
-                      field.value ? "text-black" : "text-gray-400"
-                    }`}
-                  >
-                    <option value="">Role</option>
-                    <option value="1">Admin</option>
-                    <option value="2">User</option>
-                  </select>
-                )}
-              </Field>
-              <ErrorMessage
-                name="roleId"
-                className="text-red-500"
-                component="p"
-              />
-            </div>
-            <div className="mb-10">
-              <Field name="password" component={PasswordInput} />
-              <ErrorMessage
-                name="password"
-                className="text-red-500"
-                component="p"
-              />
-            </div>
-            <div className="mb-3 flex justify-center">
-              <CustomAuthButton
-                isLoading={loading}
-                text="Create"
-                type="submit"
-              />
-            </div>
-          </Form>
-        </Formik>
+    <div className="flex justify-center min-h-0 flex-1">
+      <div className="w-full xl:w-[95%] max-w-2xl flex flex-col overflow-hidden">
+        <h2 className="text-2xl font-bold text-slate-800 mb-4">Create User</h2>
+        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={onSubmitHandler}
+          >
+            <Form className="space-y-3">
+              <div>
+                <Field
+                  placeholder="Name"
+                  type="text"
+                  name="username"
+                  className={fieldClass}
+                />
+                <ErrorMessage
+                  name="username"
+                  className="mt-1 text-xs text-red-500"
+                  component="p"
+                />
+              </div>
+              <div>
+                <Field
+                  placeholder="Email"
+                  type="text"
+                  name="email"
+                  className={fieldClass}
+                />
+                <ErrorMessage
+                  name="email"
+                  className="mt-1 text-xs text-red-500"
+                  component="p"
+                />
+              </div>
+              <div>
+                <Field name="roleId">
+                  {({ field }) => (
+                    <select
+                      {...field}
+                      className={`${fieldClass} ${field.value ? "text-slate-800" : "text-slate-400"}`}
+                    >
+                      <option value="">Select Role</option>
+                      <option value="1">Admin</option>
+                      <option value="2">User</option>
+                    </select>
+                  )}
+                </Field>
+                <ErrorMessage
+                  name="roleId"
+                  className="mt-1 text-xs text-red-500"
+                  component="p"
+                />
+              </div>
+              <div>
+                <Field
+                  name="password"
+                  component={PasswordInput}
+                  placeholder="Password"
+                  inputClassName={`${fieldClass} pl-10 pr-10`}
+                />
+                <ErrorMessage
+                  name="password"
+                  className="mt-1 text-xs text-red-500"
+                  component="p"
+                />
+              </div>
+              <div className="pt-2 flex justify-end">
+                <CustomAuthButton
+                  isLoading={loading}
+                  text="Create"
+                  type="submit"
+                  className="!h-10 !rounded-lg !py-0 !text-sm"
+                />
+              </div>
+            </Form>
+          </Formik>
+        </div>
       </div>
     </div>
   );

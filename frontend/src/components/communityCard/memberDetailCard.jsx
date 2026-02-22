@@ -1,11 +1,19 @@
 import React from "react";
+import { HiXMark } from "react-icons/hi2";
+
+const DetailRow = ({ label, value }) => (
+  <p className="text-sm text-slate-800">
+    <span className="font-medium text-slate-600">{label}:</span>{" "}
+    {value ?? "N/A"}
+  </p>
+);
 
 const MemberDetailModal = ({ data, onClose }) => {
   if (!data) return null;
   const formatDate = (d) =>
-    new Date(d).toISOString().split("T")[0].split("-").reverse().join("-");
-
+    d ? new Date(d).toISOString().split("T")[0].split("-").reverse().join("-") : "";
   const calculateAge = (d) => {
+    if (!d) return null;
     const dob = new Date(d);
     const t = new Date();
     let a = t.getFullYear() - dob.getFullYear();
@@ -15,81 +23,74 @@ const MemberDetailModal = ({ data, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
-      <div className="bg-white w-[90%] md:w-[700px] rounded-lg shadow-lg p-6 max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center border-b pb-3 mb-4">
-          <h2 className="text-xl font-bold text-[#004aa3]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm">
+      <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200/80 bg-white shadow-xl">
+        {/* Header - same as edit slip modal */}
+        <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4 sticky top-0 bg-white z-10 rounded-t-2xl">
+          <h2 className="text-xl font-bold text-slate-800">
             Community Card Details
           </h2>
-          <button onClick={onClose} className="text-red-500 font-bold text-lg">
-            ✕
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700"
+            aria-label="Close"
+          >
+            <HiXMark className="w-5 h-5" />
           </button>
         </div>
-        <div className="mb-6">
-          <h3 className="text-lg font-semibold mb-3 text-gray-700">
-            Main Member
-          </h3>
 
-          <div className="grid grid-cols-2 gap-3 text-sm">
-            <p>
-              <b>Name:</b> {data.full_name}
-            </p>
-            <p>
-              <b>CNIC:</b> {data.cnic}
-            </p>
-            <p>
-              <b>Guardian:</b> {data.guardian_name || "N/A"}
-            </p>
-            <p>
-              <b>Contact:</b> {data.contact_number || "N/A"}
-            </p>
-            <p>
-              <b>Card No:</b> {data.card_number || "N/A"}
-            </p>
-            <p>
-              <b>Address:</b> {data.current_address || "N/A"}
-            </p>
-            <p>
-              <b>DOB:</b> {formatDate(data.date_of_birth) || "N/A"}
-            </p>
-            <p>
-              <b>Age:</b> {calculateAge(data.date_of_birth) ?? "N/A"}
-            </p>
-          </div>
-        </div>
-        <div>
-          <h3 className="text-lg font-semibold mb-3 text-gray-700">
-            Family Members
-          </h3>
-          {data.relations?.length ? (
-            <div className="space-y-3">
-              {data.relations.map((rel, index) => (
-                <div
-                  key={index}
-                  className="border rounded p-3 bg-gray-50 text-sm"
-                >
-                  <p>
-                    <b>Name:</b> {rel.full_name}
-                  </p>
-                  <p>
-                    <b>Relation:</b> {rel.relation}
-                  </p>
-                  <p>
-                    <b>CNIC:</b> {rel.cnic || "N/A"}
-                  </p>
-                  <p>
-                    <b>DOB:</b> {formatDate(rel.date_of_birth) || "N/A"}
-                  </p>
-                  <p>
-                    <b>Age:</b>{" "}
-                    {`${calculateAge(rel.date_of_birth)} years` ?? "N/A"}
-                  </p>
-                </div>
-              ))}
+        <div className="px-6 py-5">
+          {/* Main Member */}
+          <section className="mb-6">
+            <h3 className="text-base font-semibold text-slate-800 mb-3">
+              Main Member
+            </h3>
+            <div className="grid grid-cols-2 gap-x-6 gap-y-2.5">
+              <DetailRow label="Name" value={data.full_name} />
+              <DetailRow label="CNIC" value={data.cnic} />
+              <DetailRow label="Guardian" value={data.guardian_name} />
+              <DetailRow label="Contact" value={data.contact_number} />
+              <DetailRow label="Card No" value={data.card_number} />
+              <DetailRow label="Address" value={data.current_address} />
+              <DetailRow label="DOB" value={formatDate(data.date_of_birth)} />
+              <DetailRow label="Age" value={calculateAge(data.date_of_birth)} />
             </div>
-          ) : (
-            <p className="text-gray-500 text-sm">No relations found</p>
-          )}
+          </section>
+
+          {/* Family Members */}
+          <section>
+            <h3 className="text-base font-semibold text-slate-800 mb-3">
+              Family Members
+            </h3>
+            {data.relations?.length ? (
+              <div className="space-y-3">
+                {data.relations.map((rel, index) => (
+                  <div
+                    key={index}
+                    className="rounded-lg border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm"
+                  >
+                    <div className="grid grid-cols-2 gap-x-6 gap-y-2.5">
+                      <DetailRow label="Name" value={rel.full_name} />
+                      <DetailRow label="Relation" value={rel.relation} />
+                      <DetailRow label="CNIC" value={rel.cnic} />
+                      <DetailRow label="DOB" value={formatDate(rel.date_of_birth)} />
+                      <DetailRow
+                        label="Age"
+                        value={
+                          calculateAge(rel.date_of_birth) != null
+                            ? `${calculateAge(rel.date_of_birth)} years`
+                            : null
+                        }
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-slate-500">No relations found</p>
+            )}
+          </section>
         </div>
       </div>
     </div>

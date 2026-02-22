@@ -7,6 +7,9 @@ import { axiosClient } from "../utils/AxiosClient";
 import { useMainContext } from "../context/mainContext";
 import { useNavigate } from "react-router-dom";
 
+const fieldClass =
+  "input w-full h-10 py-0 px-3 rounded-lg border border-slate-200 text-sm outline-none focus:border-[#004aa3] focus:ring-2 focus:ring-[#004aa3]/20";
+
 function DoctorCreate() {
   const [loading, setLoading] = useState(false);
   const { doctors, setDoctors } = useMainContext();
@@ -22,7 +25,6 @@ function DoctorCreate() {
       helpers.resetForm();
       toast.success("Doctor created successfully!");
     } catch (error) {
-      console.log(error);
       toast.error(error?.response?.data?.message || error?.message);
     } finally {
       setLoading(false);
@@ -41,57 +43,58 @@ function DoctorCreate() {
       .min(2, "Name must be at least 2 characters"),
     specialization: yup
       .string()
-      .required("Specialization is Required")
+      .required("Specialization is required")
       .min(2, "Specialization must be at least 2 characters")
   });
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center">
-      <div className="w-full xl:w-[40%] mx-10 xl:mx-0 py-10 flex items-start  rounded-md shadow-lg shadow-[#004aa3]">
-        <Formik
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={onSubmitHandler}
-        >
-          <Form className="w-full  px-10 py-10  lg:mx-10 ">
-            <p className="text-center pb-8 font-bold text-2xl underline">
-              Create Doctor
-            </p>
-            <div className="mb-3">
-              <Field
-                placeholder="Doctor Name"
-                type="text"
-                name="doctor_name"
-                className="input w-full py-3 px-3 rounded border outline-none"
-              />
-              <ErrorMessage
-                name="doctor_name"
-                className="text-red-500"
-                component="p"
-              />
-            </div>
-            <div className="mb-3">
-              <Field
-                placeholder="Specialization"
-                type="text"
-                name="specialization"
-                className="input w-full py-3 px-3 rounded border outline-none"
-              />
-              <ErrorMessage
-                name="specialization"
-                className="text-red-500"
-                component="p"
-              />
-            </div>
-            <div className="mb-3 flex justify-center">
-              <CustomAuthButton
-                isLoading={loading}
-                text="Create"
-                type="submit"
-              />
-            </div>
-          </Form>
-        </Formik>
+    <div className="flex justify-center min-h-0 flex-1">
+      <div className="w-full xl:w-[95%] max-w-2xl flex flex-col overflow-hidden">
+        <h2 className="text-2xl font-bold text-slate-800 mb-4">Create Doctor</h2>
+        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={onSubmitHandler}
+          >
+            <Form className="space-y-3">
+              <div>
+                <Field
+                  placeholder="Doctor Name"
+                  type="text"
+                  name="doctor_name"
+                  className={fieldClass}
+                />
+                <ErrorMessage
+                  name="doctor_name"
+                  className="mt-1 text-xs text-red-500"
+                  component="p"
+                />
+              </div>
+              <div>
+                <Field
+                  placeholder="Specialization"
+                  type="text"
+                  name="specialization"
+                  className={fieldClass}
+                />
+                <ErrorMessage
+                  name="specialization"
+                  className="mt-1 text-xs text-red-500"
+                  component="p"
+                />
+              </div>
+              <div className="pt-2 flex justify-end">
+                <CustomAuthButton
+                  isLoading={loading}
+                  text="Create"
+                  type="submit"
+                  className="!h-10 !rounded-lg !py-0 !text-sm"
+                />
+              </div>
+            </Form>
+          </Formik>
+        </div>
       </div>
     </div>
   );

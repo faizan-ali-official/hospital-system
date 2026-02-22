@@ -13,6 +13,8 @@ const mainContext = createContext({
   services: [],
   discounts: [],
   communityCard: [],
+  sidebarMobileOpen: false,
+  setSidebarMobileOpen: () => {},
   setAllSlips: () => {},
   setDoctors: () => {},
   setAllUsers: () => {},
@@ -39,6 +41,7 @@ export const MainContextProvider = ({ children }) => {
   const [communityCard, setCommunityCard] = useState([]);
   const [feesTypes, setFeesTypes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sidebarMobileOpen, setSidebarMobileOpen] = useState(false);
 
   const navigate = useNavigate();
   const params = {
@@ -134,6 +137,8 @@ export const MainContextProvider = ({ children }) => {
         services,
         discounts,
         communityCard,
+        sidebarMobileOpen,
+        setSidebarMobileOpen,
         fetchUserProfile,
         logOutHandler,
         setAllUsers,

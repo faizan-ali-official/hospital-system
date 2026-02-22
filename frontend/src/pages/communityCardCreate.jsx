@@ -10,6 +10,9 @@ import { axiosClient } from "../utils/AxiosClient";
 import { useMainContext } from "../context/mainContext";
 import { useLocation } from "react-router-dom";
 
+const fieldClass =
+  "input w-full h-10 py-0 px-3 rounded-lg border border-slate-200 text-sm outline-none focus:border-[#004aa3] focus:ring-2 focus:ring-[#004aa3]/20";
+
 function CommunityCardCreate() {
   const { state } = useLocation();
   const editData = state?.data;
@@ -161,29 +164,32 @@ function CommunityCardCreate() {
           validationSchema={validationSchema}
           onSubmit={onSubmitHandler}
         >
-          <Form className="px-10 py-10 lg:mx-10 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Form className="px-10 py-10 lg:mx-10 space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <Input
                 name="full_name"
                 placeholder="Full Name"
                 errorName="full_name"
+                showLabel={false}
+                compact
+                className="h-10 py-0 px-3"
               />
               <Input
                 name="date_of_birth"
                 type="date"
-                label="Date of Birth"
                 errorName="date_of_birth"
+                showLabel={false}
+                compact
+                className="h-10 py-0 px-3"
               />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
                 <Field name="gender">
                   {({ field }) => (
                     <select
                       {...field}
-                      className={`input w-full py-3 px-3 rounded border outline-none ${
-                        field.value ? "text-black" : "text-gray-400"
-                      }`}
+                      className={`${fieldClass} ${field.value ? "text-slate-800" : "text-slate-400"}`}
                     >
                       <option value="">Select Gender</option>
                       <option value="male">Male</option>
@@ -194,7 +200,7 @@ function CommunityCardCreate() {
                 <ErrorMessage
                   name="gender"
                   component="p"
-                  className="text-red-500"
+                  className="mt-1 text-xs text-red-500"
                 />
               </div>
               <div>
@@ -202,9 +208,7 @@ function CommunityCardCreate() {
                   {({ field }) => (
                     <select
                       {...field}
-                      className={`input w-full py-3 px-3 rounded border outline-none ${
-                        field.value ? "text-black" : "text-gray-400"
-                      }`}
+                      className={`${fieldClass} ${field.value ? "text-slate-800" : "text-slate-400"}`}
                     >
                       <option value="">Select Blood Group</option>
                       {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map(
@@ -220,11 +224,11 @@ function CommunityCardCreate() {
                 <ErrorMessage
                   name="blood_group"
                   component="p"
-                  className="text-red-500"
+                  className="mt-1 text-xs text-red-500"
                 />
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div className="relative">
                 <Field name="parent_id">
                   {({ form }) => (
@@ -239,25 +243,25 @@ function CommunityCardCreate() {
                           if (val.length >= 4) searchParent(val);
                           else setParentResults([]);
                         }}
-                        className="input w-full py-3 px-3 rounded border outline-none"
+                        className={fieldClass}
                       />
 
                       {parentResults.length > 0 && (
-                        <ul className="absolute z-10 bg-white border w-full rounded shadow max-h-48 overflow-auto">
+                        <ul className="absolute z-10 bg-white border border-slate-200 w-full rounded-lg shadow-lg max-h-48 overflow-auto">
                           {parentResults.map((item) => (
                             <li
-                              key={item._id}
-                              className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                              key={item.id ?? item._id}
+                              className="px-3 py-2 hover:bg-slate-50 cursor-pointer text-sm"
                               onClick={() => {
-                                form.setFieldValue("parent_id", item._id);
+                                form.setFieldValue("parent_id", item.id ?? item._id);
                                 setParentQuery(
                                   `${item.full_name} (${item.card_number})`
                                 );
                                 setParentResults([]);
                               }}
                             >
-                              <p className="font-medium">{item.full_name}</p>
-                              <p className="text-xs text-gray-500">
+                              <p className="font-medium text-slate-800">{item.full_name}</p>
+                              <p className="text-xs text-slate-500">
                                 Card: {item.card_number}
                               </p>
                             </li>
@@ -272,47 +276,68 @@ function CommunityCardCreate() {
                 name="guardian_name"
                 placeholder="Guardian Name"
                 errorName="guardian_name"
+                showLabel={false}
+                compact
+                className="h-10 py-0 px-3"
               />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input name="cnic" placeholder="CNIC" errorName="cnic" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <Input name="cnic" placeholder="CNIC" errorName="cnic" showLabel={false} compact className="h-10 py-0 px-3" />
               <Input
                 name="contact_number"
                 placeholder="Contact Number"
                 errorName="contact_number"
+                showLabel={false}
+                compact
+                className="h-10 py-0 px-3"
               />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <Input
                 name="permanent_address"
                 placeholder="Permanent Address"
                 errorName="permanent_address"
+                showLabel={false}
+                compact
+                className="h-10 py-0 px-3"
               />
               <Input
                 name="current_address"
                 placeholder="Current Address"
                 errorName="current_address"
+                showLabel={false}
+                compact
+                className="h-10 py-0 px-3"
               />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <Input
                 name="occupation"
                 placeholder="Occupation"
                 errorName="occupation"
+                showLabel={false}
+                compact
+                className="h-10 py-0 px-3"
               />
               <Input
                 name="family_members_count"
                 placeholder="Family Members"
                 errorName="family_members_count"
+                showLabel={false}
+                compact
+                className="h-10 py-0 px-3"
               />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <Input
                 name="card_number"
                 placeholder="Card Number"
                 errorName="card_number"
+                showLabel={false}
+                compact
+                className="h-10 py-0 px-3"
               />
-              <Input name="cast" placeholder="Cast (optional)" />
+              <Input name="cast" placeholder="Cast (optional)" showLabel={false} compact className="h-10 py-0 px-3" />
             </div>
             <FieldArray name="relations">
               {({ push, remove, form }) => (
@@ -320,46 +345,58 @@ function CommunityCardCreate() {
                   {form.values.relations.map((_, index) => (
                     <div
                       key={index}
-                      className="mt-4 border rounded p-4 relative"
+                      className="mt-3 rounded-lg border border-slate-200 p-4 relative"
                     >
-                      <p className="font-semibold mb-2">
+                      <p className="text-sm font-semibold text-slate-800 mb-3">
                         Relation # {index + 1}
                       </p>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <Input
                           name={`relations[${index}].full_name`}
                           placeholder="Name"
                           errorName={`relations[${index}].full_name`}
+                          showLabel={false}
+                          compact
+                          className="h-10 py-0 px-3"
                         />
                         <Input
                           name={`relations[${index}].relation`}
                           placeholder="Relation"
                           errorName={`relations[${index}].relation`}
+                          showLabel={false}
+                          compact
+                          className="h-10 py-0 px-3"
                         />
                       </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
                         <Input
                           type="date"
                           name={`relations[${index}].date_of_birth`}
-                          label="Date of Birth"
+                          showLabel={false}
+                          compact
+                          className="h-10 py-0 px-3"
                         />
                         <Input
                           name={`relations[${index}].cnic`}
                           placeholder="CNIC"
                           errorName={`relations[${index}].cnic`}
+                          showLabel={false}
+                          compact
+                          className="h-10 py-0 px-3"
                         />
                       </div>
                       <button
                         type="button"
                         onClick={() => remove(index)}
-                        className="absolute top-2 right-2 text-red-500 text-sm"
+                        className="absolute top-3 right-3 text-sm text-red-600 hover:text-red-700"
                       >
                         Remove
                       </button>
                     </div>
                   ))}
-                  <p
-                    className="text-blue-500 font-bold border-2 w-[115px] p-2 rounded cursor-pointer"
+                  <button
+                    type="button"
+                    className="flex h-10 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
                     onClick={() =>
                       push({
                         full_name: "",
@@ -370,17 +407,18 @@ function CommunityCardCreate() {
                       })
                     }
                   >
+                    <CiCirclePlus className="w-4 h-4" />
                     Add more
-                    <CiCirclePlus className="inline ml-1 text-blue-500" />
-                  </p>
+                  </button>
                 </>
               )}
             </FieldArray>
-            <div className="mt-10 flex justify-center">
+            <div className="mt-8 flex justify-center">
               <CustomAuthButton
                 isLoading={loading}
-                text="Generate"
+                text={isEdit ? "Update Card" : "Generate"}
                 type="submit"
+                className="!h-10 !rounded-lg !py-0 !text-sm"
               />
             </div>
           </Form>

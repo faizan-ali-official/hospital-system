@@ -2,29 +2,29 @@ import React from "react";
 
 function ReportTypeButton({ setReportName, reportName }) {
   return (
-    <div className="w-full flex justify-center mt-3">
-      <div className="bg-gray-300 w-[500px] flex rounded-2xl ">
-        <div
-          className={`${
-            reportName == 1 && "bg-[#004aa3]"
-          } min-h-12 w-[250px] items-center flex justify-center rounded-2xl`}
-          onClick={() => setReportName("1")}
-        >
-          <p className="text-white font-bold text-xl w-full text-center">
-            Appoinment
-          </p>
-        </div>
-        <div
-          className={`${
-            reportName == 2 && "bg-[#004aa3]"
-          } min-h-12 w-[250px] items-center flex justify-center rounded-2xl`}
-          onClick={() => setReportName("2")}
-        >
-          <p className="text-white font-bold text-xl w-full text-center">
-            Pharmacy
-          </p>
-        </div>
-      </div>
+    <div className="inline-flex rounded-lg border border-slate-200 bg-white p-1 shadow-sm">
+      <button
+        type="button"
+        onClick={() => setReportName("1")}
+        className={`rounded-md px-5 py-2 text-sm font-semibold transition-colors ${
+          reportName == "1"
+            ? "bg-[#004aa3] text-white shadow-sm"
+            : "text-slate-600 hover:bg-slate-50"
+        }`}
+      >
+        Appointment
+      </button>
+      <button
+        type="button"
+        onClick={() => setReportName("2")}
+        className={`rounded-md px-5 py-2 text-sm font-semibold transition-colors ${
+          reportName == "2"
+            ? "bg-[#004aa3] text-white shadow-sm"
+            : "text-slate-600 hover:bg-slate-50"
+        }`}
+      >
+        Pharmacy
+      </button>
     </div>
   );
 }

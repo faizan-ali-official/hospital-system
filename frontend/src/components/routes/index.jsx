@@ -19,7 +19,7 @@ import {
 } from "../../pages";
 import { useIsOnline } from "react-use-is-online";
 import { useMainContext } from "../../context/mainContext";
-import { HiChevronDown } from "react-icons/hi2";
+import { HiChevronDown, HiBars3 } from "react-icons/hi2";
 
 const pathToSection = {
   "/": "Home",
@@ -50,7 +50,7 @@ function getInitials(name) {
 }
 
 const RouterPage = () => {
-  const { user } = useMainContext();
+  const { user, setSidebarMobileOpen } = useMainContext();
   const { isOnline, isOffline } = useIsOnline();
   const location = useLocation();
   const isLoginPage = location.pathname === "/login";
@@ -66,9 +66,19 @@ const RouterPage = () => {
       <div className="flex-shrink-0 h-1 bg-emerald-500" />
       <header className="flex-shrink-0 z-40 bg-slate-100 border-b border-slate-200">
         <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
-          <span className="inline-flex items-center rounded-full bg-emerald-500/15 px-4 py-1.5 text-sm font-medium text-emerald-800">
-            {sectionLabel}
-          </span>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setSidebarMobileOpen(true)}
+              className="lg:hidden flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-200 hover:text-slate-800 transition-colors"
+              aria-label="Open menu"
+            >
+              <HiBars3 className="w-6 h-6" />
+            </button>
+            <span className="inline-flex items-center rounded-full bg-emerald-500/15 px-4 py-1.5 text-sm font-medium text-emerald-800">
+              {sectionLabel}
+            </span>
+          </div>
           {user?.id && isOnline && (
             <div className="flex items-center gap-2 flex-shrink-0">
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-sky-200 text-sm font-semibold text-sky-800">

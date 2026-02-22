@@ -2,11 +2,15 @@ import { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as yup from "yup";
 import { toast } from "react-toastify";
+import { HiXMark } from "react-icons/hi2";
 import CustomAuthButton from "../customButton";
 import { axiosClient } from "../../utils/AxiosClient";
 import { useMainContext } from "../../context/mainContext";
 
-function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
+const slipFieldClass =
+  "input w-full h-10 py-0 px-3 rounded-lg border border-slate-200 text-sm outline-none focus:border-[#004aa3] focus:ring-2 focus:ring-[#004aa3]/20";
+
+function DoctorUpdateModal({ user, onClose, setShowUpdateModal }) {
   const [loading, setLoading] = useState(false);
   const { doctors, setDoctors } = useMainContext();
 
@@ -21,7 +25,6 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
       setDoctors(updatedData);
       setShowUpdateModal(false);
     } catch (error) {
-      console.log(error);
       toast.error(error?.response?.data?.message || error?.message);
     } finally {
       setLoading(false);
@@ -40,19 +43,25 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
       .min(2, "Name must be at least 2 characters"),
     specialization: yup
       .string()
-      .required("Specialization is Required")
+      .required("Specialization is required")
       .min(2, "Specialization must be at least 2 characters")
   });
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <div className="bg-white w-full max-w-md p-6 rounded shadow-lg relative">
-        <button
-          className="absolute top-2 right-3 text-gray-500 hover:text-black text-xl"
-          onClick={onClose}
-        >
-          &times;
-        </button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm">
+      <div className="relative w-full max-w-md rounded-2xl border border-slate-200/80 bg-white shadow-xl">
+        {/* Header - same as slip/user update modal */}
+        <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+          <h2 className="text-xl font-bold text-slate-800">Edit Doctor</h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700"
+            aria-label="Close"
+          >
+            <HiXMark className="w-5 h-5" />
+          </button>
+        </div>
 
         <Formik
           initialValues={initialValues}
@@ -60,41 +69,49 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
           onSubmit={onSubmitHandler}
           enableReinitialize
         >
-          <Form>
-            <p className="text-center font-bold text-xl mb-6 underline">
-              Update Doctor
-            </p>
-            <div className="mb-3">
-              <Field
-                placeholder="Doctor Name"
-                type="text"
-                name="doctor_name"
-                className="input w-full py-3 px-3 rounded border outline-none"
-              />
-              <ErrorMessage
-                name="doctor_name"
-                className="text-red-500"
-                component="p"
-              />
+          <Form className="px-6 py-5">
+            <div className="space-y-3">
+              <div>
+                <Field
+                  placeholder="Doctor Name"
+                  type="text"
+                  name="doctor_name"
+                  className={slipFieldClass}
+                />
+                <ErrorMessage
+                  name="doctor_name"
+                  component="p"
+                  className="mt-1 text-xs text-red-500"
+                />
+              </div>
+              <div>
+                <Field
+                  placeholder="Specialization"
+                  type="text"
+                  name="specialization"
+                  className={slipFieldClass}
+                />
+                <ErrorMessage
+                  name="specialization"
+                  component="p"
+                  className="mt-1 text-xs text-red-500"
+                />
+              </div>
             </div>
-            <div className="mb-3">
-              <Field
-                placeholder="Specialization"
-                type="text"
-                name="specialization"
-                className="input w-full py-3 px-3 rounded border outline-none"
-              />
-              <ErrorMessage
-                name="specialization"
-                className="text-red-500"
-                component="p"
-              />
-            </div>
-            <div className="text-center">
+
+            <div className="mt-5 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={onClose}
+                className="h-10 rounded-lg border border-slate-200 px-4 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+              >
+                Cancel
+              </button>
               <CustomAuthButton
                 isLoading={loading}
                 text="Update"
                 type="submit"
+                className="!h-10 !rounded-lg !py-0 !text-sm"
               />
             </div>
           </Form>
@@ -104,4 +121,4 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
   );
 }
 
-export default UserUpdateModal;
+export default DoctorUpdateModal;

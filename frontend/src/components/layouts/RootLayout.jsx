@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Sidebar, Menu, MenuItem } from "react-pro-sidebar";
 import { IoMdHome } from "react-icons/io";
 import {
@@ -23,9 +23,24 @@ const navItemClass =
 
 const RootLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const isToggle = true;
+  const [isLg, setIsLg] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth >= 1024 : true
+  );
   const location = useLocation();
-  const { logOutHandler, user } = useMainContext();
+  const { logOutHandler, user, sidebarMobileOpen, setSidebarMobileOpen } = useMainContext();
+
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const handler = () => setIsLg(mq.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
+  useEffect(() => {
+    if (!isLg) setSidebarMobileOpen(false);
+  }, [location.pathname, isLg, setSidebarMobileOpen]);
+
+  const sidebarToggled = isLg || sidebarMobileOpen;
 
   const isActive = (link) => location.pathname === link;
 
@@ -57,8 +72,8 @@ const RootLayout = () => {
         <Sidebar
           collapsed={collapsed}
           breakPoint="lg"
-          toggled={isToggle}
-          onBackdropClick={null}
+          toggled={sidebarToggled}
+          onBackdropClick={() => setSidebarMobileOpen(false)}
           rootStyles={{
             backgroundColor: SIDEBAR_BG,
             borderRight: "1px solid #e2e8f0",

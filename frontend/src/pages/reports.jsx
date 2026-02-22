@@ -3,6 +3,7 @@ import ReportTypeButton from "../components/reportTypeButton";
 import { axiosClient } from "../utils/AxiosClient";
 import { useMainContext } from "../context/mainContext";
 import SearchSlip from "../components/searchSlip";
+import { HiOutlinePrinter } from "react-icons/hi2";
 
 const Reports = () => {
   const tableContainerRef = useRef(null);
@@ -136,38 +137,46 @@ const Reports = () => {
   };
 
   return (
-    <div ref={tableContainerRef}>
-      <div className="print-hidden">
-        <ReportTypeButton
-          setReportName={setReportName}
-          reportName={reportName}
-        />
-        <SearchSlip
-          setFilteredSearch={setReportData}
-          isreport={true}
-          endpoint={endpoint}
-          handlePrint={handlePrint}
-        />
-      </div>
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="w-full xl:w-[50%] mx-10 xl:mx-0 py-10 items-start rounded-md shadow-lg shadow-[#004aa3]">
-          <div className="flex justify-around ">
-            <div className="w-[40%] min-h-[20vh] bg-[#004aa3] rounded-xl">
-              <div className="h-[100%] flex items-center justify-center flex-col">
-                <p className="font-bold text-white text-2xl">No of Slips</p>
-                <p className="font-bold text-white text-2xl">
-                  {reportData.slips_count}
-                </p>
-              </div>
-            </div>
-            <div className="w-[40%] min-h-[20vh] bg-[#004aa3] rounded-xl">
-              <div className="h-[100%] flex items-center justify-center flex-col">
-                <p className="font-bold text-white text-2xl">Total Earning</p>
-                <p className="font-bold text-white text-2xl">
-                  Rs. {reportData.total_amount}
-                </p>
-              </div>
-            </div>
+    <div className="flex justify-center min-h-0 flex-1" ref={tableContainerRef}>
+      <div className="w-full xl:w-[95%] max-w-4xl flex flex-col overflow-hidden">
+        <h2 className="text-2xl font-bold text-slate-800 mb-4">Reports</h2>
+
+        <div className="print-hidden space-y-4">
+          <div className="flex flex-wrap items-center gap-3">
+            <ReportTypeButton
+              setReportName={setReportName}
+              reportName={reportName}
+            />
+            <button
+              type="button"
+              onClick={handlePrint}
+              className="flex h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
+            >
+              <HiOutlinePrinter className="w-4 h-4" />
+              Print
+            </button>
+          </div>
+
+          <SearchSlip
+            setFilteredSearch={setReportData}
+            isreport={true}
+            endpoint={endpoint}
+            handlePrint={handlePrint}
+          />
+        </div>
+
+        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <p className="text-sm font-medium text-slate-600">No of Slips</p>
+            <p className="mt-2 text-2xl font-bold text-slate-800">
+              {reportData.slips_count ?? 0}
+            </p>
+          </div>
+          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <p className="text-sm font-medium text-slate-600">Total Earning</p>
+            <p className="mt-2 text-2xl font-bold text-[#004aa3]">
+              Rs. {reportData.total_amount ?? "0.00"}
+            </p>
           </div>
         </div>
       </div>
