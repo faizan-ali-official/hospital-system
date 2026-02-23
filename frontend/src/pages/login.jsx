@@ -66,33 +66,34 @@ function Login() {
           <div className="absolute bottom-32 right-20 w-96 h-96 bg-blue-300 rounded-full blur-3xl" />
           <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-white/20 rounded-full blur-2xl" />
         </div>
-        <div className="relative z-10 flex flex-col justify-between p-10 xl:p-14">
-          <div>
+        <div className="relative z-10 w-full flex flex-col justify-between p-10 xl:p-14">
+          <div></div>
+          <div className="">
             <img
               src={Logo}
               alt="Malik Medical Health Center"
-              className="h-12 w-12 rounded-lg object-cover bg-white shadow-lg"
+              className="h-15 w-15 rounded-lg object-cover bg-white shadow-lg"
             />
-            <h1 className="mt-10 text-3xl xl:text-4xl font-bold text-white leading-tight max-w-md">
+            <h1 className="mt-10 text-3xl xl:text-4xl font-bold text-white">
               Welcome to Malik Medical Health Center
             </h1>
             <p className="mt-6 text-lg text-blue-100/90 max-w-md leading-relaxed">
-              Transform your care operations with an intelligent platform built for efficiency, insight, and patient care.
+              Transform your care operations with an intelligent platform built
+              for efficiency, insight, and patient care.
             </p>
           </div>
           <p className="text-sm text-blue-100/70 max-w-md">
-            By signing in you agree to our Terms of Service and acknowledge our Privacy Policy describing how we handle your data.
+            By signing in you agree to our Terms of Service and acknowledge our
+            Privacy Policy describing how we handle your data.
           </p>
         </div>
       </div>
 
       {/* Right column - Login form */}
       <div className="w-full lg:w-[50%] xl:w-[45%] flex flex-col items-center justify-center bg-white px-6 sm:px-12 py-12">
-        <div className="w-full max-w-md">
-          <h2 className="text-3xl font-bold text-slate-800 text-center">
-            Sign In
-          </h2>
-          <p className="text-slate-500 text-center mt-2 mb-8">
+        <div className="w-full ">
+          <h2 className="text-3xl font-bold text-[#004aa3]">Sign In</h2>
+          <p className="text-slate-500 mt-2 mb-8 italic">
             Sign in to your account
           </p>
 
@@ -147,26 +148,7 @@ function Login() {
                   component="p"
                 />
               </div>
-
-              <div className="flex items-center justify-between">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={keepSignedIn}
-                    onChange={(e) => setKeepSignedIn(e.target.checked)}
-                    className="w-4 h-4 rounded border-slate-300 text-[#004aa3] focus:ring-[#004aa3]"
-                  />
-                  <span className="text-sm text-slate-700">Keep me signed in</span>
-                </label>
-                <a
-                  href="#"
-                  className="text-sm text-[#004aa3] hover:underline font-medium"
-                >
-                  Forgot Password?
-                </a>
-              </div>
-
-              <div className="pt-1">
+              <div className="pt-1 mt-10">
                 <CustomAuthButton
                   isLoading={loading}
                   text="Sign In"
@@ -174,13 +156,6 @@ function Login() {
                   className="!rounded-lg !py-3.5 !text-base font-semibold w-full"
                 />
               </div>
-
-              <p className="text-center text-sm text-slate-600 pt-2">
-                Don&apos;t have an account?{" "}
-                <a href="#" className="text-[#004aa3] font-medium hover:underline">
-                  Sign Up
-                </a>
-              </p>
             </Form>
           </Formik>
         </div>

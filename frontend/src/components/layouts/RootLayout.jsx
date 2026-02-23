@@ -6,7 +6,7 @@ import {
   HiUser,
   HiTag,
   HiArrowRightOnRectangle,
-  HiChevronLeft,
+  HiChevronLeft
 } from "react-icons/hi2";
 import Logo from "../../assets/logo.jpeg";
 import { FaUserDoctor, FaSheetPlastic } from "react-icons/fa6";
@@ -27,7 +27,8 @@ const RootLayout = () => {
     typeof window !== "undefined" ? window.innerWidth >= 1024 : true
   );
   const location = useLocation();
-  const { logOutHandler, user, sidebarMobileOpen, setSidebarMobileOpen } = useMainContext();
+  const { logOutHandler, user, sidebarMobileOpen, setSidebarMobileOpen } =
+    useMainContext();
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 1024px)");
@@ -57,7 +58,7 @@ const RootLayout = () => {
             : "border-transparent hover:bg-slate-100"
         }`}
         style={{
-          color: isActive(link) ? THEME_PRIMARY : TEXT_DARK,
+          color: isActive(link) ? THEME_PRIMARY : TEXT_DARK
         }}
       >
         <Icon className="w-5 h-5 flex-shrink-0 text-inherit" />
@@ -78,7 +79,7 @@ const RootLayout = () => {
             backgroundColor: SIDEBAR_BG,
             borderRight: "1px solid #e2e8f0",
             height: "100%",
-            minHeight: "0",
+            minHeight: "0"
           }}
         >
           <div className="flex flex-col h-full min-h-0 py-3">
@@ -90,7 +91,10 @@ const RootLayout = () => {
                   className="h-9 w-9 flex-shrink-0 rounded-lg object-cover border border-slate-200"
                 />
                 {!collapsed && (
-                  <span className="text-sm font-semibold truncate" style={{ color: TEXT_DARK }}>
+                  <span
+                    className="text-sm font-semibold truncate"
+                    style={{ color: TEXT_DARK }}
+                  >
                     MMHC
                   </span>
                 )}
@@ -102,7 +106,9 @@ const RootLayout = () => {
                 aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
               >
                 <HiChevronLeft
-                  className={`w-4 h-4 transition-transform ${collapsed ? "rotate-180" : ""}`}
+                  className={`w-4 h-4 transition-transform ${
+                    collapsed ? "rotate-180" : ""
+                  }`}
                 />
               </button>
             </div>
@@ -111,8 +117,8 @@ const RootLayout = () => {
               menuItemStyles={{
                 button: {
                   padding: "0 8px",
-                  "&:hover": { backgroundColor: "transparent" },
-                },
+                  "&:hover": { backgroundColor: "transparent" }
+                }
               }}
             >
               <div className="px-2 space-y-0">
@@ -129,7 +135,7 @@ const RootLayout = () => {
                 />
                 {user?.role === "admin" && (
                   <>
-                    <CustomMenu link="/users" text="Employees" Icon={HiUser} />
+                    <CustomMenu link="/users" text="Users" Icon={HiUser} />
                     <CustomMenu
                       link="/doctors"
                       text="Doctors"

@@ -184,7 +184,7 @@ function SearchSlip({
             <button
               onClick={fetchFilteredSlips}
               disabled={loading}
-              className="h-10 w-full rounded-lg border border-slate-200 bg-[#004aa3] px-4 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#003d82] disabled:opacity-70"
+              className="h-10 w-full flex rounded-lg border border-slate-200 bg-[#004aa3] text-sm font-semibold text-white shadow-sm transition-colors items-center justify-center hover:bg-[#003d82] disabled:opacity-70"
             >
               {loading ? <BtnLoader /> : "Search"}
             </button>

@@ -34,7 +34,7 @@ const DeletedSlips = () => {
     printWindow.document.write(
       "<html><head><title>Deleted Slips</title><style>body{font-family:Arial,sans-serif;color:#333}h2{text-align:center;margin-bottom:20px}table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #004aa3;padding:8px;text-align:left}th{background-color:#f3f4f6}tr{page-break-inside:avoid}</style></head><body><h2>Malik Medical Health Center - Deleted Slips</h2>" +
         clonedTable.innerHTML +
-        "<script>window.onload=function(){window.print();};<\/script></body></html>"
+        "<script>window.onload=function(){window.print();};</script></body></html>"
     );
     printWindow.document.close();
   };
@@ -42,7 +42,9 @@ const DeletedSlips = () => {
   return (
     <div className="flex justify-center min-h-0 flex-1">
       <div className="w-full xl:w-[95%] flex flex-col overflow-hidden">
-        <h2 className="text-2xl font-bold text-slate-800 mb-4">Deleted Slips</h2>
+        <h2 className="text-2xl font-bold text-slate-800 mb-4">
+          Deleted Slips
+        </h2>
 
         <div className="flex flex-wrap items-center gap-3 mb-4">
           <div className="relative flex-1 min-w-[200px] max-w-md">
@@ -55,24 +57,7 @@ const DeletedSlips = () => {
               className="h-10 w-full rounded-lg border border-slate-200 bg-white py-0 pl-10 pr-4 text-sm text-slate-800 placeholder-slate-400 outline-none focus:border-[#004aa3] focus:ring-2 focus:ring-[#004aa3]/20"
             />
           </div>
-          <button
-            type="button"
-            onClick={() => setShowFilter(!showFilter)}
-            className="flex h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
-          >
-            <Icon className="w-4 h-4 text-slate-500" />
-            Filter
-          </button>
-          <button
-            type="button"
-            onClick={handlePrint}
-            className="flex h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
-          >
-            <HiOutlinePrinter className="w-4 h-4" />
-            Print
-          </button>
         </div>
-
         {showFilter && (
           <div className="mb-4 rounded-lg border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-slate-600">
             No date filters for deleted slips yet.
@@ -86,7 +71,9 @@ const DeletedSlips = () => {
           ref={tableContainerRef}
           className={
             "overflow-y-auto flex-1 min-h-0 rounded-xl border border-slate-200 bg-white " +
-            (showFilter ? "max-h-[calc(100vh-420px)]" : "max-h-[calc(100vh-220px)]")
+            (showFilter
+              ? "max-h-[calc(100vh-420px)]"
+              : "max-h-[calc(100vh-220px)]")
           }
         >
           {filteredSlips.length > 0 ? (

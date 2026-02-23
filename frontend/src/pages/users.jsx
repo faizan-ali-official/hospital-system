@@ -51,7 +51,8 @@ const Users = () => {
     rows.forEach((row, rowIndex) => {
       if (rowIndex === 0) return;
       const cells = row.querySelectorAll("td");
-      if (actionsIndex !== -1 && cells[actionsIndex]) cells[actionsIndex].remove();
+      if (actionsIndex !== -1 && cells[actionsIndex])
+        cells[actionsIndex].remove();
     });
     if (actionsIndex !== -1 && rows[0]) {
       const ths = rows[0].querySelectorAll("th");
@@ -103,33 +104,35 @@ const Users = () => {
         <h2 className="text-2xl font-bold text-slate-800 mb-4">Users</h2>
 
         {/* Control bar */}
-        <div className="flex flex-wrap items-center gap-3 mb-4">
-          <div className="relative flex-1 min-w-[200px] max-w-md">
-            <HiMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
-            <input
-              type="text"
-              placeholder="Search by name, email or role"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-10 w-full rounded-lg border border-slate-200 bg-white py-0 pl-10 pr-4 text-sm text-slate-800 placeholder-slate-400 outline-none focus:border-[#004aa3] focus:ring-2 focus:ring-[#004aa3]/20"
-            />
+        <div className="flex mb-4 justify-between">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="relative flex-1 min-w-[200px] max-w-md">
+              <HiMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
+              <input
+                type="text"
+                placeholder="Search by name, email or role"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="h-10 w-full rounded-lg border border-slate-200 bg-white py-0 pl-10 pr-4 text-sm text-slate-800 placeholder-slate-400 outline-none focus:border-[#004aa3] focus:ring-2 focus:ring-[#004aa3]/20"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowFilter(!showFilter)}
+              className="flex h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
+            >
+              <Icon className="w-4 h-4 text-slate-500" />
+              Filter
+            </button>
+            <button
+              type="button"
+              onClick={handlePrint}
+              className="flex h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
+            >
+              <HiOutlinePrinter className="w-4 h-4" />
+              Print
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => setShowFilter(!showFilter)}
-            className="flex h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
-          >
-            <Icon className="w-4 h-4 text-slate-500" />
-            Filter
-          </button>
-          <button
-            type="button"
-            onClick={handlePrint}
-            className="flex h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
-          >
-            <HiOutlinePrinter className="w-4 h-4" />
-            Print
-          </button>
           {user?.role === "admin" && (
             <button
               type="button"
@@ -153,7 +156,9 @@ const Users = () => {
         <div
           ref={tableContainerRef}
           className={`overflow-y-auto flex-1 min-h-0 rounded-xl border border-slate-200 bg-white ${
-            showFilter ? "max-h-[calc(100vh-420px)]" : "max-h-[calc(100vh-220px)]"
+            showFilter
+              ? "max-h-[calc(100vh-420px)]"
+              : "max-h-[calc(100vh-220px)]"
           }`}
         >
           {filteredUsers.length > 0 ? (
@@ -164,7 +169,9 @@ const Users = () => {
                   <th className="py-3 px-4">Email</th>
                   <th className="py-3 px-4">Role</th>
                   {user?.role === "admin" && (
-                    <th className="py-3 px-4 text-right print-hidden">Action</th>
+                    <th className="py-3 px-4 text-right print-hidden">
+                      Action
+                    </th>
                   )}
                 </tr>
               </thead>
@@ -186,7 +193,9 @@ const Users = () => {
                             type="button"
                             onClick={(e) => {
                               e.stopPropagation();
-                              setActionMenuId(actionMenuId === item.id ? null : item.id);
+                              setActionMenuId(
+                                actionMenuId === item.id ? null : item.id
+                              );
                             }}
                             className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-700"
                             aria-label="Actions"

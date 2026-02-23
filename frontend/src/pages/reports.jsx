@@ -142,7 +142,7 @@ const Reports = () => {
         <h2 className="text-2xl font-bold text-slate-800 mb-4">Reports</h2>
 
         <div className="print-hidden space-y-4">
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap justify-between items-center gap-3">
             <ReportTypeButton
               setReportName={setReportName}
               reportName={reportName}
@@ -165,7 +165,7 @@ const Reports = () => {
           />
         </div>
 
-        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
             <p className="text-sm font-medium text-slate-600">No of Slips</p>
             <p className="mt-2 text-2xl font-bold text-slate-800">

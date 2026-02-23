@@ -42,13 +42,14 @@ const Slips = () => {
   const [actionMenuId, setActionMenuId] = useState(null);
   const Icon = showFilter ? FaTimes : FaFilter;
 
-  const filteredBySearch = allSlips?.filter((item) => {
-    if (!searchQuery.trim()) return true;
-    const q = searchQuery.toLowerCase();
-    const slipId = String(item?.id ?? "");
-    const patientName = (item?.patient_name ?? "").toLowerCase();
-    return slipId.includes(q) || patientName.includes(q);
-  }) ?? [];
+  const filteredBySearch =
+    allSlips?.filter((item) => {
+      if (!searchQuery.trim()) return true;
+      const q = searchQuery.toLowerCase();
+      const slipId = String(item?.id ?? "");
+      const patientName = (item?.patient_name ?? "").toLowerCase();
+      return slipId.includes(q) || patientName.includes(q);
+    }) ?? [];
 
   useEffect(() => {
     const closeMenu = () => setActionMenuId(null);
@@ -347,7 +348,9 @@ const Slips = () => {
   return (
     <div className="flex justify-center min-h-0 flex-1">
       <div className="w-full xl:w-[95%] flex flex-col overflow-hidden">
-        <h2 className="text-2xl font-bold text-slate-800 mb-4">Patient Slips</h2>
+        <h2 className="text-2xl font-bold text-slate-800 mb-4">
+          Patient Slips
+        </h2>
 
         {/* Control bar */}
         <div className="flex flex-wrap items-center gap-3 mb-4">
@@ -398,7 +401,9 @@ const Slips = () => {
         <div
           ref={tableContainerRef}
           className={`overflow-y-auto flex-1 min-h-0 rounded-xl border border-slate-200 bg-white ${
-            showFilter ? "max-h-[calc(100vh-420px)]" : "max-h-[calc(100vh-220px)]"
+            showFilter
+              ? "max-h-[calc(100vh-420px)]"
+              : "max-h-[calc(100vh-220px)]"
           }`}
         >
           {!showNo ? (
@@ -414,7 +419,9 @@ const Slips = () => {
                     <th className="py-3 px-4">Created By</th>
                     <th className="py-3 px-4">Fees</th>
                     <th className="py-3 px-4">Discount Fees</th>
-                    <th className="py-3 px-4 text-right print-hidden">Action</th>
+                    <th className="py-3 px-4 text-right print-hidden">
+                      Action
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -424,12 +431,17 @@ const Slips = () => {
                       className="border-b border-slate-100 text-sm text-slate-800 hover:bg-slate-50/80 transition-colors"
                     >
                       <td className="py-3 px-4 font-medium">{item?.id}</td>
-                      <td className="py-3 px-4 capitalize">{item?.patient_name}</td>
-                      <td className="py-3 px-4 capitalize">{item?.doctor_name}</td>
+                      <td className="py-3 px-4 capitalize">
+                        {item?.patient_name}
+                      </td>
+                      <td className="py-3 px-4 capitalize">
+                        {item?.doctor_name}
+                      </td>
                       <td className="py-3 px-4">
                         <span
-                          className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                            (item?.slip_type_name || item?.type_name) === "pharmacy"
+                          className={`inline-flex rounded-full px-2.5 py-0.5 text-xs capitalize font-medium ${
+                            (item?.slip_type_name || item?.type_name) ===
+                            "pharmacy"
                               ? "bg-sky-100 text-sky-700"
                               : "bg-emerald-100 text-emerald-700"
                           }`}
@@ -438,16 +450,23 @@ const Slips = () => {
                         </span>
                       </td>
                       <td className="py-3 px-4">
-                        {new Date(item.created_at).toLocaleDateString("en-GB").replace(/\//g, "-")}
+                        {new Date(item.created_at)
+                          .toLocaleDateString("en-GB")
+                          .replace(/\//g, "-")}
                       </td>
-                      <td className="py-3 px-4 capitalize">{item?.created_by_name}</td>
+                      <td className="py-3 px-4 capitalize">
+                        {item?.created_by_name}
+                      </td>
                       <td className="py-3 px-4">
                         {item?.fees_before_discount != null
                           ? item.fees_before_discount
                           : item?.slip_type_name === "pharmacy"
                           ? Number(item?.pharmacy_fees) +
                             (Array.isArray(item?.services)
-                              ? item.services.reduce((sum, s) => sum + Number(s.fees || 0), 0)
+                              ? item.services.reduce(
+                                  (sum, s) => sum + Number(s.fees || 0),
+                                  0
+                                )
                               : 0)
                           : item?.doctor_fee}
                       </td>
@@ -456,7 +475,8 @@ const Slips = () => {
                           <span className="text-slate-700">
                             {item.fees_after_discount}{" "}
                             <span className="text-slate-400 text-xs">
-                              ({item.discount_name} - {item.discount_percentage}%)
+                              ({item.discount_name} - {item.discount_percentage}
+                              %)
                             </span>
                           </span>
                         ) : (
@@ -469,7 +489,9 @@ const Slips = () => {
                             type="button"
                             onClick={(e) => {
                               e.stopPropagation();
-                              setActionMenuId(actionMenuId === item.id ? null : item.id);
+                              setActionMenuId(
+                                actionMenuId === item.id ? null : item.id
+                              );
                             }}
                             className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-700"
                             aria-label="Actions"
@@ -533,14 +555,20 @@ const Slips = () => {
             )
           ) : (
             <div className="flex min-h-[320px] items-center justify-center">
-              <p className="text-center font-semibold text-slate-600">No data found for this filter.</p>
+              <p className="text-center font-semibold text-slate-600">
+                No data found for this filter.
+              </p>
             </div>
           )}
           {loading && (
-            <div className="flex justify-center py-4 text-sm text-slate-500">Loading more...</div>
+            <div className="flex justify-center py-4 text-sm text-slate-500">
+              Loading more...
+            </div>
           )}
           {!hasMore && filteredBySearch.length > 0 && (
-            <div className="flex justify-center py-3 text-xs text-slate-400">End of records</div>
+            <div className="flex justify-center py-3 text-xs text-slate-400">
+              End of records
+            </div>
           )}
         </div>
       </div>

@@ -5,15 +5,15 @@ import { HiDocumentText, HiCube } from "react-icons/hi2";
 
 const TABS = [
   { id: "appointment", label: "Appointment Slip", Icon: HiDocumentText },
-  { id: "pharmacy", label: "Pharmacy Slip", Icon: HiCube },
+  { id: "pharmacy", label: "Pharmacy Slip", Icon: HiCube }
 ];
 
 function Home() {
   const [activeTab, setActiveTab] = useState("appointment");
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
-      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-lg shadow-slate-200/50 overflow-hidden">
+    <div className="w-full max-w-4xl mx-auto flex h-full items-center">
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-lg shadow-slate-200/50 overflow-hidden w-full">
         {/* Tab bar */}
         <div className="flex border-b border-slate-200 bg-slate-50/60">
           {TABS.map((tab) => (
