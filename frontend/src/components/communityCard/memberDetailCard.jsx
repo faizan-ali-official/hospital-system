@@ -2,8 +2,8 @@ import React from "react";
 import { HiXMark } from "react-icons/hi2";
 
 const DetailRow = ({ label, value }) => (
-  <p className="text-sm text-slate-800">
-    <span className="font-medium text-slate-600">{label}:</span>{" "}
+  <p className="text-sm text-slate-800 dark:text-slate-200">
+    <span className="font-medium text-slate-600 dark:text-slate-400">{label}:</span>{" "}
     {value ?? "N/A"}
   </p>
 );
@@ -23,17 +23,17 @@ const MemberDetailModal = ({ data, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm">
-      <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200/80 bg-white shadow-xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 dark:bg-black/50 p-4 backdrop-blur-sm">
+      <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200/80 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-xl">
         {/* Header - same as edit slip modal */}
-        <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4 sticky top-0 bg-white z-10 rounded-t-2xl">
-          <h2 className="text-xl font-bold text-slate-800">
+        <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-600 px-6 py-4 sticky top-0 bg-white dark:bg-slate-800 z-10 rounded-t-2xl">
+          <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">
             Community Card Details
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700"
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 dark:text-slate-400 transition-colors hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-slate-200"
             aria-label="Close"
           >
             <HiXMark className="w-5 h-5" />
@@ -43,7 +43,7 @@ const MemberDetailModal = ({ data, onClose }) => {
         <div className="px-6 py-5">
           {/* Main Member */}
           <section className="mb-6">
-            <h3 className="text-base font-semibold text-slate-800 mb-3">
+            <h3 className="text-base font-semibold text-slate-800 dark:text-slate-200 mb-3">
               Main Member
             </h3>
             <div className="grid grid-cols-2 gap-x-6 gap-y-2.5">
@@ -60,7 +60,7 @@ const MemberDetailModal = ({ data, onClose }) => {
 
           {/* Family Members */}
           <section>
-            <h3 className="text-base font-semibold text-slate-800 mb-3">
+            <h3 className="text-base font-semibold text-slate-800 dark:text-slate-200 mb-3">
               Family Members
             </h3>
             {data.relations?.length ? (
@@ -68,7 +68,7 @@ const MemberDetailModal = ({ data, onClose }) => {
                 {data.relations.map((rel, index) => (
                   <div
                     key={index}
-                    className="rounded-lg border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm"
+                    className="rounded-lg border border-slate-200 dark:border-slate-600 bg-slate-50/50 dark:bg-slate-700/50 px-4 py-3 text-sm"
                   >
                     <div className="grid grid-cols-2 gap-x-6 gap-y-2.5">
                       <DetailRow label="Name" value={rel.full_name} />
@@ -88,7 +88,7 @@ const MemberDetailModal = ({ data, onClose }) => {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-slate-500">No relations found</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400">No relations found</p>
             )}
           </section>
         </div>

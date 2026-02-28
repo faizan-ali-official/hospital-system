@@ -9,18 +9,18 @@ import { useMainContext } from "../../context/mainContext";
 import PrintSlip from "../slips/printSlips";
 import Input from "../input/input";
 import Select from "react-select";
-import { customStyles } from "../../styles/customStyle";
+import { getSelectStyles } from "../../styles/customStyle";
 import BtnLoader from "../loader/btnLoader";
 
 const slipFieldClass =
-  "input w-full h-10 py-0 px-3 rounded-lg border border-slate-200 text-sm outline-none focus:border-[#004aa3] focus:ring-2 focus:ring-[#004aa3]/20";
+  "input w-full h-10 py-0 px-3 rounded-lg border border-slate-200 dark:border-slate-500 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-sm outline-none focus:border-[#004aa3] dark:focus:border-sky-400 focus:ring-2 focus:ring-[#004aa3]/20 dark:focus:ring-sky-400/20";
 
 function PharmacySlip() {
   const componentRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [loader, setLoader] = useState(false);
 
-  const { doctors, services, allSlips, setAllSlips } = useMainContext();
+  const { doctors, services, allSlips, setAllSlips, theme } = useMainContext();
   const [generatedSlip, setGeneratedSlip] = useState(null);
 
   const printFn = useReactToPrint({
@@ -164,7 +164,7 @@ function PharmacySlip() {
                 {({ field }) => (
                   <select
                     {...field}
-                    className={`${slipFieldClass} ${field.value ? "text-slate-800" : "text-slate-400"}`}
+                    className={`${slipFieldClass} ${field.value ? "text-slate-800 dark:text-slate-200" : "text-slate-400 dark:text-slate-500"}`}
                   >
                     <option value="">Select Doctor</option>
                     {doctors.map((item) => (
@@ -183,7 +183,7 @@ function PharmacySlip() {
                 {({ field }) => (
                   <select
                     {...field}
-                    className={`${slipFieldClass} ${field.value ? "text-slate-800" : "text-slate-400"}`}
+                    className={`${slipFieldClass} ${field.value ? "text-slate-800 dark:text-slate-200" : "text-slate-400 dark:text-slate-500"}`}
                   >
                     <option value="">Select Gender</option>
                     <option value="Male">Male</option>
@@ -209,7 +209,7 @@ function PharmacySlip() {
                       onChange={(selected) =>
                         form.setFieldValue("service_id", selected.map((i) => i.value))
                       }
-                      styles={customStyles}
+                      styles={getSelectStyles(theme === "dark")}
                       classNamePrefix="slip-select"
                     />
                   );

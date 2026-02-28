@@ -33,7 +33,7 @@ function SearchSlip({
   });
 
   const fieldClass =
-    "h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-800 placeholder-slate-400 outline-none focus:border-[#004aa3] focus:ring-2 focus:ring-[#004aa3]/20";
+    "h-10 w-full rounded-lg border border-slate-200 dark:border-slate-500 bg-white dark:bg-slate-800 px-3 text-sm text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 outline-none focus:border-[#004aa3] dark:focus:border-sky-400 focus:ring-2 focus:ring-[#004aa3]/20 dark:focus:ring-sky-400/20";
 
   const fetchFilteredSlips = async () => {
     setLoading(true);
@@ -89,7 +89,7 @@ function SearchSlip({
 
   return (
     <>
-      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm mb-4">
+      <div className="rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 p-4 shadow-sm mb-4">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 items-end">
           <div>
             <select
@@ -184,7 +184,7 @@ function SearchSlip({
             <button
               onClick={fetchFilteredSlips}
               disabled={loading}
-              className="h-10 w-full flex rounded-lg border border-slate-200 bg-[#004aa3] text-sm font-semibold text-white shadow-sm transition-colors items-center justify-center hover:bg-[#003d82] disabled:opacity-70"
+              className="h-10 w-full flex rounded-lg border border-slate-200 dark:border-slate-600 bg-[#004aa3] dark:bg-sky-600 text-sm font-semibold text-white shadow-sm transition-colors items-center justify-center hover:bg-[#003d82] dark:hover:bg-sky-700 disabled:opacity-70"
             >
               {loading ? <BtnLoader /> : "Search"}
             </button>

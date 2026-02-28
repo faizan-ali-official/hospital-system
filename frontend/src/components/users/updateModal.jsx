@@ -9,7 +9,7 @@ import { useMainContext } from "../../context/mainContext";
 import PasswordInput from "../input/passwordInput";
 
 const slipFieldClass =
-  "input w-full h-10 py-0 px-3 rounded-lg border border-slate-200 text-sm outline-none focus:border-[#004aa3] focus:ring-2 focus:ring-[#004aa3]/20";
+  "input w-full h-10 py-0 px-3 rounded-lg border border-slate-200 dark:border-slate-500 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-sm outline-none focus:border-[#004aa3] dark:focus:border-sky-400 focus:ring-2 focus:ring-[#004aa3]/20 dark:focus:ring-sky-400/20";
 
 function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
   const [loading, setLoading] = useState(false);
@@ -55,15 +55,15 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
   });
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm">
-      <div className="relative w-full max-w-md rounded-2xl border border-slate-200/80 bg-white shadow-xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 dark:bg-black/50 p-4 backdrop-blur-sm">
+      <div className="relative w-full max-w-md rounded-2xl border border-slate-200/80 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-xl">
         {/* Header - same as slip update modal */}
-        <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
-          <h2 className="text-xl font-bold text-slate-800">Edit User</h2>
+        <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-600 px-6 py-4">
+          <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">Edit User</h2>
           <button
             type="button"
             onClick={onClose}
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700"
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 dark:text-slate-400 transition-colors hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-slate-200"
             aria-label="Close"
           >
             <HiXMark className="w-5 h-5" />
@@ -94,7 +94,7 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
                 <Field
                   name="email"
                   placeholder="Email"
-                  className={`${slipFieldClass} bg-slate-50 cursor-not-allowed`}
+                  className={`${slipFieldClass} bg-slate-50 dark:bg-slate-700 cursor-not-allowed`}
                   disabled
                 />
                 <ErrorMessage
@@ -108,7 +108,7 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
                   {({ field }) => (
                     <select
                       {...field}
-                      className={`${slipFieldClass} ${field.value ? "text-slate-800" : "text-slate-400"}`}
+                      className={`${slipFieldClass} ${field.value ? "text-slate-800 dark:text-slate-200" : "text-slate-400 dark:text-slate-500"}`}
                     >
                       <option value="">Select Role</option>
                       <option value="1">Admin</option>
@@ -141,7 +141,7 @@ function UserUpdateModal({ user, onClose, setShowUpdateModal }) {
               <button
                 type="button"
                 onClick={onClose}
-                className="h-10 rounded-lg border border-slate-200 px-4 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                className="h-10 rounded-lg border border-slate-200 dark:border-slate-600 px-4 text-sm font-medium text-slate-700 dark:text-slate-200 transition-colors hover:bg-slate-50 dark:hover:bg-slate-700"
               >
                 Cancel
               </button>

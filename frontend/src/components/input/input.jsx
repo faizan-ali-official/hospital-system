@@ -11,7 +11,7 @@ function Input({ placeholder, type, name, errorName, label, showLabel = true, co
         placeholder={placeholder}
         type={type || "text"}
         name={name}
-        className={`input w-full py-3 px-3 rounded-lg border border-slate-200 outline-none ${className}`}
+        className={`input w-full py-3 px-3 rounded-lg border border-slate-200 dark:border-slate-500 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 outline-none focus:border-[#004aa3] dark:focus:border-sky-400 focus:ring-2 focus:ring-[#004aa3]/20 dark:focus:ring-sky-400/20 ${className}`}
         {...props}
       />
       {errorName && (

@@ -8,7 +8,7 @@ import { useMainContext } from "../context/mainContext";
 import { useNavigate } from "react-router-dom";
 
 const fieldClass =
-  "input w-full h-10 py-0 px-3 rounded-lg border border-slate-200 text-sm outline-none focus:border-[#004aa3] focus:ring-2 focus:ring-[#004aa3]/20";
+  "input w-full h-10 py-0 px-3 rounded-lg border border-slate-200 dark:border-slate-500 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-sm outline-none focus:border-[#004aa3] dark:focus:border-sky-400 focus:ring-2 focus:ring-[#004aa3]/20 dark:focus:ring-sky-400/20";
 
 function DoctorCreate() {
   const [loading, setLoading] = useState(false);
@@ -50,8 +50,8 @@ function DoctorCreate() {
   return (
     <div className="flex justify-center min-h-0 flex-1">
       <div className="w-full xl:w-[95%] max-w-2xl flex flex-col overflow-hidden">
-        <h2 className="text-2xl font-bold text-slate-800 mb-4">Create Doctor</h2>
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4">Create Doctor</h2>
+        <div className="rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 p-6 shadow-sm">
           <Formik
             initialValues={initialValues}
             validationSchema={validationSchema}

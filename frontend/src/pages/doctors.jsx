@@ -83,32 +83,32 @@ const Doctors = () => {
   return (
     <div className="flex justify-center min-h-0 flex-1">
       <div className="w-full xl:w-[95%] flex flex-col overflow-hidden">
-        <h2 className="text-2xl font-bold text-slate-800 mb-4">Doctors</h2>
+        <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4">Doctors</h2>
 
         <div className="flex justify-between mb-4">
           <div className="flex flex-wrap items-center gap-3">
             <div className="relative flex-1 min-w-[200px] max-w-md">
-              <HiMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
+              <HiMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 dark:text-slate-500 pointer-events-none" />
               <input
                 type="text"
                 placeholder="Search by name or specialization"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-10 w-full rounded-lg border border-slate-200 bg-white py-0 pl-10 pr-4 text-sm text-slate-800 placeholder-slate-400 outline-none focus:border-[#004aa3] focus:ring-2 focus:ring-[#004aa3]/20"
+                className="h-10 w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 py-0 pl-10 pr-4 text-sm text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 outline-none focus:border-[#004aa3] dark:focus:border-sky-400 focus:ring-2 focus:ring-[#004aa3]/20 dark:focus:ring-sky-400/20"
               />
             </div>
             <button
               type="button"
               onClick={() => setShowFilter(!showFilter)}
-              className="flex h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
+              className="flex h-10 items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 text-sm font-medium text-slate-700 dark:text-slate-200 shadow-sm transition-colors hover:bg-slate-50 dark:hover:bg-slate-700"
             >
-              <Icon className="w-4 h-4 text-slate-500" />
+              <Icon className="w-4 h-4 text-slate-500 dark:text-slate-400" />
               Filter
             </button>
             <button
               type="button"
               onClick={handlePrint}
-              className="flex h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
+              className="flex h-10 items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 text-sm font-medium text-slate-700 dark:text-slate-200 shadow-sm transition-colors hover:bg-slate-50 dark:hover:bg-slate-700"
             >
               <HiOutlinePrinter className="w-4 h-4" />
               Print
@@ -118,7 +118,7 @@ const Doctors = () => {
             <button
               type="button"
               onClick={() => navigate("/doctorcreate")}
-              className="flex h-10 items-center gap-2 rounded-lg bg-[#004aa3] px-4 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[#003d8a]"
+              className="flex h-10 items-center gap-2 rounded-lg bg-[#004aa3] dark:bg-sky-600 px-4 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[#003d8a] dark:hover:bg-sky-700"
             >
               + Doctor
             </button>
@@ -126,18 +126,18 @@ const Doctors = () => {
         </div>
 
         {showFilter && (
-          <div className="mb-4 rounded-lg border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-slate-600">
+          <div className="mb-4 rounded-lg border border-slate-200 dark:border-slate-600 bg-slate-50/50 dark:bg-slate-800/50 px-4 py-3 text-sm text-slate-600 dark:text-slate-400">
             No filters available for doctors yet.
           </div>
         )}
 
         <div className="flex items-center justify-between mb-2">
-          <h3 className="text-base font-semibold text-slate-800">Records</h3>
+          <h3 className="text-base font-semibold text-slate-800 dark:text-slate-200">Records</h3>
         </div>
         <div
           ref={tableContainerRef}
           className={
-            "overflow-y-auto flex-1 min-h-0 rounded-xl border border-slate-200 bg-white " +
+            "overflow-y-auto flex-1 min-h-0 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 " +
             (showFilter
               ? "max-h-[calc(100vh-420px)]"
               : "max-h-[calc(100vh-220px)]")
@@ -145,8 +145,8 @@ const Doctors = () => {
         >
           {filteredDoctors.length > 0 ? (
             <table className="w-full">
-              <thead className="sticky top-0 z-10 bg-white border-b border-slate-200">
-                <tr className="text-left text-xs font-semibold uppercase tracking-wide text-slate-600">
+                <thead className="sticky top-0 z-10 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-600">
+                <tr className="text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">
                   <th className="py-3 px-4">Name</th>
                   <th className="py-3 px-4">Specialization</th>
                   {user?.role === "admin" && (
@@ -160,7 +160,7 @@ const Doctors = () => {
                 {filteredDoctors.map((item) => (
                   <tr
                     key={item.id}
-                    className="border-b border-slate-100 text-sm text-slate-800 hover:bg-slate-50/80 transition-colors"
+                    className="border-b border-slate-100 dark:border-slate-700 text-sm text-slate-800 dark:text-slate-200 hover:bg-slate-50/80 dark:hover:bg-slate-700/50 transition-colors"
                   >
                     <td className="py-3 px-4 font-medium capitalize">
                       {item.doctor_name}
@@ -179,14 +179,14 @@ const Doctors = () => {
                                 actionMenuId === item.id ? null : item.id
                               );
                             }}
-                            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+                            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-600 hover:text-slate-700 dark:hover:text-slate-200"
                             aria-label="Actions"
                           >
                             <FaEllipsisV className="w-4 h-4" />
                           </button>
                           {actionMenuId === item.id && (
                             <div
-                              className="absolute right-0 top-full z-20 mt-1 w-40 rounded-lg border border-slate-200 bg-white py-1 shadow-lg"
+                              className="absolute right-0 top-full z-20 mt-1 w-40 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 py-1 shadow-lg"
                               onClick={(e) => e.stopPropagation()}
                             >
                               <button
@@ -196,7 +196,7 @@ const Doctors = () => {
                                   setShowUpdateModal(true);
                                   setActionMenuId(null);
                                 }}
-                                className="block w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50"
+                                className="block w-full px-4 py-2 text-left text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700"
                               >
                                 Edit
                               </button>
@@ -207,7 +207,7 @@ const Doctors = () => {
                                   setShowModal(true);
                                   setActionMenuId(null);
                                 }}
-                                className="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50"
+                                className="block w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30"
                               >
                                 Delete
                               </button>
@@ -221,7 +221,7 @@ const Doctors = () => {
               </tbody>
             </table>
           ) : (
-            <div className="flex min-h-[320px] items-center justify-center text-slate-500">
+            <div className="flex min-h-[320px] items-center justify-center text-slate-500 dark:text-slate-400">
               No doctors found
             </div>
           )}

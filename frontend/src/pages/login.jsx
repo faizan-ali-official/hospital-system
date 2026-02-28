@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as yup from "yup";
 import { toast } from "react-toastify";
-import { HiOutlineUser } from "react-icons/hi2";
+import { HiOutlineUser, HiSun, HiMoon } from "react-icons/hi2";
 import CustomAuthButton from "../components/customButton";
 import { axiosClient } from "../utils/AxiosClient";
 import { useMainContext } from "../context/mainContext";
@@ -10,12 +10,12 @@ import PasswordInput from "../components/input/passwordInput";
 import Logo from "../assets/logo.jpeg";
 
 const loginInputClass =
-  "w-full py-3 pl-11 pr-4 rounded-lg border border-slate-200 bg-white text-slate-800 placeholder-slate-400 outline-none transition-all duration-200 focus:border-[#004aa3] focus:ring-2 focus:ring-[#004aa3]/20";
+  "w-full py-3 pl-11 pr-4 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 outline-none transition-all duration-200 focus:border-[#004aa3] dark:focus:border-sky-400 focus:ring-2 focus:ring-[#004aa3]/20 dark:focus:ring-sky-400/20";
 
 function Login() {
   const [loading, setLoading] = useState(false);
   const [keepSignedIn, setKeepSignedIn] = useState(false);
-  const { fetchUserProfile } = useMainContext();
+  const { fetchUserProfile, theme, setTheme } = useMainContext();
 
   const onSubmitHandler = async (values, helpers) => {
     try {
@@ -90,10 +90,18 @@ function Login() {
       </div>
 
       {/* Right column - Login form */}
-      <div className="w-full lg:w-[50%] xl:w-[45%] flex flex-col items-center justify-center bg-white px-6 sm:px-12 py-12">
+      <div className="w-full lg:w-[50%] xl:w-[45%] flex flex-col items-center justify-center bg-white dark:bg-slate-900 px-6 sm:px-12 py-12 relative">
+        <button
+          type="button"
+          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          className="absolute top-4 right-4 flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+        >
+          {theme === "dark" ? <HiSun className="w-5 h-5" /> : <HiMoon className="w-5 h-5" />}
+        </button>
         <div className="w-full ">
-          <h2 className="text-3xl font-bold text-[#004aa3]">Sign In</h2>
-          <p className="text-slate-500 mt-2 mb-8 italic">
+          <h2 className="text-3xl font-bold text-[#004aa3] dark:text-sky-400">Sign In</h2>
+          <p className="text-slate-500 dark:text-slate-400 mt-2 mb-8 italic">
             Sign in to your account
           </p>
 
@@ -106,7 +114,7 @@ function Login() {
               <div>
                 <label
                   htmlFor="username"
-                  className="block text-sm font-medium text-slate-700 mb-1.5"
+                  className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
                 >
                   Email
                 </label>
@@ -132,7 +140,7 @@ function Login() {
               <div>
                 <label
                   htmlFor="password"
-                  className="block text-sm font-medium text-slate-700 mb-1.5"
+                  className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
                 >
                   Password
                 </label>

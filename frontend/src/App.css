@@ -1,14 +1,25 @@
 @import "tailwindcss";
 
+/* Class-based dark mode: add .dark to html to enable */
+@custom-variant dark (&:where(.dark, .dark *));
+
+html.dark,
+html.dark body {
+  background-color: #0f172a;
+}
+
 /* Sidebar: white background, full height, own scroll */
-.pro-sidebar {
+/* react-pro-sidebar v1 uses .ps-sidebar-root and .ps-sidebar-container */
+.pro-sidebar,
+.ps-sidebar-root {
   background-color: #ffffff !important;
   height: 100% !important;
   display: flex !important;
   flex-direction: column !important;
   min-height: 0 !important;
 }
-.pro-sidebar .pro-sidebar-inner {
+.pro-sidebar .pro-sidebar-inner,
+.ps-sidebar-container {
   background-color: #ffffff !important;
   display: flex !important;
   flex-direction: column !important;
@@ -16,7 +27,23 @@
   height: 100% !important;
   overflow: hidden !important;
 }
-.pro-sidebar .pro-menu-item a {
+.pro-sidebar,
+.pro-sidebar .pro-sidebar-inner,
+.ps-sidebar-root,
+.ps-sidebar-container {
+  transition: background-color 0.2s ease;
+}
+.dark .pro-sidebar,
+.dark .pro-sidebar .pro-sidebar-inner,
+.dark .ps-sidebar-root,
+.dark .ps-sidebar-container {
+  background-color: #1e293b !important;
+}
+.dark .ps-sidebar-root {
+  border-color: #334155 !important;
+}
+.pro-sidebar .pro-menu-item a,
+.ps-menu-button {
   display: flex;
   width: 100%;
   color: inherit;
@@ -26,19 +53,25 @@
 /* Hide sidebar scrollbar completely (content still scrolls with wheel/touch) */
 .pro-sidebar,
 .pro-sidebar .pro-sidebar-inner,
+.ps-sidebar-root,
+.ps-sidebar-container,
 .pro-sidebar .sidebar-menu,
 .pro-sidebar ul,
 .pro-sidebar div,
-.pro-sidebar * {
+.pro-sidebar *,
+.ps-sidebar-root * {
   scrollbar-width: none !important;
   -ms-overflow-style: none !important;
 }
 .pro-sidebar::-webkit-scrollbar,
 .pro-sidebar .pro-sidebar-inner::-webkit-scrollbar,
+.ps-sidebar-root::-webkit-scrollbar,
+.ps-sidebar-container::-webkit-scrollbar,
 .pro-sidebar .sidebar-menu::-webkit-scrollbar,
 .pro-sidebar ul::-webkit-scrollbar,
 .pro-sidebar div::-webkit-scrollbar,
-.pro-sidebar *::-webkit-scrollbar {
+.pro-sidebar *::-webkit-scrollbar,
+.ps-sidebar-root *::-webkit-scrollbar {
   display: none !important;
   width: 0 !important;
   height: 0 !important;

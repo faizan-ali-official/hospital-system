@@ -19,7 +19,7 @@ import {
 } from "../../pages";
 import { useIsOnline } from "react-use-is-online";
 import { useMainContext } from "../../context/mainContext";
-import { HiChevronDown, HiBars3 } from "react-icons/hi2";
+import { HiChevronDown, HiBars3, HiSun, HiMoon } from "react-icons/hi2";
 
 const pathToSection = {
   "/": "Home",
@@ -51,7 +51,7 @@ function getInitials(name) {
 }
 
 const RouterPage = () => {
-  const { user, setSidebarMobileOpen } = useMainContext();
+  const { user, setSidebarMobileOpen, theme, setTheme } = useMainContext();
   const { isOnline, isOffline } = useIsOnline();
   const location = useLocation();
   const isLoginPage = location.pathname === "/login";
@@ -66,34 +66,46 @@ const RouterPage = () => {
   }
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden">
+    <div className="flex flex-col h-screen overflow-hidden bg-white dark:bg-slate-900">
       {/* Thin green bar */}
-      <div className="flex-shrink-0 h-1 bg-[#004aa3]" />
-      <header className="flex-shrink-0 z-40 bg-slate-100 border-b border-slate-200">
+      <div className="flex-shrink-0 h-1 bg-emerald-500 dark:bg-emerald-600" />
+      <header className="flex-shrink-0 z-40 bg-slate-100 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
         <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => setSidebarMobileOpen(true)}
-              className="lg:hidden flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-200 hover:text-slate-800 transition-colors"
+              className="lg:hidden flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 hover:text-slate-800 dark:hover:text-white transition-colors"
               aria-label="Open menu"
             >
               <HiBars3 className="w-6 h-6" />
             </button>
-            <span className="inline-flex items-center rounded-full bg-[#004aa3]/15 px-4 py-1.5 text-sm font-medium text-[#004aa3]">
+            <span className="inline-flex items-center rounded-full bg-emerald-500/15 dark:bg-emerald-500/25 px-4 py-1.5 text-sm font-medium text-emerald-800 dark:text-emerald-200">
               {sectionLabel}
             </span>
           </div>
           {user?.id && isOnline && (
             <div className="flex items-center gap-2 flex-shrink-0">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-sky-200 text-sm font-semibold text-[#004aa3]">
+              <button
+                type="button"
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+                aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+              >
+                {theme === "dark" ? (
+                  <HiSun className="w-5 h-5" />
+                ) : (
+                  <HiMoon className="w-5 h-5" />
+                )}
+              </button>
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-sky-200 dark:bg-sky-800 text-sm font-semibold text-sky-800 dark:text-sky-200">
                 {getInitials(user?.name || user?.username)}
               </div>
-              <span className="hidden sm:inline text-sm font-medium text-[#004aa3] capitalize truncate max-w-[160px]">
+              <span className="hidden sm:inline text-sm font-medium text-slate-800 dark:text-slate-200 capitalize truncate max-w-[160px]">
                 {user?.name || user?.username}
               </span>
               <HiChevronDown
-                className="w-4 h-4 text-slate-500 flex-shrink-0"
+                className="w-4 h-4 text-slate-500 dark:text-slate-400 flex-shrink-0"
                 aria-hidden
               />
             </div>

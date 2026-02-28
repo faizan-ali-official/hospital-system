@@ -11,7 +11,7 @@ import { useMainContext } from "../context/mainContext";
 import { useLocation } from "react-router-dom";
 
 const fieldClass =
-  "input w-full h-10 py-0 px-3 rounded-lg border border-slate-200 text-sm outline-none focus:border-[#004aa3] focus:ring-2 focus:ring-[#004aa3]/20";
+  "input w-full h-10 py-0 px-3 rounded-lg border border-slate-200 dark:border-slate-500 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-sm outline-none focus:border-[#004aa3] dark:focus:border-sky-400 focus:ring-2 focus:ring-[#004aa3]/20 dark:focus:ring-sky-400/20";
 
 function CommunityCardCreate() {
   const { state } = useLocation();
@@ -150,7 +150,7 @@ function CommunityCardCreate() {
   return (
     <div className="h-[82.5vh] flex flex-col overflow-hidden">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-bold">Community Card</h2>
+        <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">Community Card</h2>
         <Icon
           size={25}
           className="text-[#004aa3] cursor-pointer"
@@ -189,7 +189,7 @@ function CommunityCardCreate() {
                   {({ field }) => (
                     <select
                       {...field}
-                      className={`${fieldClass} ${field.value ? "text-slate-800" : "text-slate-400"}`}
+                      className={`${fieldClass} ${field.value ? "text-slate-800 dark:text-slate-200" : "text-slate-400 dark:text-slate-500"}`}
                     >
                       <option value="">Select Gender</option>
                       <option value="male">Male</option>
@@ -208,7 +208,7 @@ function CommunityCardCreate() {
                   {({ field }) => (
                     <select
                       {...field}
-                      className={`${fieldClass} ${field.value ? "text-slate-800" : "text-slate-400"}`}
+                      className={`${fieldClass} ${field.value ? "text-slate-800 dark:text-slate-200" : "text-slate-400 dark:text-slate-500"}`}
                     >
                       <option value="">Select Blood Group</option>
                       {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map(
@@ -247,11 +247,11 @@ function CommunityCardCreate() {
                       />
 
                       {parentResults.length > 0 && (
-                        <ul className="absolute z-10 bg-white border border-slate-200 w-full rounded-lg shadow-lg max-h-48 overflow-auto">
+                        <ul className="absolute z-10 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 w-full rounded-lg shadow-lg max-h-48 overflow-auto">
                           {parentResults.map((item) => (
                             <li
                               key={item.id ?? item._id}
-                              className="px-3 py-2 hover:bg-slate-50 cursor-pointer text-sm"
+                              className="px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer text-sm"
                               onClick={() => {
                                 form.setFieldValue("parent_id", item.id ?? item._id);
                                 setParentQuery(
@@ -260,8 +260,8 @@ function CommunityCardCreate() {
                                 setParentResults([]);
                               }}
                             >
-                              <p className="font-medium text-slate-800">{item.full_name}</p>
-                              <p className="text-xs text-slate-500">
+                              <p className="font-medium text-slate-800 dark:text-slate-200">{item.full_name}</p>
+                              <p className="text-xs text-slate-500 dark:text-slate-400">
                                 Card: {item.card_number}
                               </p>
                             </li>
@@ -345,9 +345,9 @@ function CommunityCardCreate() {
                   {form.values.relations.map((_, index) => (
                     <div
                       key={index}
-                      className="mt-3 rounded-lg border border-slate-200 p-4 relative"
+                      className="mt-3 rounded-lg border border-slate-200 dark:border-slate-600 p-4 relative dark:bg-slate-800/50"
                     >
-                      <p className="text-sm font-semibold text-slate-800 mb-3">
+                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-3">
                         Relation # {index + 1}
                       </p>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -396,7 +396,7 @@ function CommunityCardCreate() {
                   ))}
                   <button
                     type="button"
-                    className="flex h-10 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
+                    className="flex h-10 items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 text-sm font-medium text-slate-700 dark:text-slate-200 shadow-sm transition-colors hover:bg-slate-50 dark:hover:bg-slate-700"
                     onClick={() =>
                       push({
                         full_name: "",

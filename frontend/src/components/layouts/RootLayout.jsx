@@ -15,9 +15,6 @@ import { HiDocumentMagnifyingGlass, HiDocumentMinus } from "react-icons/hi2";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { useMainContext } from "../../context/mainContext";
 
-const SIDEBAR_BG = "#ffffff";
-const THEME_PRIMARY = "#004aa3";
-const TEXT_DARK = "#171717";
 const navItemClass =
   "flex items-center gap-3 w-full py-2.5 px-3 text-sm font-medium transition-all duration-200 rounded-r-lg";
 
@@ -27,8 +24,12 @@ const RootLayout = () => {
     typeof window !== "undefined" ? window.innerWidth >= 1024 : true
   );
   const location = useLocation();
-  const { logOutHandler, user, sidebarMobileOpen, setSidebarMobileOpen } =
+  const { logOutHandler, user, sidebarMobileOpen, setSidebarMobileOpen, theme } =
     useMainContext();
+
+  const isDark = theme === "dark";
+  const sidebarBg = isDark ? "#1e293b" : "#ffffff";
+  const sidebarBorder = isDark ? "1px solid #334155" : "1px solid #e2e8f0";
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 1024px)");
@@ -54,12 +55,9 @@ const RootLayout = () => {
       <span
         className={`${navItemClass} border-l-4 ${
           isActive(link)
-            ? "border-l-[#004aa3] bg-[#004aa3]/10"
-            : "border-transparent hover:bg-slate-100"
+            ? "border-l-[#004aa3] dark:border-l-sky-400 bg-[#004aa3]/10 dark:bg-sky-400/20 text-[#004aa3] dark:text-sky-300"
+            : "border-transparent hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200"
         }`}
-        style={{
-          color: isActive(link) ? THEME_PRIMARY : TEXT_DARK
-        }}
       >
         <Icon className="w-5 h-5 flex-shrink-0 text-inherit" />
         {!collapsed && <span>{text}</span>}
@@ -75,26 +73,24 @@ const RootLayout = () => {
           breakPoint="lg"
           toggled={sidebarToggled}
           onBackdropClick={() => setSidebarMobileOpen(false)}
+          backgroundColor={sidebarBg}
           rootStyles={{
-            backgroundColor: SIDEBAR_BG,
-            borderRight: "1px solid #e2e8f0",
+            backgroundColor: sidebarBg,
+            borderRight: sidebarBorder,
             height: "100%",
             minHeight: "0"
           }}
         >
           <div className="flex flex-col h-full min-h-0 py-3">
             <div className="flex-shrink-0 flex items-center justify-between gap-2 px-3 mb-4">
-              <div className="flex items-center gap-2 min-w-0">
+              <div className={`flex items-center gap-2 ${collapsed ? "min-w-9 justify-center" : "min-w-0"}`}>
                 <img
                   src={Logo}
                   alt="MMHC"
-                  className="h-9 w-9 flex-shrink-0 rounded-lg object-cover border border-slate-200"
+                  className="h-9 w-9 flex-shrink-0 rounded-lg object-cover border border-slate-200 dark:border-slate-600"
                 />
                 {!collapsed && (
-                  <span
-                    className="text-sm font-semibold truncate"
-                    style={{ color: TEXT_DARK }}
-                  >
+                  <span className="text-sm font-semibold truncate text-slate-800 dark:text-slate-200">
                     MMHC
                   </span>
                 )}
@@ -102,7 +98,7 @@ const RootLayout = () => {
               <button
                 type="button"
                 onClick={() => setCollapsed((c) => !c)}
-                className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-slate-200 text-slate-800 hover:bg-slate-300 transition-colors"
+                className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-slate-200 dark:bg-slate-600 text-slate-800 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-500 transition-colors"
                 aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
               >
                 <HiChevronLeft
@@ -165,12 +161,11 @@ const RootLayout = () => {
                 )}
               </div>
             </Menu>
-            <div className="flex-shrink-0 p-2 border-t border-slate-200">
+            <div className="flex-shrink-0 px-2 py-2 border-t border-slate-200 dark:border-slate-600">
               <button
                 type="button"
                 onClick={() => logOutHandler()}
-                className={`${navItemClass} w-full justify-center border-l-transparent hover:bg-red-50 hover:text-red-600`}
-                style={{ color: TEXT_DARK }}
+                className={`flex items-center gap-3 w-full py-2.5 pl-5 pr-3 text-sm font-medium transition-all duration-200 rounded-r-lg justify-start border-l-4 border-transparent hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 text-slate-800 dark:text-slate-200`}
               >
                 <HiArrowRightOnRectangle className="w-5 h-5" />
                 {!collapsed && <span>Logout</span>}
@@ -179,7 +174,7 @@ const RootLayout = () => {
           </div>
         </Sidebar>
       </div>
-      <main className="flex-1 min-w-0 min-h-0 overflow-y-auto p-4 sm:p-6 bg-slate-50/80">
+      <main className="flex-1 min-w-0 min-h-0 overflow-y-auto p-4 sm:p-6 bg-slate-50/80 dark:bg-slate-900">
         <Outlet />
       </main>
     </div>

@@ -160,7 +160,7 @@ const CommunityCard = () => {
   return (
     <div className="flex justify-center min-h-0 flex-1">
       <div className="w-full xl:w-[95%] flex flex-col overflow-hidden">
-        <h2 className="text-2xl font-bold text-slate-800 mb-4">
+        <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4">
           Community Card
         </h2>
 
@@ -168,27 +168,27 @@ const CommunityCard = () => {
         <div className="flex  mb-4 justify-between">
           <div className="flex flex-wrap items-center gap-3">
             <div className="relative flex-1 min-w-[200px] max-w-md">
-              <HiMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
+              <HiMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 dark:text-slate-500 pointer-events-none" />
               <input
                 type="text"
                 placeholder="Search by name or CNIC"
                 value={searchCard}
                 onChange={(e) => setSearchCard(e.target.value)}
-                className="h-10 w-full rounded-lg border border-slate-200 bg-white py-0 pl-10 pr-4 text-sm text-slate-800 placeholder-slate-400 outline-none focus:border-[#004aa3] focus:ring-2 focus:ring-[#004aa3]/20"
+                className="h-10 w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 py-0 pl-10 pr-4 text-sm text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 outline-none focus:border-[#004aa3] dark:focus:border-sky-400 focus:ring-2 focus:ring-[#004aa3]/20 dark:focus:ring-sky-400/20"
               />
             </div>
             <button
               type="button"
               onClick={() => setShowFilter(!showFilter)}
-              className="flex h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
+              className="flex h-10 items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 text-sm font-medium text-slate-700 dark:text-slate-200 shadow-sm transition-colors hover:bg-slate-50 dark:hover:bg-slate-700"
             >
-              <Icon className="w-4 h-4 text-slate-500" />
+              <Icon className="w-4 h-4 text-slate-500 dark:text-slate-400" />
               Filter
             </button>
             <button
               type="button"
               onClick={handlePrint}
-              className="flex h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
+              className="flex h-10 items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 text-sm font-medium text-slate-700 dark:text-slate-200 shadow-sm transition-colors hover:bg-slate-50 dark:hover:bg-slate-700"
             >
               <HiOutlinePrinter className="w-4 h-4" />
               Print
@@ -198,7 +198,7 @@ const CommunityCard = () => {
             <button
               type="button"
               onClick={() => navigate("/communitycardcreate")}
-              className="flex h-10 items-center gap-2 rounded-lg bg-[#004aa3] px-4 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[#003d8a]"
+              className="flex h-10 items-center gap-2 rounded-lg bg-[#004aa3] dark:bg-sky-600 px-4 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[#003d8a] dark:hover:bg-sky-700"
             >
               + Card
             </button>
@@ -206,17 +206,17 @@ const CommunityCard = () => {
         </div>
 
         {showFilter && (
-          <div className="mb-4 rounded-lg border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-slate-600">
+          <div className="mb-4 rounded-lg border border-slate-200 dark:border-slate-600 bg-slate-50/50 dark:bg-slate-800/50 px-4 py-3 text-sm text-slate-600 dark:text-slate-400">
             No filters available for community cards yet.
           </div>
         )}
 
         <div className="flex items-center justify-between mb-2">
-          <h3 className="text-base font-semibold text-slate-800">Records</h3>
+          <h3 className="text-base font-semibold text-slate-800 dark:text-slate-200">Records</h3>
         </div>
         <div
           ref={tableContainerRef}
-          className={`overflow-y-auto flex-1 min-h-0 rounded-xl border border-slate-200 bg-white ${
+          className={`overflow-y-auto flex-1 min-h-0 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 ${
             showFilter
               ? "max-h-[calc(100vh-420px)]"
               : "max-h-[calc(100vh-220px)]"
@@ -225,8 +225,8 @@ const CommunityCard = () => {
           {!showNo ? (
             filteredCommunityCards.length > 0 ? (
               <table className="w-full">
-                <thead className="sticky top-0 z-10 bg-white border-b border-slate-200">
-                  <tr className="text-left text-xs font-semibold uppercase tracking-wide text-slate-600">
+                <thead className="sticky top-0 z-10 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-600">
+                  <tr className="text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">
                     <th className="py-3 px-4">Card ID</th>
                     <th className="py-3 px-4">Name</th>
                     <th className="py-3 px-4">CNIC</th>
@@ -241,7 +241,7 @@ const CommunityCard = () => {
                   {filteredCommunityCards.map((item) => (
                     <tr
                       key={item.id}
-                      className="border-b border-slate-100 text-sm text-slate-800 hover:bg-slate-50/80 transition-colors cursor-pointer"
+                      className="border-b border-slate-100 dark:border-slate-700 text-sm text-slate-800 dark:text-slate-200 hover:bg-slate-50/80 dark:hover:bg-slate-700/50 transition-colors cursor-pointer"
                       onClick={() => {
                         setSelectedMember(item);
                         setShowDetailModal(true);
@@ -269,14 +269,14 @@ const CommunityCard = () => {
                                 actionMenuId === item.id ? null : item.id
                               );
                             }}
-                            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+                            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-600 hover:text-slate-700 dark:hover:text-slate-200"
                             aria-label="Actions"
                           >
                             <FaEllipsisV className="w-4 h-4" />
                           </button>
                           {actionMenuId === item.id && (
                             <div
-                              className="absolute right-0 top-full z-20 mt-1 w-40 rounded-lg border border-slate-200 bg-white py-1 shadow-lg"
+                              className="absolute right-0 top-full z-20 mt-1 w-40 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 py-1 shadow-lg"
                               onClick={(e) => e.stopPropagation()}
                             >
                               <button
@@ -286,7 +286,7 @@ const CommunityCard = () => {
                                   setShowDetailModal(true);
                                   setActionMenuId(null);
                                 }}
-                                className="block w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50"
+                                className="block w-full px-4 py-2 text-left text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700"
                               >
                                 View
                               </button>
@@ -300,7 +300,7 @@ const CommunityCard = () => {
                                       });
                                       setActionMenuId(null);
                                     }}
-                                    className="block w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50"
+                                    className="block w-full px-4 py-2 text-left text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700"
                                   >
                                     Edit
                                   </button>
@@ -312,7 +312,7 @@ const CommunityCard = () => {
                                       setShowDetailModal(false);
                                       setActionMenuId(null);
                                     }}
-                                    className="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50"
+                                    className="block w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30"
                                   >
                                     Delete
                                   </button>
@@ -327,24 +327,24 @@ const CommunityCard = () => {
                 </tbody>
               </table>
             ) : (
-              <div className="flex min-h-[320px] items-center justify-center text-slate-500">
+              <div className="flex min-h-[320px] items-center justify-center text-slate-500 dark:text-slate-400">
                 No data found
               </div>
             )
           ) : (
             <div className="flex min-h-[320px] items-center justify-center">
-              <p className="text-center font-semibold text-slate-600">
+              <p className="text-center font-semibold text-slate-600 dark:text-slate-400">
                 No data found for this filter.
               </p>
             </div>
           )}
           {loading && (
-            <div className="flex justify-center py-4 text-sm text-slate-500">
+            <div className="flex justify-center py-4 text-sm text-slate-500 dark:text-slate-400">
               Loading more...
             </div>
           )}
           {!hasMore && filteredCommunityCards.length > 0 && (
-            <div className="flex justify-center py-3 text-xs text-slate-400">
+            <div className="flex justify-center py-3 text-xs text-slate-400 dark:text-slate-500">
               End of records
             </div>
           )}

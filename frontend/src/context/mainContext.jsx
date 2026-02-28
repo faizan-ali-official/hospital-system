@@ -15,6 +15,8 @@ const mainContext = createContext({
   communityCard: [],
   sidebarMobileOpen: false,
   setSidebarMobileOpen: () => {},
+  theme: "light",
+  setTheme: () => {},
   setAllSlips: () => {},
   setDoctors: () => {},
   setAllUsers: () => {},
@@ -42,6 +44,22 @@ export const MainContextProvider = ({ children }) => {
   const [feesTypes, setFeesTypes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sidebarMobileOpen, setSidebarMobileOpen] = useState(false);
+  const [theme, setThemeState] = useState(() => {
+    if (typeof window === "undefined") return "light";
+    return localStorage.getItem("theme") || "light";
+  });
+
+  const setTheme = (value) => {
+    setThemeState(value);
+    localStorage.setItem("theme", value);
+    if (typeof document !== "undefined") {
+      document.documentElement.classList.toggle("dark", value === "dark");
+    }
+  };
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", theme === "dark");
+  }, [theme]);
 
   const navigate = useNavigate();
   const params = {
@@ -77,7 +95,6 @@ export const MainContextProvider = ({ children }) => {
         "/api/patient-slips?limit=100&offset=0&deleted=true"
       );
       setDeleteSlips(deleteSlipResp?.data);
-      navigate("/");
     } catch (error) {
       setUser(null);
       navigate("/login");
@@ -139,6 +156,8 @@ export const MainContextProvider = ({ children }) => {
         communityCard,
         sidebarMobileOpen,
         setSidebarMobileOpen,
+        theme,
+        setTheme,
         fetchUserProfile,
         logOutHandler,
         setAllUsers,

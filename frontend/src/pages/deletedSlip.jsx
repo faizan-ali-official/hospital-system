@@ -42,35 +42,35 @@ const DeletedSlips = () => {
   return (
     <div className="flex justify-center min-h-0 flex-1">
       <div className="w-full xl:w-[95%] flex flex-col overflow-hidden">
-        <h2 className="text-2xl font-bold text-slate-800 mb-4">
+        <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4">
           Deleted Slips
         </h2>
 
         <div className="flex flex-wrap items-center gap-3 mb-4">
           <div className="relative flex-1 min-w-[200px] max-w-md">
-            <HiMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
+            <HiMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 dark:text-slate-500 pointer-events-none" />
             <input
               type="text"
               placeholder="Search by slip ID, patient, deleted by or reason"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-10 w-full rounded-lg border border-slate-200 bg-white py-0 pl-10 pr-4 text-sm text-slate-800 placeholder-slate-400 outline-none focus:border-[#004aa3] focus:ring-2 focus:ring-[#004aa3]/20"
+              className="h-10 w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 py-0 pl-10 pr-4 text-sm text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 outline-none focus:border-[#004aa3] dark:focus:border-sky-400 focus:ring-2 focus:ring-[#004aa3]/20 dark:focus:ring-sky-400/20"
             />
           </div>
         </div>
         {showFilter && (
-          <div className="mb-4 rounded-lg border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-slate-600">
+          <div className="mb-4 rounded-lg border border-slate-200 dark:border-slate-600 bg-slate-50/50 dark:bg-slate-800/50 px-4 py-3 text-sm text-slate-600 dark:text-slate-400">
             No date filters for deleted slips yet.
           </div>
         )}
 
         <div className="flex items-center justify-between mb-2">
-          <h3 className="text-base font-semibold text-slate-800">Records</h3>
+          <h3 className="text-base font-semibold text-slate-800 dark:text-slate-200">Records</h3>
         </div>
         <div
           ref={tableContainerRef}
           className={
-            "overflow-y-auto flex-1 min-h-0 rounded-xl border border-slate-200 bg-white " +
+            "overflow-y-auto flex-1 min-h-0 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 " +
             (showFilter
               ? "max-h-[calc(100vh-420px)]"
               : "max-h-[calc(100vh-220px)]")
@@ -78,8 +78,8 @@ const DeletedSlips = () => {
         >
           {filteredSlips.length > 0 ? (
             <table className="w-full">
-              <thead className="sticky top-0 z-10 bg-white border-b border-slate-200">
-                <tr className="text-left text-xs font-semibold uppercase tracking-wide text-slate-600">
+              <thead className="sticky top-0 z-10 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-600">
+                <tr className="text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">
                   <th className="py-3 px-4">Slip ID</th>
                   <th className="py-3 px-4">Patient Name</th>
                   <th className="py-3 px-4">Deleted By</th>
@@ -92,7 +92,7 @@ const DeletedSlips = () => {
                 {filteredSlips.map((item) => (
                   <tr
                     key={item.id}
-                    className="border-b border-slate-100 text-sm text-slate-800 hover:bg-slate-50/80 transition-colors"
+                    className="border-b border-slate-100 dark:border-slate-700 text-sm text-slate-800 dark:text-slate-200 hover:bg-slate-50/80 dark:hover:bg-slate-700/50 transition-colors"
                   >
                     <td className="py-3 px-4 font-medium">{item?.id}</td>
                     <td className="py-3 px-4 capitalize">
@@ -117,7 +117,7 @@ const DeletedSlips = () => {
               </tbody>
             </table>
           ) : (
-            <div className="flex min-h-[320px] items-center justify-center text-slate-500">
+            <div className="flex min-h-[320px] items-center justify-center text-slate-500 dark:text-slate-400">
               No deleted slips found
             </div>
           )}
