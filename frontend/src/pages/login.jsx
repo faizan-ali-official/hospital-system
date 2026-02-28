@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as yup from "yup";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 import { HiOutlineUser, HiSun, HiMoon } from "react-icons/hi2";
 import CustomAuthButton from "../components/customButton";
 import { axiosClient } from "../utils/AxiosClient";
@@ -15,6 +16,7 @@ const loginInputClass =
 function Login() {
   const [loading, setLoading] = useState(false);
   const [keepSignedIn, setKeepSignedIn] = useState(false);
+  const navigate = useNavigate();
   const { fetchUserProfile, theme, setTheme } = useMainContext();
 
   const onSubmitHandler = async (values, helpers) => {
@@ -26,6 +28,7 @@ function Login() {
       localStorage.setItem("user", JSON.stringify(data?.user));
       await fetchUserProfile();
       helpers.resetForm();
+      navigate("/", { replace: true });
     } catch (error) {
       console.log(error);
       toast.error(error?.response?.data?.message || error?.message);
