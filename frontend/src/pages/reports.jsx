@@ -139,7 +139,9 @@ const Reports = () => {
   return (
     <div className="flex justify-center min-h-0 flex-1" ref={tableContainerRef}>
       <div className="w-full xl:w-[95%] max-w-4xl flex flex-col overflow-hidden">
-        <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4">Reports</h2>
+        <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4">
+          Reports
+        </h2>
 
         <div className="print-hidden space-y-4">
           <div className="flex flex-wrap justify-between items-center gap-3">
@@ -156,7 +158,6 @@ const Reports = () => {
               Print
             </button>
           </div>
-
           <SearchSlip
             setFilteredSearch={setReportData}
             isreport={true}
@@ -167,13 +168,17 @@ const Reports = () => {
 
         <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 p-6 shadow-sm">
-            <p className="text-sm font-medium text-slate-600 dark:text-slate-400">No of Slips</p>
+            <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
+              No of Slips
+            </p>
             <p className="mt-2 text-2xl font-bold text-slate-800 dark:text-slate-100">
               {reportData.slips_count ?? 0}
             </p>
           </div>
           <div className="rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 p-6 shadow-sm">
-            <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Total Earning</p>
+            <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
+              Total Earning
+            </p>
             <p className="mt-2 text-2xl font-bold text-[#004aa3] dark:text-sky-400">
               Rs. {reportData.total_amount ?? "0.00"}
             </p>

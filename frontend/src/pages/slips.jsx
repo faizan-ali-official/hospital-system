@@ -278,7 +278,15 @@ const Slips = () => {
         `/api/patient-slips?limit=${limit}&offset=${offset}&deleted=false`
       );
       const newSlips = response?.data;
-      setAllSlips((prevSlips) => [...prevSlips, ...newSlips]);
+      setAllSlips((prevSlips) => {
+        const map = new Map();
+
+        [...prevSlips, ...newSlips].forEach((item) => {
+          map.set(item.id, item);
+        });
+
+        return Array.from(map.values());
+      });
       setOffset((prevOffset) => prevOffset + limit);
       if (newSlips.length < limit) {
         setHasMore(false);
@@ -396,7 +404,9 @@ const Slips = () => {
         )}
 
         <div className="flex items-center justify-between mb-2">
-          <h3 className="text-base font-semibold text-slate-800 dark:text-slate-200">Records</h3>
+          <h3 className="text-base font-semibold text-slate-800 dark:text-slate-200">
+            Records
+          </h3>
         </div>
         <div
           ref={tableContainerRef}
@@ -480,7 +490,9 @@ const Slips = () => {
                             </span>
                           </span>
                         ) : (
-                          <span className="text-slate-400 dark:text-slate-500">No Discount</span>
+                          <span className="text-slate-400 dark:text-slate-500">
+                            No Discount
+                          </span>
                         )}
                       </td>
                       <td className="py-3 px-4 text-right print-hidden">

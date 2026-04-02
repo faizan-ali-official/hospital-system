@@ -164,26 +164,48 @@ function PharmacySlip() {
                 {({ field }) => (
                   <select
                     {...field}
-                    className={`${slipFieldClass} ${field.value ? "text-slate-800 dark:text-slate-200" : "text-slate-400 dark:text-slate-500"}`}
+                    className={`${slipFieldClass} ${
+                      field.value
+                        ? "text-slate-800 dark:text-slate-200"
+                        : "text-slate-400 dark:text-slate-500"
+                    }`}
                   >
                     <option value="">Select Doctor</option>
                     {doctors.map((item) => (
-                      <option key={item.id} value={item.id}>{`Dr. ${item.doctor_name}`}</option>
+                      <option
+                        key={item.id}
+                        value={item.id}
+                      >{`Dr. ${item.doctor_name}`}</option>
                     ))}
                   </select>
                 )}
               </Field>
-              <ErrorMessage name="doctor_id" className="text-red-500 text-xs mt-0.5" component="p" />
+              <ErrorMessage
+                name="doctor_id"
+                className="text-red-500 text-xs mt-0.5"
+                component="p"
+              />
             </div>
             <div>
-              <Input placeholder="Age" name="age" errorName="age" showLabel={false} compact className="h-10 py-0 px-3" />
+              <Input
+                placeholder="Age"
+                name="age"
+                errorName="age"
+                showLabel={false}
+                compact
+                className="h-10 py-0 px-3"
+              />
             </div>
-            <div>
+            <div className="sm:col-span-2">
               <Field name="gender">
                 {({ field }) => (
                   <select
                     {...field}
-                    className={`${slipFieldClass} ${field.value ? "text-slate-800 dark:text-slate-200" : "text-slate-400 dark:text-slate-500"}`}
+                    className={`${slipFieldClass} ${
+                      field.value
+                        ? "text-slate-800 dark:text-slate-200"
+                        : "text-slate-400 dark:text-slate-500"
+                    }`}
                   >
                     <option value="">Select Gender</option>
                     <option value="Male">Male</option>
@@ -191,7 +213,11 @@ function PharmacySlip() {
                   </select>
                 )}
               </Field>
-              <ErrorMessage name="gender" className="text-red-500 text-xs mt-0.5" component="p" />
+              <ErrorMessage
+                name="gender"
+                className="text-red-500 text-xs mt-0.5"
+                component="p"
+              />
             </div>
             <div className="sm:col-span-2">
               <Field name="service_id">
@@ -204,10 +230,15 @@ function PharmacySlip() {
                     <Select
                       isMulti
                       options={options}
-                      value={options.filter((opt) => field.value?.includes(opt.value))}
+                      value={options.filter((opt) =>
+                        field.value?.includes(opt.value)
+                      )}
                       placeholder="Select Service"
                       onChange={(selected) =>
-                        form.setFieldValue("service_id", selected.map((i) => i.value))
+                        form.setFieldValue(
+                          "service_id",
+                          selected.map((i) => i.value)
+                        )
                       }
                       styles={getSelectStyles(theme === "dark")}
                       classNamePrefix="slip-select"
@@ -215,7 +246,11 @@ function PharmacySlip() {
                   );
                 }}
               </Field>
-              <ErrorMessage name="service_id" className="text-red-500 text-xs mt-0.5" component="p" />
+              <ErrorMessage
+                name="service_id"
+                className="text-red-500 text-xs mt-0.5"
+                component="p"
+              />
             </div>
             <div>
               <Input

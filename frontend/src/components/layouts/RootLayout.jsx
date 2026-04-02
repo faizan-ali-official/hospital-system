@@ -18,14 +18,34 @@ import { useMainContext } from "../../context/mainContext";
 const navItemClass =
   "flex items-center gap-3 w-full py-2.5 px-3 text-sm font-medium transition-all duration-200 rounded-r-lg";
 
+const menuItems = [ 
+  { link: "/", text: "Home", icon: IoMdHome },
+  { link: "/patientslip", text: "Slips", icon: FaSheetPlastic },
+  { link: "/communitycard", text: "Community Card", icon: FaAddressCard }
+];
+
+const adminMenuItems = [
+  { link: "/users", text: "Users", icon: HiUser },
+  { link: "/doctors", text: "Doctors", icon: FaUserDoctor },
+  { link: "/services", text: "Services", icon: HiClipboardDocumentList },
+  { link: "/discounts", text: "Discounts", icon: HiTag },
+  { link: "/reports", text: "Reports", icon: HiDocumentMagnifyingGlass },
+  { link: "/deletedslips", text: "Deleted Slips", icon: HiDocumentMinus }
+];
+
 const RootLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [isLg, setIsLg] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth >= 1024 : true
   );
   const location = useLocation();
-  const { logOutHandler, user, sidebarMobileOpen, setSidebarMobileOpen, theme } =
-    useMainContext();
+  const {
+    logOutHandler,
+    user,
+    sidebarMobileOpen,
+    setSidebarMobileOpen,
+    theme
+  } = useMainContext();
 
   const isDark = theme === "dark";
   const sidebarBg = isDark ? "#1e293b" : "#ffffff";
@@ -83,7 +103,11 @@ const RootLayout = () => {
         >
           <div className="flex flex-col h-full min-h-0 py-3">
             <div className="flex-shrink-0 flex items-center justify-between gap-2 px-3 mb-4">
-              <div className={`flex items-center gap-2 ${collapsed ? "min-w-9 justify-center" : "min-w-0"}`}>
+              <div
+                className={`flex items-center gap-2 ${
+                  collapsed ? "min-w-9 justify-center" : "min-w-0"
+                }`}
+              >
                 <img
                   src={Logo}
                   alt="MMHC"
@@ -118,45 +142,27 @@ const RootLayout = () => {
               }}
             >
               <div className="px-2 space-y-0">
-                <CustomMenu link="/" text="Home" Icon={IoMdHome} />
-                <CustomMenu
-                  link="/patientslip"
-                  text="Slips"
-                  Icon={FaSheetPlastic}
-                />
-                <CustomMenu
-                  link="/communitycard"
-                  text="Community Card"
-                  Icon={FaAddressCard}
-                />
+                {menuItems.map((item) => (
+                  <CustomMenu
+                    key={item.link}
+                    {...item}
+                    Icon={item.icon}
+                    collapsed={collapsed}
+                    active={isActive(item.link)}
+                  />
+                ))}
                 {user?.role === "admin" && (
                   <>
-                    <CustomMenu link="/users" text="Users" Icon={HiUser} />
-                    <CustomMenu
-                      link="/doctors"
-                      text="Doctors"
-                      Icon={FaUserDoctor}
-                    />
-                    <CustomMenu
-                      link="/services"
-                      text="Services"
-                      Icon={HiClipboardDocumentList}
-                    />
-                    <CustomMenu
-                      link="/discounts"
-                      text="Discounts"
-                      Icon={HiTag}
-                    />
-                    <CustomMenu
-                      link="/reports"
-                      text="Reports"
-                      Icon={HiDocumentMagnifyingGlass}
-                    />
-                    <CustomMenu
-                      link="/deletedslips"
-                      text="Deleted Slips"
-                      Icon={HiDocumentMinus}
-                    />
+                    {user?.role === "admin" &&
+                      adminMenuItems.map((item) => (
+                        <CustomMenu
+                          key={item.link}
+                          {...item}
+                          Icon={item.icon}
+                          collapsed={collapsed}
+                          active={isActive(item.link)}
+                        />
+                      ))}
                   </>
                 )}
               </div>
