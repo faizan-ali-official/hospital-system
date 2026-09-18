@@ -471,14 +471,14 @@ const Slips = () => {
                         {item?.fees_before_discount != null
                           ? item.fees_before_discount
                           : item?.slip_type_name === "pharmacy"
-                          ? Number(item?.pharmacy_fees) +
-                            (Array.isArray(item?.services)
-                              ? item.services.reduce(
-                                  (sum, s) => sum + Number(s.fees || 0),
-                                  0
-                                )
-                              : 0)
-                          : item?.doctor_fee}
+                            ? Number(item?.pharmacy_fees) +
+                              (Array.isArray(item?.services)
+                                ? item.services.reduce(
+                                    (sum, s) => sum + Number(s.fees || 0),
+                                    0
+                                  )
+                                : 0)
+                            : item?.doctor_fee}
                       </td>
                       <td className="py-3 px-4">
                         {item?.discount_id ? (

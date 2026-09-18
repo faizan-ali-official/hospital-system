@@ -98,12 +98,20 @@ function Login() {
           type="button"
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
           className="absolute top-4 right-4 flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-          aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+          aria-label={
+            theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
+          }
         >
-          {theme === "dark" ? <HiSun className="w-5 h-5" /> : <HiMoon className="w-5 h-5" />}
+          {theme === "dark" ? (
+            <HiSun className="w-5 h-5" />
+          ) : (
+            <HiMoon className="w-5 h-5" />
+          )}
         </button>
         <div className="w-full ">
-          <h2 className="text-3xl font-bold text-[#004aa3] dark:text-sky-400">Sign In</h2>
+          <h2 className="text-3xl font-bold text-[#004aa3] dark:text-sky-400">
+            Sign In
+          </h2>
           <p className="text-slate-500 dark:text-slate-400 mt-2 mb-8 italic">
             Sign in to your account
           </p>
